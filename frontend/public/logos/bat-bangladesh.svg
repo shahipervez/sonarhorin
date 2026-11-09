@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
+  <g transform="translate(18, 16)">
+    <rect width="44" height="44" rx="8" fill="#0B2341"/>
+    <path d="M12 28 C14 16 30 16 32 28" fill="none" stroke="#E5A823" stroke-width="3"/>
+    <circle cx="22" cy="22" r="5" fill="#E5A823"/>
+  </g>
+  <text x="72" y="41" font-family="'Inter',sans-serif" font-size="24" font-weight="900" fill="#0B2341" letter-spacing="1">BAT</text>
+  <text x="73" y="56" font-family="'Inter',sans-serif" font-size="10" font-weight="700" fill="#E5A823" letter-spacing="0.6">BANGLADESH</text>
+</svg>

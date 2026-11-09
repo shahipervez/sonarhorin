@@ -1,0 +1,35 @@
+# One command to run the whole stack:   cp .env.example .env  (fill it in)  →  docker compose up -d --build
+# Then: http://localhost  (put HTTPS in front for production)
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sonarhorin}
+      POSTGRES_USER: ${POSTGRES_USER:-sonarhorin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: {test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-sonarhorin}"], interval: 5s, retries: 10}
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      REDIS_URL: redis://redis:6379/0
+      TRUST_X_FORWARDED_FOR: "true"
+    volumes: [media:/app/media, private:/app/private]
+    depends_on: {db: {condition: service_healthy}, redis: {condition: service_started}}
+    restart: unless-stopped
+
+  web:
+    build: ./frontend
+    ports: ["80:80"]
+    depends_on: [backend]
+    restart: unless-stopped
+
+volumes: {pgdata: {}, media: {}, private: {}}

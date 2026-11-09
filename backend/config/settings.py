@@ -1,0 +1,213 @@
+"""Sonarhorin (সোনারহরিণ) — Django settings."""
+import os
+from datetime import timedelta
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+
+def env_bool(name, default=False):
+    return os.getenv(name, str(default)).lower() in ("1", "true", "yes", "on")
+
+
+DEBUG = env_bool("DJANGO_DEBUG", True)
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-change-me-in-production")
+if not DEBUG and (SECRET_KEY.startswith("dev-only") or len(SECRET_KEY) < 40):
+    from django.core.exceptions import ImproperlyConfigured
+
+    raise ImproperlyConfigured("Set a long random DJANGO_SECRET_KEY before running with DJANGO_DEBUG=False.")
+ALLOWED_HOSTS = ["*"]
+
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    # third party
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    "corsheaders",
+    # sonarhorin apps
+    "apps.accounts",
+    "apps.core",
+    "apps.cv",
+    "apps.assessments",
+    "apps.interviews",
+    "apps.programs",
+    "apps.certifications",
+    "apps.stories",
+    "apps.jobs",
+    "apps.portfolio",
+    "apps.network",
+    "apps.startups",
+    "apps.career",
+]
+
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "apps.core.security.SecurityHeadersMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+ROOT_URLCONF = "config.urls"
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = "config.wsgi.application"
+
+# SQLite for development. Set DATABASE_URL-style vars below for PostgreSQL in production.
+if os.getenv("POSTGRES_DB"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("POSTGRES_DB"),
+            "USER": os.getenv("POSTGRES_USER", "postgres"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", ""),
+            "HOST": os.getenv("POSTGRES_HOST", "localhost"),
+            "PORT": os.getenv("POSTGRES_PORT", "5432"),
+        }
+    }
+else:
+    DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3"}}
+
+AUTH_USER_MODEL = "accounts.User"
+
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 8}},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+# Argon2id first; older hashes still verify and are upgraded on next login.
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+]
+
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "Asia/Dhaka"
+USE_I18N = True
+USE_TZ = True
+
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+# CVs, resumes and pitch decks live here — never served publicly, only through owner-checked API views.
+PRIVATE_MEDIA_ROOT = Path(os.getenv("PRIVATE_MEDIA_ROOT", BASE_DIR / "private"))
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle", "rest_framework.throttling.AnonRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {
+        "user": "3000/hour", "anon": os.getenv("ANON_RATE", "1500/hour"),
+        "login": "10/min", "register": "8/hour", "ai": os.getenv("AI_RATE", "60/hour"), "upload": "40/hour",
+    },
+}
+
+# Short-lived access token (kept in memory by the SPA) + rotating refresh token in an HttpOnly cookie.
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+}
+REFRESH_COOKIE = {
+    "key": "sh_refresh",
+    "path": "/api/auth/",
+    "httponly": True,
+    "secure": env_bool("COOKIE_SECURE", not DEBUG),   # set COOKIE_SECURE=False only to test the docker stack over plain http
+    "samesite": "Strict" if not DEBUG else "Lax",
+}
+LOGIN_MAX_FAILS = 5          # per email + per IP …
+LOGIN_LOCK_MINUTES = 15      # … then locked for this long
+TRUST_X_FORWARDED_FOR = env_bool("TRUST_X_FORWARDED_FOR", False)
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",") if o.strip()]
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+
+# ---- HTTP security headers
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
+X_FRAME_OPTIONS = "DENY"
+SESSION_COOKIE_HTTPONLY = True
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = env_bool("COOKIE_SECURE", True)
+    CSRF_COOKIE_SECURE = env_bool("COOKIE_SECURE", True)
+
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+if os.getenv("REDIS_URL"):
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.redis.RedisCache", "LOCATION": os.getenv("REDIS_URL")}}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"plain": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"}},
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "plain"}},
+    "loggers": {"security": {"handlers": ["console"], "level": "INFO"}, "apps": {"handlers": ["console"], "level": "INFO"}},
+}
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+
+# ---- Sonarhorin settings ----
+DISCORD_INVITE_URL = os.getenv("DISCORD_INVITE_URL", "https://discord.gg/your-invite-code")
+SITE_URL = os.getenv("SITE_URL", "http://localhost:5173")
+
+# Optional AI. Everything works without a key (built-in rule engines); with a key, CV feedback
+# and the interviewer become LLM-powered.
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5-5")
+AI_MAX_INPUT_CHARS = 24000   # resume / job text is truncated to this before it reaches the model
+
+QUICK_TEST_QUESTIONS = 10
+QUICK_TEST_MINUTES = 10
+QUICK_TEST_PASS_PERCENT = 70
+INTERVIEW_MINUTES = 10
+
+# ---- Email (used by "email apply"). Console in development; set SMTP vars in production.
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Sonarhorin Apply <apply@sonarhorin.com>")

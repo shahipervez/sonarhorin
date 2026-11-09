@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
+  <g transform="translate(18, 16)">
+    <!-- Sunburst + leaf -->
+    <circle cx="22" cy="22" r="16" fill="#F39200"/>
+    <circle cx="22" cy="22" r="8" fill="#FFCC00"/>
+    <path d="M22 6 C32 6 36 16 36 22 C36 28 28 32 22 28 Z" fill="#78BE20"/>
+  </g>
+  <text x="72" y="50" font-family="'Inter',sans-serif" font-size="28" font-weight="900" fill="#2E7D32" letter-spacing="-0.8">marico</text>
+</svg>

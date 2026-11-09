@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
+  <g transform="translate(18, 18)">
+    <!-- Banglalink tiger stripes -->
+    <path d="M6 38 C14 26 24 14 38 6 C32 18 22 30 14 42 Z" fill="#FF6600"/>
+    <path d="M18 42 C26 30 36 18 46 14 C42 24 32 34 24 44 Z" fill="#FF8533"/>
+    <circle cx="44" cy="8" r="4" fill="#FF6600"/>
+  </g>
+  <text x="74" y="49" font-family="'Inter',-apple-system,sans-serif" font-size="24" font-weight="800" fill="#FF6600" letter-spacing="-0.8">banglalink</text>
+</svg>

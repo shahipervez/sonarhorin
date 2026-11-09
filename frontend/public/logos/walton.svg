@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
+  <g transform="translate(18, 16)">
+    <!-- Walton oval + crown -->
+    <ellipse cx="24" cy="22" rx="22" ry="16" fill="#0055A5"/>
+    <polygon points="12,14 18,24 24,14 30,24 36,14 36,28 12,28" fill="#FFFFFF"/>
+  </g>
+  <text x="72" y="44" font-family="'Inter',sans-serif" font-size="22" font-weight="900" fill="#0055A5" letter-spacing="0.5">WALTON</text>
+  <text x="73" y="57" font-family="'Inter',sans-serif" font-size="9" font-weight="700" fill="#E31B23" letter-spacing="0.5">HI-TECH INDUSTRIES</text>
+</svg>

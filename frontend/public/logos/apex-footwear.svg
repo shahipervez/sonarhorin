@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
+  <g transform="translate(18, 16)">
+    <rect width="44" height="44" rx="8" fill="#D71920"/>
+    <polygon points="12,30 22,14 32,30" fill="#FFFFFF"/>
+  </g>
+  <text x="72" y="44" font-family="'Inter',sans-serif" font-size="26" font-weight="900" fill="#D71920" font-style="italic" letter-spacing="-0.5">Apex</text>
+  <text x="73" y="57" font-family="'Inter',sans-serif" font-size="9" font-weight="700" fill="#333333" letter-spacing="0.5">FOOTWEAR LIMITED</text>
+</svg>

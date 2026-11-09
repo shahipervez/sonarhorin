@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
+  <g transform="translate(20, 16)">
+    <circle cx="22" cy="22" r="22" fill="#EB1A55"/>
+    <circle cx="22" cy="22" r="8" fill="#FFFFFF"/>
+  </g>
+  <text x="76" y="52" font-family="'Inter',sans-serif" font-size="36" font-weight="900" fill="#EB1A55" letter-spacing="-1.5">brac</text>
+</svg>

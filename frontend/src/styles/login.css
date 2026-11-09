@@ -1,0 +1,524 @@
+/* ==========================================================================
+   SONARHORIN ENCHANTED FOREST LOGIN & GOLDEN DEER BRANDING
+   Inspired by the User's Reference Design with Frosted Glassmorphism
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Page Viewport with Enchanted Forest Backdrop
+   -------------------------------------------------------------------------- */
+.forest-login-viewport {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #0B192C;
+  background-image: 
+    linear-gradient(to bottom, rgba(11, 25, 44, 0.4) 0%, rgba(11, 25, 44, 0.1) 40%, rgba(11, 25, 44, 0.6) 100%),
+    url("/forest-bg.png");
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hind Siliguri", sans-serif;
+}
+
+/* --------------------------------------------------------------------------
+   Top Navigation Bar matching the Reference Design
+   -------------------------------------------------------------------------- */
+.forest-top-nav {
+  position: relative;
+  width: 100%;
+  z-index: 20;
+  padding: 22px 36px;
+  box-sizing: border-box;
+}
+
+.forest-nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Brand Link with Official Golden Deer Logo */
+.forest-brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.forest-brand-link:hover {
+  transform: scale(1.03);
+}
+
+.forest-brand-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.85)) drop-shadow(0 0 24px rgba(217, 119, 6, 0.5));
+}
+
+.forest-brand-text {
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.forest-brand-text .part-sonar {
+  color: #FFFFFF;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.forest-brand-text .part-horin {
+  color: #FFD700;
+  background: linear-gradient(135deg, #FFF9E6 0%, #FFD700 40%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.8));
+}
+
+/* Navigation Links */
+.forest-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.forest-nav-item {
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.forest-nav-item:hover {
+  color: #FFD700;
+  transform: translateY(-1px);
+}
+
+.forest-nav-btn {
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 7px 22px;
+  color: #FFFFFF;
+  font-size: 14.5px;
+  font-weight: 700;
+  text-decoration: none;
+  background: rgba(14, 26, 41, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.forest-nav-btn:hover,
+.forest-nav-btn.active {
+  background: #FFFFFF;
+  color: #0E1A29;
+  border-color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Center Stage & Glassmorphic Login Card
+   -------------------------------------------------------------------------- */
+.forest-login-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px 60px;
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.forest-glass-card-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 410px;
+}
+
+/* Frosted Ice Glassmorphism Card strictly matching Reference Image 1 */
+.forest-glass-card {
+  position: relative;
+  width: 100%;
+  background: rgba(220, 235, 246, 0.62);
+  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  border-radius: 24px;
+  box-shadow: 
+    0 28px 70px rgba(5, 14, 28, 0.6),
+    0 0 35px rgba(255, 255, 255, 0.25) inset;
+  padding: 36px 32px 30px;
+  box-sizing: border-box;
+  animation: cardFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes cardFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Top Right Close Button (✕) */
+.forest-card-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #0E1A29;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(14, 26, 41, 0.35);
+  transition: all 0.2s ease;
+}
+
+.forest-card-close-btn:hover {
+  background: #D97706;
+  color: #FFFFFF;
+  transform: scale(1.1) rotate(90deg);
+}
+
+/* Golden Deer Crest Emblem */
+.forest-card-crest {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.forest-card-stag-img {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.85));
+  animation: stagBreathe 3s ease-in-out infinite alternate;
+}
+
+@keyframes stagBreathe {
+  0% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.75)); }
+  100% { transform: scale(1.05); filter: drop-shadow(0 0 18px rgba(245, 158, 11, 0.95)); }
+}
+
+/* Login Title */
+.forest-card-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0C1A2B;
+  text-align: center;
+  margin: 0 0 16px;
+  letter-spacing: -0.3px;
+}
+
+/* Mode Switcher: User (Phone Number) vs Admin (Gmail) */
+.forest-mode-switcher {
+  display: flex;
+  gap: 6px;
+  background: rgba(14, 26, 41, 0.08);
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.forest-mode-chip {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  color: #172A3E;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.forest-mode-chip.active {
+  background: #0E1A29;
+  color: #FFD700;
+  box-shadow: 0 3px 10px rgba(14, 26, 41, 0.3);
+}
+
+/* 1-Click Fast Test Pill */
+.forest-quick-pill {
+  margin-bottom: 16px;
+}
+
+.forest-pill-action {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px dashed rgba(14, 26, 41, 0.35);
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0E1A29;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.forest-pill-action:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: #0E1A29;
+  transform: translateY(-1px);
+}
+
+.pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+}
+
+.pill-dot.admin {
+  background: #F59E0B;
+}
+
+/* Input Fields (Underlined modern aesthetic matching Reference Design) */
+.forest-inputs-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 16px 0 20px;
+}
+
+.forest-field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.forest-field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0E1A29;
+  margin-bottom: 2px;
+}
+
+.forest-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.forest-line-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1.8px solid #0E1A29;
+  background: transparent;
+  padding: 8px 32px 8px 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #0A1624;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.forest-line-input::placeholder {
+  color: rgba(14, 26, 41, 0.45);
+  font-weight: 400;
+}
+
+.forest-line-input:focus {
+  border-bottom-color: #D97706;
+  padding-left: 2px;
+}
+
+.forest-input-icon {
+  position: absolute;
+  right: 2px;
+  font-size: 15px;
+  color: #0E1A29;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.forest-input-icon.btn-toggle {
+  pointer-events: auto;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+
+/* Remember Me & Forgot Password Row */
+.forest-options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  font-size: 12.5px;
+}
+
+.forest-remember-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #0E1A29;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.forest-custom-checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: #0E1A29;
+  cursor: pointer;
+}
+
+.forest-forgot-link {
+  color: #0E1A29;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.forest-forgot-link:hover {
+  color: #D97706;
+  text-decoration: underline;
+}
+
+/* Error Box */
+.forest-err-box {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: #991B1B;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* Primary Dark Action Button */
+.forest-submit-btn {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 9px;
+  background: #0E1A29;
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(14, 26, 41, 0.45);
+  transition: all 0.22s ease;
+}
+
+.forest-submit-btn:hover:not(:disabled) {
+  background: #17293E;
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 22px rgba(14, 26, 41, 0.55);
+}
+
+.forest-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.forest-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Card Footer */
+.forest-card-footer {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 13px;
+  color: #0E1A29;
+  font-weight: 500;
+}
+
+.forest-card-footer p {
+  margin: 0;
+}
+
+.forest-reg-link {
+  color: #0E1A29;
+  font-weight: 800;
+  text-decoration: underline;
+  margin-left: 4px;
+  transition: color 0.2s ease;
+}
+
+.forest-reg-link:hover {
+  color: #D97706;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Responsiveness
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .forest-top-nav {
+    padding: 16px 20px;
+  }
+
+  .forest-nav-menu {
+    gap: 16px;
+  }
+
+  .forest-nav-item:not(.forest-nav-btn) {
+    display: none; /* Keep clean on mobile, show logo and login button */
+  }
+
+  .forest-glass-card {
+    padding: 28px 22px 24px;
+  }
+
+  .forest-brand-text {
+    font-size: 18px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Animated welcome host (canvas) — replaces the static forest backdrop
+   -------------------------------------------------------------------------- */
+.forest-login-viewport.welcome-mode { background: #3B2A6B; }
+.welcome-stage { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+.welcome-mode .forest-top-nav, .welcome-mode .forest-login-main { position: relative; z-index: 2; }
+.welcome-mode .forest-login-main { justify-content: flex-end; padding-right: clamp(20px, 9vw, 160px); }
+.welcome-card { opacity: 0; transform: translate(-120px, 60px) scale(.35) rotate(-6deg); transform-origin: 0% 70%; pointer-events: none;
+  transition: opacity .5s ease, transform .85s cubic-bezier(.34, 1.4, .64, 1); }
+.welcome-card.open { opacity: 1; transform: none; pointer-events: auto; }
+.welcome-card .forest-glass-card { animation: none; background: rgba(255, 246, 236, .72); border-color: rgba(255, 255, 255, .9);
+  box-shadow: 0 30px 80px rgba(60, 20, 60, .45), 0 0 40px rgba(255, 220, 170, .35) inset; }
+.welcome-skip { position: absolute; z-index: 3; right: 24px; bottom: 24px; padding: 10px 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,.6);
+  background: rgba(30, 16, 40, .45); color: #fff; font: 700 13px "Hind Siliguri", sans-serif; cursor: pointer; backdrop-filter: blur(8px); }
+.welcome-skip:hover { background: #fff; color: #1A1020; }
+@media (max-width: 860px) {
+  .welcome-mode .forest-login-main { justify-content: center; padding: 46vh 16px 40px; }
+  .welcome-card { transform: translateY(80px) scale(.6); transform-origin: 50% 0%; }
+}
+@media (prefers-reduced-motion: reduce) { .welcome-card { transition: none; } }
+.welcome-fx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 2147480000; pointer-events: none; }

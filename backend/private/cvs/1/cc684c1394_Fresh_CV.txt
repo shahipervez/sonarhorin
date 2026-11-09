@@ -1,0 +1,16 @@
+Rahim Uddin
+rahim.uddin@gmail.com | +880 1712345678 | linkedin.com/in/rahimuddin | github.com/rahim
+Summary: Fresh CSE graduate aiming for a Junior Software Engineer role.
+Skills: Python, Django, React, JavaScript, SQL, PostgreSQL, Git, Docker, REST API, Data Structures, Algorithms, Linux
+Projects
+- Built a Django attendance app used by 120 students; reduced manual work by 70%.
+- Developed a React dashboard and deployed it on AWS, serving 500 users.
+- Designed a machine learning model that improved accuracy by 12%.
+Experience
+Software Engineer Intern, Robi — Implemented REST API endpoints, automated tests, optimized queries (3x faster).
+Education
+BSc in CSE, IUBAT — CGPA 3.62 / 4.00 (2026)
+Certifications: AWS Cloud Practitioner, Coursera Machine Learning
+Achievements: Won 2nd place in a national hackathon; led a team of 4.
+Activities: Volunteer, IT Society — organized coding workshops for 80 students.
+Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. Additional detail about coursework, teamwork, communication and problem solving. 

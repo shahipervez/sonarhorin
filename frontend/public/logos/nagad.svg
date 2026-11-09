@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
+  <g transform="translate(18, 16)">
+    <!-- Nagad flame -->
+    <path d="M22 4 C28 14 36 22 36 32 C36 40 28 46 20 46 C12 46 6 38 8 28 C9 22 16 16 18 10 Z" fill="#EE3124"/>
+    <path d="M22 16 C26 22 28 26 28 32 C28 38 22 40 18 40 C14 40 12 34 14 28 Z" fill="#FFC20E"/>
+  </g>
+  <text x="68" y="47" font-family="'Inter',sans-serif" font-size="28" font-weight="900" fill="#EE3124" letter-spacing="-0.8">নগদ</text>
+  <text x="134" y="47" font-family="'Inter',sans-serif" font-size="15" font-weight="700" fill="#555555" letter-spacing="0.2">nagad</text>
+</svg>

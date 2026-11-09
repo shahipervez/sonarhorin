@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
+  <g transform="translate(20, 16)">
+    <!-- 8-point geometric star -->
+    <rect width="44" height="44" rx="8" fill="#D92528"/>
+    <polygon points="22,9 25,18 35,22 25,26 22,35 19,26 9,22 19,18" fill="#FFFFFF"/>
+  </g>
+  <text x="74" y="38" font-family="'Inter',-apple-system,sans-serif" font-size="13" font-weight="600" fill="#666666" letter-spacing="1">THE</text>
+  <text x="74" y="54" font-family="'Inter',-apple-system,sans-serif" font-size="20" font-weight="900" fill="#D92528" letter-spacing="-0.3">CITY BANK</text>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
+  <g transform="translate(18, 16)">
+    <!-- bKash bird emblem -->
+    <path d="M22 6 L38 20 L26 28 L32 44 L16 32 L8 40 L12 24 Z" fill="#E2136E"/>
+    <path d="M22 6 L26 28 L16 32 Z" fill="#C20E5C"/>
+  </g>
+  <text x="74" y="47" font-family="'Inter',-apple-system,sans-serif" font-size="28" font-weight="900" fill="#222222" letter-spacing="-0.8">b<tspan fill="#E2136E">Kash</tspan></text>
+  <text x="75" y="60" font-family="'Inter',-apple-system,sans-serif" font-size="8.5" font-weight="600" fill="#888888" letter-spacing="0.3">a BRAC Bank company</text>
+</svg>
