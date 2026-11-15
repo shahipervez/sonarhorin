@@ -1,0 +1,27 @@
+# fly.toml - Sonarhorin Django Backend on Fly.io
+app = "sonarhorin-backend"
+primary_region = "sin"  # Singapore (closest to Bangladesh)
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  DJANGO_DEBUG = "false"
+  CORS_ALLOW_ALL_ORIGINS = "true"
+  SECURE_SSL_REDIRECT = "false"
+  COOKIE_SECURE = "false"
+  TRUST_X_FORWARDED_FOR = "true"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

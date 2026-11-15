@@ -146,8 +146,8 @@ REFRESH_COOKIE = {
     "key": "sh_refresh",
     "path": "/api/auth/",
     "httponly": True,
-    "secure": env_bool("COOKIE_SECURE", not DEBUG),   # set COOKIE_SECURE=False only to test the docker stack over plain http
-    "samesite": "Strict" if not DEBUG else "Lax",
+    "secure": True,
+    "samesite": "None",
 }
 LOGIN_MAX_FAILS = 5          # per email + per IP …
 LOGIN_LOCK_MINUTES = 15      # … then locked for this long

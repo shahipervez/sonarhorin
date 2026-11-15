@@ -4,14 +4,6 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://f50c6e7ad73b8b.lhr.life/api/:path*"
-    },
-    {
-      "source": "/media/:path*",
-      "destination": "https://f50c6e7ad73b8b.lhr.life/media/:path*"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

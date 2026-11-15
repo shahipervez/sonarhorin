@@ -34,8 +34,12 @@ def _clear_refresh_cookie(resp):
 
 
 def _session_response(user, refresh: RefreshToken, code=200):
-    """Access token in the body (SPA keeps it in memory); refresh token only in an HttpOnly cookie."""
-    resp = Response({"user": UserSerializer(user).data, "access": str(refresh.access_token)}, status=code)
+    """Access token and refresh token in the body + HttpOnly cookie."""
+    resp = Response({
+        "user": UserSerializer(user).data,
+        "access": str(refresh.access_token),
+        "refresh": str(refresh),
+    }, status=code)
     return _set_refresh_cookie(resp, str(refresh))
 
 
@@ -105,7 +109,7 @@ class RefreshView(APIView):
             s.is_valid(raise_exception=True)
         except (TokenError, Exception):
             return _clear_refresh_cookie(Response({"detail": "Session expired. Please sign in again."}, status=401))
-        resp = Response({"access": s.validated_data["access"]})
+        resp = Response({"access": s.validated_data["access"], "refresh": s.validated_data.get("refresh", str(token))})
         if s.validated_data.get("refresh"):
             _set_refresh_cookie(resp, s.validated_data["refresh"])
         return resp

@@ -5,7 +5,7 @@ import { useLang } from "../i18n";
 
 /**
  * Bangladesh Top Corporate Career Portals & Featured Companies
- * Displays scraped real logos, verified corporate badges, and direct links to official career portals.
+ * Displays scraped real logos, verified corporate badges, role-based dynamic job listings, and direct portal links.
  */
 
 function initials(name) {
@@ -14,6 +14,126 @@ function initials(name) {
 }
 
 const clean = (name) => name.replace(/\s*\(demo\)\s*/i, "").replace(/\s+(ltd\.?|limited|plc\.?)$/i, "").trim();
+
+function formatSalary(min, max, L) {
+  if (min && max) {
+    return L ? `৳${Math.round(min / 1000)}k–৳${Math.round(max / 1000)}k` : `৳${Math.round(min / 1000)}k–৳${Math.round(max / 1000)}k`;
+  }
+  if (min) {
+    return L ? `৳${Math.round(min / 1000)}k+` : `৳${Math.round(min / 1000)}k+`;
+  }
+  return L ? "আলোচনা সাপেক্ষে" : "Negotiable";
+}
+
+// 8 Top Fresher Role Categories
+const ROLE_CATEGORIES = [
+  {
+    id: "all",
+    icon: "🌟",
+    titleEn: "All Roles",
+    titleBn: "সকল সার্কুলার",
+    matcher: () => true,
+  },
+  {
+    id: "software_ai",
+    icon: "💻",
+    titleEn: "Software & AI",
+    titleBn: "সফটওয়্যার ও এআই",
+    matcher: (j) => {
+      const text = `${j.title} ${j.company?.name || ""} ${(j.major_list || []).join(" ")} ${j.description || ""}`.toLowerCase();
+      return /software|developer|engineer|ml|ai|qa|tech|web|data|python|react|frontend|backend|fullstack|game|cse/.test(text);
+    },
+  },
+  {
+    id: "business_mgt",
+    icon: "📈",
+    titleEn: "Business & Sales",
+    titleBn: "বিজনেস ও সেলস",
+    matcher: (j) => {
+      const text = `${j.title} ${j.company?.name || ""} ${(j.major_list || []).join(" ")} ${j.description || ""}`.toLowerCase();
+      return /business|marketing|sales|executive|analyst|commercial|bba|management|growth|supply chain|operations/.test(text);
+    },
+  },
+  {
+    id: "banking_fin",
+    icon: "🏢",
+    titleEn: "Banking & Fintech",
+    titleBn: "ব্যাংক ও ফাইন্যান্স",
+    matcher: (j) => {
+      const text = `${j.title} ${j.company?.name || ""} ${j.company?.industry || ""} ${(j.major_list || []).join(" ")}`.toLowerCase();
+      return /bank|fintech|finance|accounts|audit|bkash|brac|ebl|city bank|financial/.test(text);
+    },
+  },
+  {
+    id: "textile_rmg",
+    icon: "🧵",
+    titleEn: "Textile & RMG",
+    titleBn: "টেক্সটাইল ও আরএমজি",
+    matcher: (j) => {
+      const text = `${j.title} ${j.company?.name || ""} ${j.company?.industry || ""} ${(j.major_list || []).join(" ")}`.toLowerCase();
+      return /textile|garment|merchandis|qc|fabric|apparel|lab|rmg|spinning|dyeing/.test(text);
+    },
+  },
+  {
+    id: "core_eng",
+    icon: "⚙️",
+    titleEn: "Engineering",
+    titleBn: "ইঞ্জিনিয়ারিং",
+    matcher: (j) => {
+      const text = `${j.title} ${j.company?.name || ""} ${(j.major_list || []).join(" ")}`.toLowerCase();
+      return /mechanical|civil|electrical|eee|engineering|hardware|maintenance|production/.test(text);
+    },
+  },
+  {
+    id: "internships",
+    icon: "🎓",
+    titleEn: "Internships",
+    titleBn: "ইন্টার্নশিপ",
+    matcher: (j) => j.job_type === "internship" || /intern|internship/i.test(j.title),
+  },
+  {
+    id: "trainee",
+    icon: "⚡",
+    titleEn: "Trainee / MTO",
+    titleBn: "ম্যানেজমেন্ট ট্রেইনি",
+    matcher: (j) => j.job_type === "trainee" || /trainee|mto|management trainee|leader/i.test(j.title),
+  },
+];
+
+function CompanyLogo({ company, className = "fc-logo-box", size = "normal" }) {
+  const slug = company?.slug;
+  const [src, setSrc] = useState(() => (slug ? `/logos/${slug}.svg` : company?.logo));
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setSrc(slug ? `/logos/${slug}.svg` : company?.logo);
+    setFailed(false);
+  }, [slug, company?.logo]);
+
+  const handleErr = () => {
+    if (src && src.endsWith(".svg")) {
+      setSrc(`/logos/${slug}.png`);
+    } else if (src && !src.startsWith("/media/")) {
+      setSrc(`/media/logos/${slug}.png`);
+    } else {
+      setFailed(true);
+    }
+  };
+
+  if (!src || failed) {
+    return (
+      <span className={`${className} fc-mono-fallback`} style={{ "--c": company?.color || "#FFC23D" }}>
+        {initials(company?.name || "CO")}
+      </span>
+    );
+  }
+
+  return (
+    <div className={`${className} ${size === "sm" ? "fc-logo-sm" : ""}`}>
+      <img src={src} alt={company?.name || "Company"} loading="lazy" onError={handleErr} />
+    </div>
+  );
+}
 
 function Tile({ c, L }) {
   const [src, setSrc] = useState(() => (c.slug ? `/logos/${c.slug}.svg` : c.logo));
@@ -40,7 +160,6 @@ function Tile({ c, L }) {
       style={{ "--c": c.color || "#FFC23D" }}
       title={`${c.name} — ${c.industry || "Corporate Office"}`}
     >
-      {/* Top right quick external career portal link */}
       {c.careers_url && (
         <a
           href={c.careers_url}
@@ -58,15 +177,9 @@ function Tile({ c, L }) {
         </a>
       )}
 
-      {/* Logo container */}
       <div className="fc-tile-logo-box">
         {src && !failed ? (
-          <img
-            src={src}
-            alt={c.name}
-            loading="lazy"
-            onError={handleErr}
-          />
+          <img src={src} alt={c.name} loading="lazy" onError={handleErr} />
         ) : (
           <span className="fc-mono">
             <i>{initials(c.name)}</i>
@@ -75,7 +188,6 @@ function Tile({ c, L }) {
         )}
       </div>
 
-      {/* Hover action overlay */}
       <div className="fc-hover-actions">
         {c.careers_url && (
           <a
@@ -90,23 +202,15 @@ function Tile({ c, L }) {
             </svg>
           </a>
         )}
-        <Link
-          to={`/jobs?q=${encodeURIComponent(clean(c.name))}`}
-          className="fc-action-btn fc-action-jobs"
-        >
-          {c.open_jobs > 0
-            ? (L ? `${c.open_jobs}টি পদ` : `${c.open_jobs} roles`)
-            : (L ? "পদ দেখুন" : "View jobs")}
+        <Link to={`/jobs?q=${encodeURIComponent(clean(c.name))}`} className="fc-action-btn fc-action-jobs">
+          {c.open_jobs > 0 ? (L ? `${c.open_jobs}টি পদ` : `${c.open_jobs} roles`) : (L ? "পদ দেখুন" : "View jobs")}
         </Link>
       </div>
 
-      {/* Industry / open-job footer indicator */}
       <div className="fc-tile-meta">
         <span className="fc-tile-name">{clean(c.name)}</span>
         <span className="fc-tile-badge">
-          {c.open_jobs > 0
-            ? (L ? `${c.open_jobs}টি পদ` : `${c.open_jobs} open`)
-            : (L ? "কর্পোরেট" : "Corporate")}
+          {c.open_jobs > 0 ? (L ? `${c.open_jobs}টি পদ` : `${c.open_jobs} open`) : (L ? "কর্পোরেট" : "Corporate")}
         </span>
       </div>
     </div>
@@ -137,16 +241,9 @@ function CorpCard({ c, L }) {
       <div className="fc-card-header">
         <div className="fc-card-logo-wrap">
           {src && !failed ? (
-            <img
-              src={src}
-              alt={c.name}
-              loading="lazy"
-              onError={handleErr}
-            />
+            <img src={src} alt={c.name} loading="lazy" onError={handleErr} />
           ) : (
-            <span className="fc-card-mono">
-              {initials(c.name)}
-            </span>
+            <span className="fc-card-mono">{initials(c.name)}</span>
           )}
         </div>
 
@@ -196,10 +293,7 @@ function CorpCard({ c, L }) {
           </a>
         ) : null}
 
-        <Link
-          to={`/jobs?q=${encodeURIComponent(clean(c.name))}`}
-          className="fc-btn-view-jobs"
-        >
+        <Link to={`/jobs?q=${encodeURIComponent(clean(c.name))}`} className="fc-btn-view-jobs">
           {L ? "সার্কুলার দেখুন →" : "View Jobs →"}
         </Link>
       </div>
@@ -227,15 +321,176 @@ function Row({ items, dir, speed, L }) {
   );
 }
 
+// Interactive Dynamic Job Card
+function DynamicJobCard({ job, L, onSelect }) {
+  const co = job.company || {};
+  const isIntern = job.job_type === "internship";
+  const isTrainee = job.job_type === "trainee";
+  const typeBadge = isIntern
+    ? L ? "🎓 ইন্টার্নশিপ" : "🎓 Internship"
+    : isTrainee
+    ? L ? "⚡ ট্রেইনি" : "⚡ Trainee"
+    : L ? "💼 ফুল-টাইম" : "💼 Full-time";
+
+  const applyLink = job.apply_url || co.careers_url;
+
+  return (
+    <article className="fc-job-item" style={{ "--cc": co.color || "#FFC23D" }}>
+      <div className="fc-job-item-header">
+        <CompanyLogo company={co} className="fc-job-logo-box" size="sm" />
+        <div className="fc-job-info">
+          <h3 className="fc-job-title" onClick={() => onSelect(job)} title={job.title}>
+            {job.title}
+          </h3>
+          <div className="fc-job-sub">
+            <span className="fc-job-company-name">{clean(co.name || "Corporate")}</span>
+            <span className="fc-job-vcheck" title={L ? "ভেরিফায়েড কোম্পানি" : "Verified Corporate"}>✓</span>
+            <span className="fc-job-dot">•</span>
+            <span className="fc-job-loc">📍 {job.remote ? (L ? "রিমোট" : "Remote") : (job.location || "Dhaka")}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="fc-job-pills-row">
+        <span className={`fc-pill-badge ${isIntern ? "intern" : isTrainee ? "trainee" : "full"}`}>
+          {typeBadge}
+        </span>
+        <span className="fc-pill-salary">
+          💰 {formatSalary(job.salary_min, job.salary_max, L)}
+        </span>
+        <span className="fc-pill-exp">
+          🎯 {L ? "০ বছর অভিজ্ঞতা (ফ্রেসার)" : "Fresher (0-1y)"}
+        </span>
+      </div>
+
+      {job.requirements?.length > 0 && (
+        <div className="fc-job-skills">
+          {job.requirements.slice(0, 3).map((r, i) => (
+            <span key={i} className="fc-skill-tag">{r}</span>
+          ))}
+          {job.major_list?.slice(0, 2).map((m, i) => (
+            <span key={`m-${i}`} className="fc-skill-tag major">{m}</span>
+          ))}
+        </div>
+      )}
+
+      <div className="fc-job-footer">
+        <button
+          type="button"
+          className="fc-job-btn-details"
+          onClick={() => onSelect(job)}
+        >
+          {L ? "বিস্তারিত" : "Details"}
+        </button>
+
+        {applyLink ? (
+          <a
+            href={applyLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fc-job-btn-apply"
+            title={L ? "অফিসিয়াল সার্কুলারে সরাসরি আবেদন করুন" : "Apply directly on official portal"}
+          >
+            <span>{L ? "আবেদন করুন" : "Apply Now"}</span>
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M7 17L17 7M17 7H7M17 7V17" />
+            </svg>
+          </a>
+        ) : (
+          <Link to={`/jobs?q=${encodeURIComponent(job.title)}`} className="fc-job-btn-apply">
+            <span>{L ? "আবেদন করুন" : "Apply Now"}</span>
+          </Link>
+        )}
+      </div>
+    </article>
+  );
+}
+
+// Sleek Job Details Popup Modal
+function JobModal({ job, L, onClose }) {
+  if (!job) return null;
+  const co = job.company || {};
+  const applyLink = job.apply_url || co.careers_url;
+
+  return (
+    <div className="fc-modal-backdrop" onClick={onClose}>
+      <div className="fc-modal-sheet" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="fc-modal-close" onClick={onClose} aria-label="Close">
+          ✕
+        </button>
+
+        <div className="fc-modal-header">
+          <CompanyLogo company={co} className="fc-modal-logo" />
+          <div className="fc-modal-title-group">
+            <span className="fc-modal-co-name">{clean(co.name || "Corporate House")}</span>
+            <h2>{job.title}</h2>
+            <div className="fc-modal-sub">
+              <span>📍 {job.location || "Dhaka, Bangladesh"}</span>
+              <span>•</span>
+              <span>💼 {job.job_type_label || "Full-time"}</span>
+              <span>•</span>
+              <span className="fc-modal-money">💰 {formatSalary(job.salary_min, job.salary_max, L)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="fc-modal-body">
+          {job.requirements?.length > 0 && (
+            <div className="fc-modal-section">
+              <h4>{L ? "প্রয়োজনীয় স্কিল ও যোগ্যতা" : "Required Skills & Qualifications"}</h4>
+              <div className="fc-modal-tags">
+                {job.requirements.map((r, i) => (
+                  <span key={i} className="fc-skill-tag">{r}</span>
+                ))}
+                {job.major_list?.map((m, i) => (
+                  <span key={`m-${i}`} className="fc-skill-tag major">{m}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {job.description && (
+            <div className="fc-modal-section">
+              <h4>{L ? "কাজের বিবরণী (Job Description)" : "Job Description"}</h4>
+              <div className="fc-modal-desc">{job.description}</div>
+            </div>
+          )}
+        </div>
+
+        <div className="fc-modal-footer">
+          <button type="button" className="fc-btn-sec" onClick={onClose}>
+            {L ? "বন্ধ করুন" : "Close"}
+          </button>
+          {applyLink && (
+            <a
+              href={applyLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="fc-btn-prim"
+            >
+              <span>{L ? "অফিসিয়াল ক্যারিয়ার পোর্টালে আবেদন করুন ↗" : "Apply on Official Portal ↗"}</span>
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FeaturedCompanies() {
   const [lang] = useLang();
   const L = lang === "bn" ? 1 : 0;
   const [list, setList] = useState(null);
+  const [allJobs, setAllJobs] = useState([]);
+  const [selectedRole, setSelectedRole] = useState("all");
   const [showDirectory, setShowDirectory] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeJobModal, setActiveJobModal] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(6);
   const ref = useRef(null);
 
+  // Fetch Featured Companies
   useEffect(() => {
     api("/api/jobs/companies/featured/")
       .then((data) => {
@@ -248,7 +503,18 @@ export default function FeaturedCompanies() {
       .catch(() => setList([]));
   }, []);
 
-  // lean the rows with scroll velocity
+  // Fetch Live Jobs
+  useEffect(() => {
+    api("/api/jobs/")
+      .then((res) => {
+        if (res?.jobs) {
+          setAllJobs(res.jobs);
+        }
+      })
+      .catch(() => setAllJobs([]));
+  }, []);
+
+  // Lean rows with scroll velocity
   useEffect(() => {
     const el = ref.current;
     if (!el || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
@@ -264,7 +530,7 @@ export default function FeaturedCompanies() {
     return () => cancelAnimationFrame(raf);
   }, [list]);
 
-  // Extract available unique industries
+  // Extract unique industries for Directory
   const industries = useMemo(() => {
     if (!list) return [];
     const set = new Set();
@@ -274,8 +540,8 @@ export default function FeaturedCompanies() {
     return Array.from(set);
   }, [list]);
 
-  // Filtered directory items
-  const filteredList = useMemo(() => {
+  // Filtered companies for Directory
+  const filteredCompanies = useMemo(() => {
     if (!list) return [];
     return list.filter((c) => {
       const matchInd = selectedIndustry === "all" || c.industry === selectedIndustry;
@@ -288,38 +554,148 @@ export default function FeaturedCompanies() {
     });
   }, [list, selectedIndustry, searchQuery]);
 
+  // Dynamic Jobs Filtered by Selected Role
+  const filteredJobs = useMemo(() => {
+    const activeCategory = ROLE_CATEGORIES.find((r) => r.id === selectedRole) || ROLE_CATEGORIES[0];
+    return allJobs.filter(activeCategory.matcher);
+  }, [allJobs, selectedRole]);
+
   if (!list || list.length < 2) return null;
   const half = Math.ceil(list.length / 2);
-  const totalRoles = list.reduce((n, c) => n + (c.open_jobs || 0), 0);
+  const totalRoles = allJobs.length || list.reduce((n, c) => n + (c.open_jobs || 0), 0);
 
   return (
     <section className="fc" ref={ref} aria-labelledby="fc-h">
+      {/* Elevated Compact Header */}
       <header className="fc-head">
         <div className="fc-pill-tag">
           <span className="fc-bd-flag">🇧🇩</span>
-          <span>{L ? "বাংলাদেশের শীর্ষ কর্পোরেট অফিস ও অফিসিয়াল ক্যারিয়ার পোর্টাল" : "Top Bangladesh Corporate Offices & Official Career Portals"}</span>
+          <span>
+            {L
+              ? "বাংলাদেশের শীর্ষ কর্পোরেট অফিস ও লাইভ ক্যারিয়ার হাব"
+              : "Top Bangladesh Corporate Offices & Official Career Portals"}
+          </span>
         </div>
+
         <h2 id="fc-h">
-          {L ? "শীর্ষ কর্পোরেট কোম্পানি ও ক্যারিয়ার হাব" : "Featured Corporate Career Portals"}
+          {L ? "শীর্ষ কর্পোরেট ক্যারিয়ার পোর্টাল ও জব সার্কুলার" : "Featured Corporate Career Portals & Jobs"}
         </h2>
+
         <p>
           {L
-            ? "বাংলাদেশে অবস্থিত দেশের শীর্ষ কর্পোরেট হেডঅফিসগুলোর ভেরিফায়েড পোর্টাল ও লাইভ সার্কুলার এক প্ল্যাটফর্মে"
-            : "Direct access to verified official career portals and live job circulars of Bangladesh's premier corporate houses"}
+            ? "রোল বেছে নিন — শীর্ষ কর্পোরেট হেডঅফিসগুলোর ভেরিফায়েড লাইভ সার্কুলার ও অফিসিয়াল পোর্টালে সরাসরি আবেদন করুন"
+            : "Select your role — access verified live job circulars and official career portals of Bangladesh's premier corporate houses"}
           <span className="fc-live">
             <i />
-            {L ? `${list.length}টি কর্পোরেট প্রতিষ্ঠান · ${totalRoles}টি পদ` : `${list.length} Corporates · ${totalRoles} Openings`}
+            {L
+              ? `${list.length}টি কর্পোরেট প্রতিষ্ঠান · ${totalRoles}টি লাইভ পদ`
+              : `${list.length} Corporates · ${totalRoles} Live Openings`}
           </span>
         </p>
+      </header>
 
-        {/* Directory Toggle Button */}
-        <div className="fc-head-actions">
+      {/* ================= 1. DYNAMIC ROLE SELECTOR TABS ================= */}
+      <div className="fc-roles-container">
+        <div className="fc-roles-label">
+          <span>{L ? "🎯 রোল অনুযায়ী সার্কুলার দেখুন:" : "🎯 Select Role to View Live Jobs:"}</span>
+        </div>
+        <div className="fc-roles-scroll">
+          {ROLE_CATEGORIES.map((cat) => {
+            const count = allJobs.filter(cat.matcher).length;
+            const isActive = selectedRole === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                className={`fc-role-chip ${isActive ? "active" : ""}`}
+                onClick={() => {
+                  setSelectedRole(cat.id);
+                  setVisibleCount(6); // reset pagination on change
+                }}
+              >
+                <span className="fc-role-icon">{cat.icon}</span>
+                <span className="fc-role-text">{L ? cat.titleBn : cat.titleEn}</span>
+                {count > 0 && <span className="fc-role-count">{count}</span>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ================= 2. DYNAMIC RELEVANT JOBS SHOWCASE ================= */}
+      <div className="fc-jobs-showcase">
+        <div className="fc-jobs-showcase-header">
+          <div className="fc-jobs-showcase-title">
+            <span className="fc-jobs-dot" />
+            <h3>
+              {L ? (
+                <>
+                  <strong>{ROLE_CATEGORIES.find((r) => r.id === selectedRole)?.titleBn}</strong>-এর জন্য{" "}
+                  <span className="fc-highlight-count">{filteredJobs.length}টি</span> সক্রিয় পদ পাওয়া গেছে
+                </>
+              ) : (
+                <>
+                  <span className="fc-highlight-count">{filteredJobs.length}</span> Active Openings for{" "}
+                  <strong>{ROLE_CATEGORIES.find((r) => r.id === selectedRole)?.titleEn}</strong>
+                </>
+              )}
+            </h3>
+          </div>
+
+          <Link to="/jobs" className="fc-explore-all-link">
+            <span>{L ? "সকল জব পোর্টাল দেখুন" : "Explore All Jobs"} →</span>
+          </Link>
+        </div>
+
+        {filteredJobs.length > 0 ? (
+          <>
+            <div className="fc-jobs-grid">
+              {filteredJobs.slice(0, visibleCount).map((job) => (
+                <DynamicJobCard
+                  key={job.id}
+                  job={job}
+                  L={L}
+                  onSelect={(j) => setActiveJobModal(j)}
+                />
+              ))}
+            </div>
+
+            {visibleCount < filteredJobs.length && (
+              <div className="fc-load-more-row">
+                <button
+                  type="button"
+                  className="fc-load-more-btn"
+                  onClick={() => setVisibleCount((c) => c + 6)}
+                >
+                  {L ? `আরও পদ দেখুন (+${Math.min(6, filteredJobs.length - visibleCount)})` : `Show More (+${Math.min(6, filteredJobs.length - visibleCount)})`}
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="fc-empty-jobs">
+            <p>{L ? "এই ক্যাটাগরিতে বর্তমানে কোনো পদ পাওয়া যায়নি।" : "No current openings found for this category."}</p>
+            <button type="button" className="fc-btn-prim sm" onClick={() => setSelectedRole("all")}>
+              {L ? "সব পদ দেখুন" : "View All Roles"}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ================= 3. CORPORATE LOGOS MARQUEE & DIRECTORY ================= */}
+      <div className="fc-corporate-portals-section">
+        <div className="fc-portals-bar">
+          <div className="fc-portals-title">
+            <h4>{L ? "🏢 অফিসিয়াল কর্পোরেট ক্যারিয়ার পোর্টাল ডিরেক্টরি" : "🏢 Official Corporate Career Portals Directory"}</h4>
+            <p>{L ? "কোম্পানির সরাসরি ক্যারিয়ার পোর্টালে যেতে লোগোতে ক্লিক করুন" : "Click any logo to visit their verified official career portal"}</p>
+          </div>
+
           <button
             type="button"
             className={`fc-dir-toggle-btn ${showDirectory ? "active" : ""}`}
             onClick={() => setShowDirectory((v) => !v)}
           >
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="7" height="7" rx="1.5" />
               <rect x="14" y="3" width="7" height="7" rx="1.5" />
               <rect x="14" y="14" width="7" height="7" rx="1.5" />
@@ -328,75 +704,86 @@ export default function FeaturedCompanies() {
             <span>
               {showDirectory
                 ? (L ? "মারকি ভিউতে ফিরে যান" : "Collapse Directory")
-                : (L ? "🏢 সবগুলো ৩০+ কর্পোরেট ক্যারিয়ার পোর্টাল দেখুন" : "🏢 Explore All 30+ Corporate Portals")}
+                : (L ? "🏢 সবগুলো ৩০+ কোম্পানি দেখুন" : "🏢 Explore All 30+ Corporate Portals")}
             </span>
           </button>
         </div>
-      </header>
 
-      {/* Infinite Drift Marquee Rows */}
-      <div className={`fc-marquee-wrapper ${showDirectory ? "fc-dimmed" : ""}`}>
-        <Row items={list.slice(0, half)} dir="left" speed={3.2} L={L} />
-        <Row items={list.slice(half)} dir="right" speed={3.6} L={L} />
-      </div>
+        {/* Infinite Drift Marquee Rows */}
+        <div className={`fc-marquee-wrapper ${showDirectory ? "fc-dimmed" : ""}`}>
+          <Row items={list.slice(0, half)} dir="left" speed={3.2} L={L} />
+          <Row items={list.slice(half)} dir="right" speed={3.6} L={L} />
+        </div>
 
-      {/* Interactive Corporate Directory Section */}
-      {showDirectory && (
-        <div className="fc-directory-container">
-          <div className="fc-directory-header">
-            <div className="fc-directory-search">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                placeholder={L ? "কোম্পানি বা ইন্ডাস্ট্রি দিয়ে খুঁজুন (যেমন: Grameenphone, Bank, Unilever)..." : "Search company or industry (e.g., Grameenphone, Bank, Unilever)..."}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
-                <button type="button" className="fc-search-clear" onClick={() => setSearchQuery("")}>✕</button>
-              )}
-            </div>
+        {/* Interactive Corporate Directory Section */}
+        {showDirectory && (
+          <div className="fc-directory-container">
+            <div className="fc-directory-header">
+              <div className="fc-directory-search">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder={
+                    L
+                      ? "কোম্পানি বা ইন্ডাস্ট্রি দিয়ে খুঁজুন (যেমন: Grameenphone, Bank, Unilever)..."
+                      : "Search company or industry (e.g., Grameenphone, Bank, Unilever)..."
+                  }
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <button type="button" className="fc-search-clear" onClick={() => setSearchQuery("")}>
+                    ✕
+                  </button>
+                )}
+              </div>
 
-            <div className="fc-filter-tabs">
-              <button
-                type="button"
-                className={`fc-filter-tab ${selectedIndustry === "all" ? "active" : ""}`}
-                onClick={() => setSelectedIndustry("all")}
-              >
-                {L ? "সবগুলো" : "All"} ({list.length})
-              </button>
-              {industries.map((ind) => {
-                const count = list.filter((c) => c.industry === ind).length;
-                return (
+              <div className="fc-filter-tabs">
+                <button
+                  type="button"
+                  className={`fc-filter-tab ${selectedIndustry === "all" ? "active" : ""}`}
+                  onClick={() => setSelectedIndustry("all")}
+                >
+                  {L ? "সবগুলো" : "All"} ({list.length})
+                </button>
+                {industries.map((ind) => (
                   <button
                     key={ind}
                     type="button"
                     className={`fc-filter-tab ${selectedIndustry === ind ? "active" : ""}`}
                     onClick={() => setSelectedIndustry(ind)}
                   >
-                    {ind} ({count})
+                    {ind}
                   </button>
-                );
-              })}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Corporate Cards Grid */}
-          <div className="fc-cards-grid">
-            {filteredList.map((c) => (
-              <CorpCard key={c.id} c={c} L={L} />
-            ))}
-          </div>
-
-          {filteredList.length === 0 && (
-            <div className="fc-empty-state">
-              <p>{L ? "কোনো কোম্পানি পাওয়া যায়নি।" : "No companies matched your query."}</p>
+            <div className="fc-cards-grid">
+              {filteredCompanies.map((c) => (
+                <CorpCard key={c.id} c={c} L={L} />
+              ))}
             </div>
-          )}
-        </div>
+
+            {filteredCompanies.length === 0 && (
+              <div className="fc-empty-state">
+                <p>{L ? "কোনো কোম্পানি পাওয়া যায়নি।" : "No companies match your search."}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Detail Modal */}
+      {activeJobModal && (
+        <JobModal
+          job={activeJobModal}
+          L={L}
+          onClose={() => setActiveJobModal(null)}
+        />
       )}
     </section>
   );

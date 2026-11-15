@@ -4,54 +4,11 @@ import { useLocation } from "react-router-dom";
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 const touch = () => window.matchMedia?.("(hover: none), (pointer: coarse)").matches;
 
-/** Gold cursor: a dot + a lagging ring that snaps onto buttons/links and says "View" over cards. */
 function GoldCursor() {
-  const dot = useRef(null), ring = useRef(null), label = useRef(null);
-  const [on, setOn] = useState(false);
   useEffect(() => {
-    if (touch() || reduced()) return;
-    setOn(true);
-    document.documentElement.classList.add("sh-cursor");
-    let x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y, target = null, raf;
-    const move = (e) => {
-      x = e.clientX; y = e.clientY;
-      const t = e.target.closest?.("a, button, [role=button], input, textarea, select, .fc-tile, .sr-card, .jg-canvas");
-      target = t && !t.matches("input, textarea, select") ? t : null;
-      const mode = !t ? "" : t.matches("input, textarea, select") ? "text" : t.matches(".fc-tile, .sr-card, .job-card, .jcard") ? "view" : "link";
-      ring.current.dataset.mode = mode;
-      label.current.textContent = mode === "view" ? "View" : "";
-    };
-    const down = () => ring.current?.classList.add("press");
-    const up = () => ring.current?.classList.remove("press");
-    const hide = () => { dot.current.style.opacity = ring.current.style.opacity = 0; };
-    const show = () => { dot.current.style.opacity = ring.current.style.opacity = 1; };
-    const loop = () => {
-      let tx = x, ty = y, w = 38, h = 38, r = 999;
-      if (target && ring.current.dataset.mode === "link") {
-        const b = target.getBoundingClientRect();
-        if (b.width < 260 && b.height < 90) { tx = b.left + b.width / 2 + (x - (b.left + b.width / 2)) * 0.15; ty = b.top + b.height / 2 + (y - (b.top + b.height / 2)) * 0.15; w = b.width + 12; h = b.height + 10; r = Math.min(b.height / 2 + 5, 20); }
-      }
-      rx += (tx - rx) * 0.2; ry += (ty - ry) * 0.2;
-      dot.current.style.transform = `translate(${x}px, ${y}px)`;
-      Object.assign(ring.current.style, { transform: `translate(${rx}px, ${ry}px)`, width: `${w}px`, height: `${h}px`, borderRadius: `${r}px` });
-      raf = requestAnimationFrame(loop);
-    };
-    addEventListener("pointermove", move, { passive: true }); addEventListener("pointerdown", down); addEventListener("pointerup", up);
-    document.addEventListener("pointerleave", hide); document.addEventListener("pointerenter", show);
-    raf = requestAnimationFrame(loop);
-    return () => {
-      cancelAnimationFrame(raf); removeEventListener("pointermove", move); removeEventListener("pointerdown", down); removeEventListener("pointerup", up);
-      document.removeEventListener("pointerleave", hide); document.removeEventListener("pointerenter", show);
-      document.documentElement.classList.remove("sh-cursor");
-    };
+    document.documentElement.classList.remove("sh-cursor");
   }, []);
-  if (!on && (typeof window === "undefined" || touch() || reduced())) return null;
-  return (
-    <>
-      <div ref={ring} className="sh-ring" aria-hidden="true"><span ref={label} /></div>
-      <div ref={dot} className="sh-dot" aria-hidden="true" />
-    </>
-  );
+  return null;
 }
 
 /** A gold curtain with the deer mark sweeps across on every page change. */

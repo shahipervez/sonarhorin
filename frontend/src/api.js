@@ -5,12 +5,35 @@ const BASE = import.meta.env.VITE_API_URL || "";
  * scripts after a reload); the refresh token is an HttpOnly cookie the browser sends to /api/auth/ only.
  */
 let ACCESS = null;
-try { localStorage.removeItem("prothom_access"); localStorage.removeItem("prothom_refresh"); } catch { /* legacy cleanup */ }
+let REFRESH = null;
+try {
+  ACCESS = localStorage.getItem("sh_access");
+  REFRESH = localStorage.getItem("sh_refresh");
+} catch { /* ignore private mode restrictions */ }
 
 export const tokens = {
   get access() { return ACCESS; },
-  set(a) { ACCESS = a || null; },
-  clear() { ACCESS = null; },
+  get refresh() { return REFRESH; },
+  set(a, r) {
+    ACCESS = a || null;
+    if (r !== undefined) REFRESH = r || null;
+    try {
+      if (a) localStorage.setItem("sh_access", a);
+      else localStorage.removeItem("sh_access");
+      if (r !== undefined) {
+        if (r) localStorage.setItem("sh_refresh", r);
+        else localStorage.removeItem("sh_refresh");
+      }
+    } catch { /* storage disabled */ }
+  },
+  clear() {
+    ACCESS = null;
+    REFRESH = null;
+    try {
+      localStorage.removeItem("sh_access");
+      localStorage.removeItem("sh_refresh");
+    } catch { /* storage disabled */ }
+  },
 };
 
 export class ApiError extends Error {
@@ -34,10 +57,25 @@ let refreshing = null;
 /** One refresh at a time — parallel 401s share the same promise. */
 export function refreshAccess() {
   if (!refreshing) {
+    const payload = REFRESH ? JSON.stringify({ refresh: REFRESH }) : undefined;
+    const headers = { "X-Requested-With": "sonarhorin" };
+    if (payload) headers["Content-Type"] = "application/json";
+
     refreshing = fetch(`${BASE}/api/auth/refresh/`, {
-      method: "POST", credentials: "include", headers: { "X-Requested-With": "sonarhorin" },
+      method: "POST",
+      credentials: "include",
+      headers,
+      body: payload,
     })
-      .then(async (r) => { if (!r.ok || r.status === 204) { ACCESS = null; return false; } ACCESS = (await r.json()).access; return true; })
+      .then(async (r) => {
+        if (!r.ok || r.status === 204) {
+          tokens.clear();
+          return false;
+        }
+        const data = await r.json();
+        tokens.set(data.access, data.refresh);
+        return true;
+      })
       .catch(() => false)
       .finally(() => setTimeout(() => { refreshing = null; }, 0));
   }

@@ -17,13 +17,13 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const d = await api("/api/auth/login/", { method: "POST", body: { email, password } });
-    tokens.set(d.access);
+    tokens.set(d.access, d.refresh);
     setUser(d.user);
     return d.user;
   };
   const register = async (form) => {
     const d = await api("/api/auth/register/", { method: "POST", body: form });
-    tokens.set(d.access);
+    tokens.set(d.access, d.refresh);
     setUser(d.user);
     return d.user;
   };

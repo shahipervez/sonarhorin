@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: sonarhorin-backend
+    runtime: python
+    region: singapore
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py migrate --noinput
+      python manage.py collectstatic --noinput
+      python manage.py seed_data || true
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: CORS_ALLOW_ALL_ORIGINS
+        value: "true"
+      - key: SECURE_SSL_REDIRECT
+        value: "false"
+      - key: COOKIE_SECURE
+        value: "false"
+      - key: PYTHON_VERSION
+        value: "3.12.0"
