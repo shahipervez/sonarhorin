@@ -843,7 +843,7 @@ html[data-lang="bn"] .scene-hint .hint-en,html[data-lang="bn"] .scene-hint .hint
 .lang.light{background:rgba(255,255,255,.12);color:#fff}
 .signin{height:36px;font-size:13.5px}
 .nav.solid .signin{background:linear-gradient(120deg,#12101C,#2A2345)}
-.menu{border-radius:18px;padding:10px;box-shadow:0 30px 70px rgba(18,16,28,.25);border:1px solid rgba(18,16,28,.06)}
+.menu{border-radius:18px;padding:10px;box-shadow:0 30px 70px rgba(18,16,28,.25);border:1px solid rgba(18,16,28,.06);max-height:calc(100vh - 80px);max-height:calc(100dvh - 80px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .menu .mi{border-radius:10px}.menu .mi:hover{background:#F3F0FF;color:var(--violet)}
 @media(max-width:1100px){.nav-search input{width:110px}.nav-links.searching .nav-search input{width:160px}.nav-links a{padding:8px 10px}}
 @media(max-width:900px){.nav-links a{display:none}.nav-links{display:flex}.nav-search{margin:0}.nav-search input{width:120px}.nav-links.searching .nav-search input{width:150px}}
