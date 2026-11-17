@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../auth";
 import { useLang } from "../i18n";
 import { setTrack } from "../track";
-import GateFX from "./GateFX";
-import IntroStory, { introSeen } from "./IntroStory";
 import StoryCanvas from "./StoryCanvas";
 
 const CHOICES = [
@@ -89,15 +87,11 @@ const WORDS_BN = [
 export default function EntryGate({ onDone }) {
   const { user, updateMe } = useAuth();
   const [picked, setPicked] = useState(null);
-  const [hasPeeked, setHasPeeked] = useState(false);
-  const [storyActive, setStoryActive] = useState(false);
+  const [resetCount, setResetCount] = useState(0);
+  const [hover, setHover] = useState(null);
   const [lang, setLang] = useLang();
   const L = lang === "bn" ? 1 : 0;
 
-  const vidRef = useRef(null);
-  const storyRef = useRef(null);
-  const fxRef = useRef(null);
-  const lastT = useRef(0);
   const words = L ? WORDS_BN : WORDS_EN;
 
   // Lock body scroll while in gate
@@ -108,54 +102,8 @@ export default function EntryGate({ onDone }) {
     };
   }, []);
 
-  // Start the wallpaper video (girl) on mount; story begins when she pulls curtain
-  useEffect(() => {
-    const v = vidRef.current;
-    if (!v) return;
-    v.currentTime = 0;
-    lastT.current = 0;
-    v.play().catch(() => {});
-    const fallback = setTimeout(() => {
-      setHasPeeked(true);
-      setStoryActive(true);
-      if (storyRef.current && storyRef.current.paused) {
-        storyRef.current.play().catch(() => {});
-      }
-    }, 2200);
-    return () => clearTimeout(fallback);
-  }, []);
-
-  // The moment she pulls the curtain (~1.15s) from the right side:
-  // Fire visual FX, reveal headline/cards, and start the story video on the far left!
-  const PEEK = 1.15;
-  const handleTimeUpdate = () => {
-    const v = vidRef.current;
-    if (!v) return;
-    const t = v.currentTime;
-    if (lastT.current < PEEK && t >= PEEK) {
-      fxRef.current?.fire();
-      setHasPeeked(true);
-      setStoryActive(true);
-      if (storyRef.current) {
-        storyRef.current.currentTime = 0;
-        storyRef.current.play().catch(() => {});
-      }
-    }
-    lastT.current = t;
-  };
-
   const replayStory = () => {
-    setHasPeeked(false);
-    setStoryActive(false);
-    lastT.current = 0;
-    if (storyRef.current) {
-      storyRef.current.pause();
-      storyRef.current.currentTime = 0;
-    }
-    if (vidRef.current) {
-      vidRef.current.currentTime = 0;
-      vidRef.current.play().catch(() => {});
-    }
+    setResetCount((c) => c + 1);
   };
 
   const choose = (k) => {
@@ -178,28 +126,11 @@ export default function EntryGate({ onDone }) {
       aria-modal="true"
       aria-labelledby="ex8-headline"
     >
-      {/* Dual Video Backdrop: Girl pulls curtain on right, Story plays on left */}
-      <div className="ex8-video-backdrop" aria-hidden="true">
-        {/* Right side: Anime girl wallpaper video pulling curtain */}
-        <video
-          ref={vidRef}
-          src="/wallpaper.mp4"
-          loop
-          muted
-          autoPlay
-          playsInline
-          className="ex8-wallpaper-video"
-          onTimeUpdate={handleTimeUpdate}
-        />
-
-        {/* Far Left side: 4K Crystal-Clear Animated Story (Zoomed-Out Full 16:9 View) */}
-        <div className={`ex8-story-left-backdrop ${storyActive ? "active" : ""}`}>
-          <StoryCanvas active={storyActive} videoRef={vidRef} />
-        </div>
-
-        <div className="ex8-video-overlay" />
+      {/* Full-bleed Continuous Animated Story Background (No Box, Zero Padding, Continuous Loop) */}
+      <div className="gate-story-backdrop" aria-hidden="true">
+        <StoryCanvas active={true} loop={true} resetKey={resetCount} />
+        <div className="gate-story-overlay" />
       </div>
-      <GateFX ref={fxRef} videoRef={vidRef} />
 
       {/* EX8 Style Top Navigation Bar */}
       <header className="ex8-nav-bar">
@@ -218,20 +149,10 @@ export default function EntryGate({ onDone }) {
             type="button"
             className="ex8-btn-outline ex8-story-btn"
             onClick={replayStory}
-            title={L ? "পর্দা সরানো ও গল্পটি শুরু থেকে দেখো" : "Replay curtain & story"}
+            title={L ? "গল্পটি শুরু থেকে দেখো" : "Replay story from beginning"}
           >
-            <span className="ex8-play">▶</span>
-            <span>{L ? "গল্প" : "STORY"}</span>
-          </button>
-
-          <button
-            type="button"
-            className="ex8-btn-outline"
-            onClick={replayStory}
-            title={L ? "গল্পটি আবার দেখো" : "Replay story"}
-          >
-            <span>{L ? "পুনরায় প্লে" : "REPLAY PEEK"}</span>
-            <span className="ex8-arrow-mini">↻</span>
+            <span className="ex8-play">↻</span>
+            <span>{L ? "গল্প রিস্টার্ট" : "REPLAY STORY"}</span>
           </button>
 
           <button
@@ -247,7 +168,7 @@ export default function EntryGate({ onDone }) {
       </header>
 
       {/* Main Dynamic Stage */}
-      <main className={`ex8-content-stage ${hasPeeked ? "peeked" : ""}`}>
+      <main className="ex8-content-stage peeked">
         {/* Top Meta Line */}
         <div className="ex8-meta-strip">
           <span className="ex8-meta-code">
@@ -268,7 +189,7 @@ export default function EntryGate({ onDone }) {
                   className={`ex8-word ${w.highlight ? "highlight" : ""} ${
                     w.accent ? "accent" : ""
                   }`}
-                  style={{ transitionDelay: `${0.1 + idx * 0.08}s` }}
+                  style={{ transitionDelay: `${0.05 + idx * 0.05}s` }}
                 >
                   {w.text}
                 </span>
@@ -276,40 +197,42 @@ export default function EntryGate({ onDone }) {
               </span>
             ))}
           </h1>
-
-
         </div>
 
-        {/* 3 COMPACT CARDS with BIG BOLD TITLES (ex8.tech Style) */}
-        <div className="ex8-cards-grid">
-          {CHOICES.map((c, i) => (
-            <button
-              key={c.k}
-              className={`ex8-compact-card ${picked === c.k ? "chosen" : picked ? "other" : ""}`}
-              style={{ "--card-order": `${0.6 + i * 0.12}s` }}
-              onClick={() => !picked && choose(c.k)}
-            >
-              {/* Card Top Meta */}
-              <div className="ex8-card-top">
-                <span className="ex8-card-code">{c.code[L]}</span>
-              </div>
-
-              {/* Card Main: BIG BOLD TITLE */}
-              <div className="ex8-card-center">
-                <span className="ex8-card-icon" aria-hidden="true">{ICONS[c.k]}</span>
-                <h2 className={`ex8-card-big-title ${L ? "bn" : ""}`}>{c.t[L]}</h2>
-              </div>
-
-              {/* Card Bottom: Specs Pills + Action Button */}
-              <div className="ex8-card-bottom">
-
-                <div className="ex8-action-btn">
-                  <span className="ex8-action-txt">{c.btn[L]}</span>
-                  <span className="ex8-action-arrow">↗</span>
+        {/* 3 MISSION CARDS (Clean floating console on top of living story background) */}
+        <div className={`gx-console ${hover ? "hl-" + hover : ""}`}>
+          <div className="ex8-cards-grid gx-tabs">
+            {CHOICES.map((c, i) => (
+              <button
+                key={c.k}
+                className={`ex8-compact-card gx-tab gx-${c.k} ${picked === c.k ? "chosen" : picked ? "other" : ""}`}
+                style={{ "--card-order": `${0.15 + i * 0.08}s` }}
+                onClick={() => !picked && choose(c.k)}
+                onMouseEnter={() => setHover(c.k)}
+                onMouseLeave={() => setHover(null)}
+                onFocus={() => setHover(c.k)}
+                onBlur={() => setHover(null)}
+              >
+                <span className="gx-num" aria-hidden="true">0{i + 1}</span>
+                <span className="gx-sweep" aria-hidden="true" />
+                <div className="ex8-card-top">
+                  <span className="ex8-card-code">{c.code[L]}</span>
+                  <div className="ex8-action-btn">
+                    <span className="ex8-action-txt">{c.btn[L]}</span>
+                    <span className="ex8-action-arrow">↗</span>
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+                <div className="ex8-card-center">
+                  <span className="ex8-card-icon" aria-hidden="true">{ICONS[c.k]}</span>
+                  <div className="gx-title-col">
+                    <h2 className={`ex8-card-big-title ${L ? "bn" : ""}`}>{c.t[L]}</h2>
+                    <span className="gx-sub">{c.sub[L]}</span>
+                  </div>
+                </div>
+                <i className="gx-plug" aria-hidden="true" />
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Bottom Skip Link */}
