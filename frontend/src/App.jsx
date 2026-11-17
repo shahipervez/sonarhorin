@@ -20,6 +20,7 @@ const QuickTest = lazy(() => import("./pages/QuickTest"));
 const Interview = lazy(() => import("./pages/Interview"));
 const Jobs = lazy(() => import("./pages/Jobs"));
 const Applications = lazy(() => import("./pages/Jobs").then((m) => ({ default: m.Applications })));
+const Internships = lazy(() => import("./pages/Internships"));
 const Programs = lazy(() => import("./pages/Programs"));
 const Certificates = lazy(() => import("./pages/Certificates"));
 const Verify = lazy(() => import("./pages/Verify"));
@@ -89,6 +90,7 @@ export default function App() {
             <Route path="/quick-test" element={P(<QuickTest />)} />
             <Route path="/interview" element={P(<Interview />)} />
             <Route path="/jobs" element={<Jobs />} />
+            <Route path="/internships" element={<Internships />} />
             <Route path="/applications" element={P(<Applications />)} />
             <Route path="/programs" element={<Programs />} />
             <Route path="/certificates" element={<Certificates />} />

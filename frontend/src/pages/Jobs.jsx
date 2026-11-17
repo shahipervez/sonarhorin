@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import StoryRail from "../components/StoryRail";
@@ -43,17 +43,27 @@ const getTypes = (L) => [
   ["part_time", L ? "পার্ট-টাইম" : "Part-time"],
 ];
 
-const daysLeft = (d) =>
+export const daysLeft = (d) =>
   d ? Math.ceil((new Date(d) - new Date(new Date().toDateString())) / 86400000) : null;
 
-const money = (a, b, L) =>
+export const money = (a, b, L) =>
   a
     ? `৳${Math.round(a / 1000)}k${b ? `–${Math.round(b / 1000)}k` : "+"}`
     : L
     ? "বেতন আলোচনা সাপেক্ষে"
     : "Salary negotiable";
 
+/** Internships have their own page/layout now — /jobs?type=internship forwards there. */
 export default function Jobs() {
+  const [sp] = useSearchParams();
+  if (sp.get("type") === "internship") {
+    const cat = sp.get("cat");
+    return <Navigate to={`/internships${cat ? `?cat=${encodeURIComponent(cat)}` : ""}`} replace />;
+  }
+  return <JobsBoard />;
+}
+
+function JobsBoard() {
   const { user } = useAuth();
   const nav = useNavigate();
   const [sp, setSp] = useSearchParams();
@@ -172,6 +182,7 @@ export default function Jobs() {
 
   // Switch between Jobs and Internship Mode
   const switchMode = (mode) => {
+    if (mode === "internship") { nav("/internships"); return; }
     setTrackMode(mode);
     if (mode === "internship") {
       setF((o) => ({ ...o, type: "internship", major: "" }));
@@ -423,7 +434,7 @@ export default function Jobs() {
   );
 }
 
-function CompanyLogo({ company, className = "clogo2" }) {
+export function CompanyLogo({ company, className = "clogo2" }) {
   const [err, setErr] = useState(false);
   const slug = company?.slug;
   const src = !err && slug ? `/logos/${slug}.svg` : company?.logo;
@@ -526,7 +537,7 @@ function Copy({ label, value, L }) {
   );
 }
 
-function ApplyModal({ j, onClose, onApplied, L, CH }) {
+export function ApplyModal({ j, onClose, onApplied, L, CH }) {
   const [pv, setPv] = useState(null);
   const [letter, setLetter] = useState("");
   const [busy, setBusy] = useState(false);

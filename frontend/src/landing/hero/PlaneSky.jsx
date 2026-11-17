@@ -947,7 +947,7 @@ export default function PlaneSky() {
             <b>Landed! That plane found an internship.</b>
             <span>On সোনারহরিণ every internship takes freshers — no plane wasted.</span>
           </div>
-          <Link to="/jobs?type=internship" className="btn btn-lime sm">
+          <Link to="/internships" className="btn btn-lime sm">
             See internships →
           </Link>
         </div>

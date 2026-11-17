@@ -28,7 +28,7 @@ export const STORY_SETS = {
 export const storyLink = (kind, s) =>
   kind === "job"
     ? `/jobs?major=${encodeURIComponent(s.major)}&cat=${s.id}`
-    : `/jobs?type=internship&q=${encodeURIComponent(s.query)}&cat=${s.id}`;
+    : `/internships?cat=${s.id}`;
 
 function StoryCard({ s, i, L, active, onOpen, onGo }) {
   const ref = useRef(null);
@@ -50,6 +50,7 @@ function StoryCard({ s, i, L, active, onOpen, onGo }) {
   };
 
   const handleMouseLeave = () => {
+    dispatchEvent(new CustomEvent("sr-hover", { detail: null }));
     setTilt({ rx: 0, ry: 0, mx: 50, my: 50, hovered: false });
   };
 
@@ -77,6 +78,7 @@ function StoryCard({ s, i, L, active, onOpen, onGo }) {
           : undefined,
       }}
       onMouseMove={handleMouseMove}
+      onMouseEnter={() => dispatchEvent(new CustomEvent("sr-hover", { detail: s.id }))}
       onMouseLeave={handleMouseLeave}
       onClick={() => onOpen(i)}
       role="button"

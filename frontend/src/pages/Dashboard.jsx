@@ -136,7 +136,7 @@ export default function Dashboard() {
             )}
             <div className="dgrid">
               <div className="dcard span2">
-                <div className="dc-head"><b>🎯 Today's matches</b><Link className="link small" to={track === "internship" ? "/jobs?type=internship" : "/jobs"}>All jobs →</Link></div>
+                <div className="dc-head"><b>🎯 Today's matches</b><Link className="link small" to={track === "internship" ? "/internships" : "/jobs"}>All jobs →</Link></div>
                 {d.matches?.jobs?.length ? (
                   <div className="mlist">{d.matches.jobs.slice(0, 4).map((j) => (
                     <Link key={j.id} to="/jobs" className="mrow"><span className="lg" style={{ background: j.company.color }}>{j.company.name[0]}</span>

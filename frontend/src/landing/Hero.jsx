@@ -7,7 +7,8 @@ import FunnyTyper, {
   STARTUP_HEADLINES,
   STARTUP_HEADLINES_EN,
 } from "./FunnyTyper";
-import JobRain from "./hero/JobRain";
+import JobStarSky, { toBn } from "./hero/JobStarSky";
+import JobStoryIntro, { useJobStory } from "./hero/JobStoryIntro";
 import LanternSky from "./hero/LanternSky";
 import PlaneSky from "./hero/PlaneSky";
 import StoryRail from "../components/StoryRail";
@@ -155,7 +156,7 @@ export const HERO_INTERN_CATEGORIES = [
   },
 ];
 
-export default function Hero() {
+export default function Hero({ ready = true }) {
   const [track, setTrack] = useTrack();
   const { user } = useAuth();
   const [lang] = useLang();
@@ -167,6 +168,8 @@ export default function Hero() {
   const [showSkillModal, setShowSkillModal] = useState(false);
   const [skillTools, setSkillTools] = useState([]);
   const [hasProj, setHasProj] = useState(null);
+  const [starCount, setStarCount] = useState(157);
+  const story = useJobStory((track === "job" || track === "internship") && ready, track);
 
   const toggleTool = (t) => {
     setSkillTools((prev) =>
@@ -179,9 +182,10 @@ export default function Hero() {
   );
 
   return (
-    <header className={`hero hero-${track} hero-integrated-categories`}>
+    <header className={`hero hero-${track} hero-integrated-categories ${track !== "startup" ? (story.playing ? "jx-play" : story.played ? "jx-after" : "") : ""}`}>
       {/* Visual Effect as the Living Background */}
-      {track === "job" && <JobRain key="job" />}
+      {track === "job" && <JobStarSky key="job" onCount={setStarCount} introT0={story.t0} />}
+      {track !== "startup" && <JobStoryIntro story={story} L={L} kind={track} />}
       {track === "internship" && <PlaneSky key="internship" />}
       {track === "startup" && <LanternSky key="startup" />}
 
@@ -197,8 +201,15 @@ export default function Hero() {
             title={
               <h1 className={`sr-title ${L ? "bn" : ""}`}>
                 {track === "job"
-                  ? L ? <>প্রথম <em>চাকরি</em></> : <>First <em>Job.</em></>
-                  : L ? <>প্রথম <em>ইন্টার্নশিপ</em></> : <>First <em>Internship.</em></>}
+                  ? <span className="jss-main">{L ? <>প্রথম <em>চাকরি</em></> : <>First <em>Job.</em></>}</span>
+                  : <span className="jss-main">{L ? <>প্রথম <em>ইন্টার্নশিপ</em></> : <>First <em>Internship.</em></>}</span>}
+                {track === "job" && (
+                  <span className={`jss-headline ${L ? "bn" : ""}`}>
+                    <i className="jss-spark" aria-hidden="true">✦</i>
+                    <span>{L ? <>প্রতিটা তারা <b>আজকের একটা আসল চাকরি।</b></> : <>Every star is <b>a real job, open today.</b></>}</span>
+                    <span className="jss-live"><i />{toBn(starCount, L)} {L ? "টি পদ খোলা" : "live"}</span>
+                  </span>
+                )}
               </h1>
             }
             footer={
@@ -206,11 +217,13 @@ export default function Hero() {
                 <>
                   <Link to="/jobs" className="sr-pill gold">{L ? "সব জব" : "All jobs"} →</Link>
                   <button type="button" className="sr-pill" onClick={() => setShowTutorialModal(true)}>{L ? "৩-স্টেপ গাইড" : "3-step guide"}</button>
+                  <button type="button" className="sr-pill jx-replay" onClick={story.replay}>↻ {L ? "গল্পটা আবার দেখো" : "Replay the story"}</button>
                 </>
               ) : (
                 <>
-                  <Link to="/jobs?type=internship" className="sr-pill gold">{L ? "সব ইন্টার্নশিপ" : "All internships"} →</Link>
+                  <Link to="/internships" className="sr-pill gold">{L ? "সব ইন্টার্নশিপ" : "All internships"} →</Link>
                   <button type="button" className="sr-pill" onClick={() => setShowSkillModal(true)}>⚡ {L ? "স্কিল-রেডি?" : "Skill-ready?"}</button>
+                  <button type="button" className="sr-pill jx-replay" onClick={story.replay}>↻ {L ? "গল্পটা আবার দেখো" : "Replay the story"}</button>
                 </>
               )
             }
@@ -415,7 +428,7 @@ export default function Hero() {
               className="btn btn-lime wide"
               onClick={() => {
                 setShowSkillModal(false);
-                nav("/jobs?type=internship");
+                nav("/internships");
               }}
             >
               {L ? "ইন্টার্নশিপ ব্রাউজ শুরু করো →" : "Start Browsing Internships →"}

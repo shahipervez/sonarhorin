@@ -17,7 +17,7 @@ const STEPS = {
     ["Day 1", "দিন ১", "📄", "Fix your CV", "সিভি ঠিক করো", "/cv"],
     ["Day 2", "দিন ২", "🌐", "Put your projects online", "প্রজেক্ট দিয়ে ওয়েবসাইট", "/portfolio"],
     ["Day 3", "দিন ৩", "🤝", "Message three seniors", "তিনজন সিনিয়রকে মেসেজ", "/network"],
-    ["Day 4+", "দিন ৪+", "🎓", "Apply to internships", "ইন্টার্নশিপে অ্যাপ্লাই", "/jobs?type=internship"],
+    ["Day 4+", "দিন ৪+", "🎓", "Apply to internships", "ইন্টার্নশিপে অ্যাপ্লাই", "/internships"],
     ["Day 10", "দিন ১০", "🏫", "Join a training program", "ট্রেনিং প্রোগ্রামে যোগ দাও", "/programs"],
     ["Goal", "লক্ষ্য", "🎉", "Your first experience", "প্রথম অভিজ্ঞতা", "/applications"],
   ],

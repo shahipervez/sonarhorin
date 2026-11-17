@@ -385,7 +385,7 @@ export default function ThreeFriendsStory() {
                   </div>
                   <b>স্কিল-রেডি ইন্টার্নশিপ</b>
                   <p>রেফারেন্স লাগবে না। স্কিল টেস্ট দিয়ে কর্পোরেট ইন্টার্ন।</p>
-                  <Link to="/jobs?type=internship" className="tfc-sol-btn">
+                  <Link to="/internships" className="tfc-sol-btn">
                     ইন্টার্নশিপ নাও →
                   </Link>
                 </div>

@@ -17,7 +17,7 @@ const PATHS = [
         "Cut page load time by 35% with lazy loading",
       ],
     },
-    to: "/jobs?type=internship",
+    to: "/internships",
     cta: ["Find internships", "ইন্টার্নশিপ খোঁজো"],
   },
   {
@@ -207,7 +207,7 @@ const FAQ = [
       "ইন্টার্নশিপ, প্রজেক্ট, ট্রেনিং — সব তোমার ওয়েবসাইটে।",
     ],
     acts: [
-      ["/jobs?type=internship", "Internships", "ইন্টার্নশিপ"],
+      ["/internships", "Internships", "ইন্টার্নশিপ"],
       ["/portfolio", "My website", "আমার ওয়েবসাইট"],
     ],
   },

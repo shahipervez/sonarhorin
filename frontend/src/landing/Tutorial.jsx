@@ -16,7 +16,7 @@ const JOB = {
   ],
 };
 const INTERN = {
-  url: "sonarhorin.com/jobs?type=internship",
+  url: "sonarhorin.com/internships",
   q: "marketing intern",
   chips: [["Internship", "ইন্টার্নশিপ"], ["Dhaka", "ঢাকা"], ["Paid", "পেইড"], ["Remote", "রিমোট"]],
   list: [
@@ -34,7 +34,7 @@ const STEPS = {
     cta: ["/jobs", "Try it now", "এখনই ট্রাই করো"] },
   internship: { h: [<>An internship in <em>4 steps.</em></>, <>৪ ধাপে <em>ইন্টার্নশিপ।</em></>],
     s: [["Search", "খোঁজো", "Type a field.", "ফিল্ডের নাম লেখো।"], ["Filter", "ফিল্টার", "Paid, near you.", "পেইড, কাছাকাছি।"], ["Match", "ম্যাচ", "See how well you fit.", "কতটা মিলছে দেখো।"], ["Apply", "অ্যাপ্লাই", "One tap. Done.", "এক ট্যাপ। শেষ।"]],
-    cta: ["/jobs?type=internship", "Try it now", "এখনই ট্রাই করো"] },
+    cta: ["/internships", "Try it now", "এখনই ট্রাই করো"] },
   startup: { h: [<>Idea to funding in <em>4 steps.</em></>, <>৪ ধাপে <em>আইডিয়া থেকে ফান্ড।</em></>],
     s: [["Write", "লেখো", "Your idea, 4 boxes.", "৪টা বক্সে আইডিয়া।"], ["Score", "স্কোর", "See your readiness.", "রেডিনেস স্কোর দেখো।"], ["Submit", "সাবমিট", "45+ unlocks it.", "৪৫+ হলেই সাবমিট।"], ["Get funded", "ফান্ড", "Pitch day → funded.", "পিচ ডে → ফান্ড।"]],
     cta: ["/startup", "Pitch my idea", "আইডিয়া পিচ করো"] },

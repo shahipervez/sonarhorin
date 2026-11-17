@@ -39,7 +39,7 @@ export default function Nav() {
 
   useEffect(() => {
     if (!home) { setSolid(true); return; }
-    const on = () => setSolid(scrollY > innerHeight * 0.75);
+    const on = () => setSolid(scrollY > 40);
     on();
     addEventListener("scroll", on, { passive: true });
     return () => removeEventListener("scroll", on);
@@ -63,11 +63,12 @@ export default function Nav() {
             placeholder={t("Search jobs, companies…", "জব, কোম্পানি খোঁজো…")} aria-label={t("Search jobs", "জব খোঁজো")} />
           <kbd>↵</kbd>
         </form>
-        <NavLink to="/jobs">{t("Jobs", "চাকরি")}</NavLink>
+        <NavLink to="/jobs" end>{t("Jobs", "চাকরি")}</NavLink>
+        <NavLink to="/internships" className="nl-intern">{t("Internship", "ইন্টার্নশিপ")}</NavLink>
         <NavLink to="/studio" className="nl-ai">{t("CV Studio", "সিভি স্টুডিও")}</NavLink>
         <NavLink to="/coach" className="nl-ai">{t("Interview Coach", "ইন্টারভিউ কোচ")}</NavLink>
         <NavLink to="/network">{t("Network", "নেটওয়ার্ক")}</NavLink>
-        <NavLink to="/startup">{t("Startup", "স্টার্টআপ")}</NavLink>
+        <NavLink to="/startup" className="nl-startup"><span>{t("Startup", "স্টার্টআপ")}</span></NavLink>
       </div>
       <div className="nav-right" ref={menuRef}>
         <button className="lang" onClick={() => setLang(lang === "bn" ? "en" : "bn")} aria-label={lang === "bn" ? "Switch to English" : "বাংলায় দেখুন"}>
@@ -85,6 +86,7 @@ export default function Nav() {
         <div className={`menu ${open ? "open" : ""}`}>
           <Link className="mi" to="/"><Icon n="home" />{t("Home", "হোম")}</Link>
           <Link className="mi" to="/jobs"><Icon n="bag" />{t("Fresher jobs · 1-tap apply", "ফ্রেশার জব")}</Link>
+          <Link className="mi" to="/internships"><Icon n="prog" />{t("Internships · boarding passes", "ইন্টার্নশিপ")}</Link>
           <Link className="mi" to="/applications"><Icon n="test" />{t("My applications", "আমার আবেদন")}</Link>
           <Link className="mi" to="/studio"><Icon n="cv" />{t("CV Studio · tailor your CV to a job", "সিভি স্টুডিও")}</Link>
           <Link className="mi" to="/coach"><Icon n="bot" />{t("Interview Coach · AI prep for one job", "ইন্টারভিউ কোচ")}</Link>

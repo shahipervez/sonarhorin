@@ -15,6 +15,7 @@ import "./styles/stories.css";
 import "./styles/career.css";
 import "./styles/login.css";
 import "./styles/featured.css";
+import "./styles/refresh.css";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>

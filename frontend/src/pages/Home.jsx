@@ -3,7 +3,6 @@ import { getTrack, hasChosenTrack, useTrack } from "../track";
 import { useLang } from "../i18n";
 import EntryGate from "../landing/EntryGate";
 import FeaturedCompanies from "../components/FeaturedCompanies";
-import JobGalaxy from "../components/JobGalaxy";
 import Experience from "../landing/Experience";
 import Hero from "../landing/Hero";
 import Painter from "../landing/Painter";
@@ -71,7 +70,7 @@ export default function Home() {
   return (
     <>
       {gate && <EntryGate onDone={() => setGate(false)} />}
-      <Hero />
+      <Hero ready={!gate} />
       {!gate && (
         <button
           type="button"
@@ -92,7 +91,7 @@ export default function Home() {
       )}
       {!gate && <Popups />}
       <FeaturedCompanies />
-      {track !== "startup" && <JobGalaxy />}
+      {/* Job Galaxy now lives in the "Find a Job" hero background (JobStarSky) */}
       <Tutorial />
       <Services />
       <StoryAnimation />

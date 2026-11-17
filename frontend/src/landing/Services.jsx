@@ -371,7 +371,7 @@ const FundDemo = ({ L }) => (
 
 const getTiles = (L, jobRows = JOBS, internRows = INTERNS) => ({
   jobs: { to: "/jobs", t: ["Fresher jobs", "ফ্রেশার জব"], d: ["0–1 year roles. 1-tap apply.", "০–১ বছরের জব, এক ট্যাপে অ্যাপ্লাই।"], hue: "violet", demo: <Feed rows={jobRows} isIntern={false} L={L} /> },
-  interns: { to: "/jobs?type=internship", t: ["Internships", "ইন্টার্নশিপ"], d: ["Internships that take freshers.", "ফ্রেশারদের জন্য ইন্টার্নশিপ।"], hue: "sky", demo: <Feed rows={internRows} isIntern={true} L={L} /> },
+  interns: { to: "/internships", t: ["Internships", "ইন্টার্নশিপ"], d: ["Internships that take freshers.", "ফ্রেশারদের জন্য ইন্টার্নশিপ।"], hue: "sky", demo: <Feed rows={internRows} isIntern={true} L={L} /> },
   cv: { to: "/cv", t: ["Judge my CV", "সিভি চেক"], d: ["See your rejection risk.", "রিজেকশনের ঝুঁকি দেখো।"], hue: "coral", demo: <CvDemo L={L} /> },
   iv: { to: "/interview", t: ["AI interviewer", "এআই ইন্টারভিউ"], d: ["10-minute mock interview.", "১০ মিনিটের মক ইন্টারভিউ।"], hue: "pink", demo: <IvDemo L={L} /> },
   qt: { to: "/quick-test", t: ["Quick test", "কুইক টেস্ট"], d: ["10 MCQs. Earn a badge.", "১০টা এমসিকিউ, ব্যাজ জেতো।"], hue: "gold", demo: <QtDemo L={L} /> },
