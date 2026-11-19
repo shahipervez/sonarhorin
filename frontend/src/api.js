@@ -5,35 +5,17 @@ const BASE = import.meta.env.VITE_API_URL || "";
  * scripts after a reload); the refresh token is an HttpOnly cookie the browser sends to /api/auth/ only.
  */
 let ACCESS = null;
-let REFRESH = null;
+// Older builds persisted tokens in localStorage — wipe them; the session is restored from the cookie instead.
 try {
-  ACCESS = localStorage.getItem("sh_access");
-  REFRESH = localStorage.getItem("sh_refresh");
-} catch { /* ignore private mode restrictions */ }
+  localStorage.removeItem("sh_access");
+  localStorage.removeItem("sh_refresh");
+} catch { /* storage disabled */ }
 
 export const tokens = {
   get access() { return ACCESS; },
-  get refresh() { return REFRESH; },
-  set(a, r) {
-    ACCESS = a || null;
-    if (r !== undefined) REFRESH = r || null;
-    try {
-      if (a) localStorage.setItem("sh_access", a);
-      else localStorage.removeItem("sh_access");
-      if (r !== undefined) {
-        if (r) localStorage.setItem("sh_refresh", r);
-        else localStorage.removeItem("sh_refresh");
-      }
-    } catch { /* storage disabled */ }
-  },
-  clear() {
-    ACCESS = null;
-    REFRESH = null;
-    try {
-      localStorage.removeItem("sh_access");
-      localStorage.removeItem("sh_refresh");
-    } catch { /* storage disabled */ }
-  },
+  /** Only the access token is held (in memory). The refresh token never reaches JS. */
+  set(a) { ACCESS = a || null; },
+  clear() { ACCESS = null; },
 };
 
 export class ApiError extends Error {
@@ -57,15 +39,11 @@ let refreshing = null;
 /** One refresh at a time — parallel 401s share the same promise. */
 export function refreshAccess() {
   if (!refreshing) {
-    const payload = REFRESH ? JSON.stringify({ refresh: REFRESH }) : undefined;
-    const headers = { "X-Requested-With": "sonarhorin" };
-    if (payload) headers["Content-Type"] = "application/json";
-
+    // The HttpOnly refresh cookie (path /api/auth/) is sent by the browser; the header is the CSRF guard.
     refreshing = fetch(`${BASE}/api/auth/refresh/`, {
       method: "POST",
       credentials: "include",
-      headers,
-      body: payload,
+      headers: { "X-Requested-With": "sonarhorin" },
     })
       .then(async (r) => {
         if (!r.ok || r.status === 204) {
@@ -73,7 +51,7 @@ export function refreshAccess() {
           return false;
         }
         const data = await r.json();
-        tokens.set(data.access, data.refresh);
+        tokens.set(data.access);
         return true;
       })
       .catch(() => false)
@@ -95,7 +73,7 @@ export async function api(path, { method = "GET", body, form, blob = false, retr
   if (form) payload = form;
   else if (body !== undefined) { headers["Content-Type"] = "application/json"; payload = JSON.stringify(body); }
   const r = await fetch(`${BASE}${path}`, { method, headers, body: payload, credentials: "include" });
-  if (r.status === 401 && retry && !path.startsWith("/api/auth/login") && (await refreshAccess())) {
+  if (r.status === 401 && retry && !/^\/api\/auth\/(login|google|otp)\//.test(path) && (await refreshAccess())) {
     return api(path, { method, body, form, blob, retry: false });
   }
   if (blob && r.ok) return r.blob();

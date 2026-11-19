@@ -211,3 +211,69 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Sonarhorin Apply <apply@sonarhorin.com>")
+
+# =====================================================================================================
+# ---- Third-party integrations (Integration Engineer) — everything below is env-driven and optional.
+#      Unset vars = feature switched off / dev fallback. Setup steps: docs/integrations/INTEGRATIONS.md
+#      Throttle rates live here as plain settings (read by the throttle classes themselves) so this
+#      block never has to touch REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"].
+# =====================================================================================================
+INSTALLED_APPS += ["apps.push", "apps.payments"]
+
+# Google Sign-In (Google Identity Services ID token). Comma-separate several client IDs (web, Android…).
+GOOGLE_CLIENT_IDS = [c.strip() for c in os.getenv("GOOGLE_CLIENT_ID", "").split(",") if c.strip()]
+
+# Phone OTP login. SMS_BACKEND: console (dev only — logs the code) | sslwireless | bulksmsbd | alphasms
+SMS_BACKEND = os.getenv("SMS_BACKEND", "console")
+SMS_API_KEY = os.getenv("SMS_API_KEY", "")
+SMS_SENDER_ID = os.getenv("SMS_SENDER_ID", "")
+SMS_API_URL = os.getenv("SMS_API_URL", "")          # override the provider's default endpoint
+SMS_TIMEOUT = float(os.getenv("SMS_TIMEOUT", "10"))
+OTP_TTL_SECONDS = int(os.getenv("OTP_TTL_SECONDS", "300"))
+OTP_MAX_ATTEMPTS = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
+OTP_RESEND_COOLDOWN = int(os.getenv("OTP_RESEND_COOLDOWN", "60"))
+OTP_PHONE_RATE = os.getenv("OTP_PHONE_RATE", "5/hour")          # OTP sends per phone number
+OTP_IP_RATE = os.getenv("OTP_IP_RATE", "20/hour")               # OTP sends per client IP
+OTP_VERIFY_IP_RATE = os.getenv("OTP_VERIFY_IP_RATE", "30/hour")  # verify calls per client IP
+OTP_ALLOW_SIGNUP = env_bool("OTP_ALLOW_SIGNUP", True)           # verified unknown number → new account
+
+# Web push (VAPID). Without keys, send_push() is a logged no-op and the vapid-key endpoint says disabled.
+VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "")
+VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY", "")
+VAPID_SUBJECT = os.getenv("VAPID_SUBJECT", "mailto:admin@sonarhorin.com")
+# The server POSTs to subscription endpoints → only accept known browser push services (SSRF guard).
+PUSH_ALLOWED_HOST_SUFFIXES = [h.strip().lower() for h in os.getenv(
+    "PUSH_ALLOWED_HOST_SUFFIXES",
+    "fcm.googleapis.com,android.googleapis.com,push.services.mozilla.com,notify.windows.com,push.apple.com",
+).split(",") if h.strip()]
+
+# SSLCommerz payments (premium). Sandbox unless SSLCZ_SANDBOX=false.
+SSLCZ_STORE_ID = os.getenv("SSLCZ_STORE_ID", "")
+SSLCZ_STORE_PASS = os.getenv("SSLCZ_STORE_PASS", "")
+SSLCZ_SANDBOX = env_bool("SSLCZ_SANDBOX", True)
+SSLCZ_API_BASE = os.getenv("SSLCZ_API_BASE", "") or (
+    "https://sandbox.sslcommerz.com" if SSLCZ_SANDBOX else "https://securepay.sslcommerz.com")
+API_PUBLIC_URL = os.getenv("API_PUBLIC_URL", "http://localhost:8000")  # public origin SSLCommerz calls back
+PREMIUM_PLANS = {
+    "premium_monthly": {"amount": os.getenv("PREMIUM_MONTHLY_BDT", "199"), "name": "Sonarhorin Premium (1 month)"},
+    "premium_yearly": {"amount": os.getenv("PREMIUM_YEARLY_BDT", "1499"), "name": "Sonarhorin Premium (1 year)"},
+}
+
+# Sentry error monitoring — only initialised when SENTRY_DSN is set.
+SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.django import DjangoIntegration
+
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            integrations=[DjangoIntegration()],
+            environment=os.getenv("SENTRY_ENVIRONMENT", "development" if DEBUG else "production"),
+            release=os.getenv("SENTRY_RELEASE") or None,
+            traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.0")),
+            send_default_pii=False,   # never ship emails/phones/IPs to Sentry
+        )
+    except ImportError:  # package missing → run without monitoring rather than crash
+        pass
+# ---- end third-party integrations -------------------------------------------------------------------

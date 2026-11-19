@@ -4,6 +4,7 @@ import { api } from "../api";
 import { useAuth } from "../auth";
 import { MAJORS } from "../config";
 import { toast } from "../utils";
+import GoogleButton from "../integrations/GoogleButton";
 
 // Email removed from ORDER: Candidate accounts are created solely with Phone Number
 const ORDER = ["full_name", "phone", "major", "university", "graduation_year", "cgpa", "linkedin", "github", "skills"];
@@ -109,6 +110,8 @@ export default function Register() {
       <form className="auth-card wide" onSubmit={submit}>
         <h1 className="h2">Your first job<br />starts here.</h1>
         <p className="muted">ফ্রি ফ্রেশার অ্যাকাউন্ট — শুধুমাত্র ফোন নম্বর দিয়েই রেজিস্টার করুন।</p>
+        {/* One-tap sign-up with Google (only when VITE_GOOGLE_CLIENT_ID is set) */}
+        <GoogleButton text="signup_with" onSuccess={() => nav(sp.get("next") || "/me")} onError={(x) => setErr(x.message)} />
 
         <div className={`cvdrop ${drag ? "drag" : ""} ${parsing ? "busy" : ""} ${cvFile && !parsing ? "done" : ""}`}
              onClick={() => fileRef.current.click()} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)}

@@ -53,6 +53,10 @@ class User(AbstractUser):
     track = models.CharField(max_length=12, choices=TRACKS, default="job", help_text="What the user is looking for — changes the dashboard layout.")
     headline = models.CharField(max_length=140, blank=True, help_text="One line shown on the network and the portfolio site.")
     is_employer = models.BooleanField(default=False, help_text="Employers can see efficiency-test results of their invites.")
+    # ---- set by third-party sign-in (Google / phone OTP), see apps/accounts/integrations.py
+    phone_e164 = models.CharField(max_length=16, unique=True, null=True, blank=True, help_text="Verified BD mobile number in +8801XXXXXXXXX form (set by OTP login).")
+    phone_verified = models.BooleanField(default=False)
+    google_sub = models.CharField(max_length=64, unique=True, null=True, blank=True, help_text="Google account id linked via Google Sign-In.")
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["full_name"]
@@ -61,3 +65,22 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.full_name} <{self.email}>"
+
+
+class PhoneOTP(models.Model):
+    """One-time login code sent by SMS. Only a salted HMAC of the code is stored."""
+
+    phone = models.CharField(max_length=16, db_index=True)  # +8801XXXXXXXXX
+    code_hash = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveSmallIntegerField(default=0)
+    used_at = models.DateTimeField(null=True, blank=True)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["phone", "-created_at"])]
+
+    def __str__(self):
+        return f"OTP {self.phone[:6]}… @ {self.created_at:%Y-%m-%d %H:%M}"

@@ -21,6 +21,9 @@ urlpatterns = [
     path("api/network/", include("apps.network.urls")),
     path("api/startups/", include("apps.startups.urls")),
     path("api/career/", include("apps.career.urls")),
+    # third-party integrations
+    path("api/push/", include("apps.push.urls")),
+    path("api/payments/", include("apps.payments.urls")),
 ]
 
 if settings.DEBUG:

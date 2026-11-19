@@ -34,11 +34,10 @@ def _clear_refresh_cookie(resp):
 
 
 def _session_response(user, refresh: RefreshToken, code=200):
-    """Access token and refresh token in the body + HttpOnly cookie."""
+    """Access token in the body; the refresh token ONLY in the HttpOnly cookie (never readable by JS)."""
     resp = Response({
         "user": UserSerializer(user).data,
         "access": str(refresh.access_token),
-        "refresh": str(refresh),
     }, status=code)
     return _set_refresh_cookie(resp, str(refresh))
 
@@ -101,7 +100,7 @@ class RefreshView(APIView):
     def post(self, request):
         if not _cookie_guard(request):
             return Response({"detail": "Missing request header."}, status=403)
-        token = request.COOKIES.get(settings.REFRESH_COOKIE["key"]) or request.data.get("refresh")
+        token = request.COOKIES.get(settings.REFRESH_COOKIE["key"])
         if not token:
             return Response(status=status.HTTP_204_NO_CONTENT)  # simply signed out — not an error
         s = TokenRefreshSerializer(data={"refresh": token})
@@ -109,7 +108,7 @@ class RefreshView(APIView):
             s.is_valid(raise_exception=True)
         except (TokenError, Exception):
             return _clear_refresh_cookie(Response({"detail": "Session expired. Please sign in again."}, status=401))
-        resp = Response({"access": s.validated_data["access"], "refresh": s.validated_data.get("refresh", str(token))})
+        resp = Response({"access": s.validated_data["access"]})
         if s.validated_data.get("refresh"):
             _set_refresh_cookie(resp, s.validated_data["refresh"])
         return resp
