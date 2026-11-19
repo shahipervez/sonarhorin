@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../api";
 import { useLang } from "../../i18n";
+import { useLite } from "../../lite";
 import { STORY_SETS } from "../../components/StoryRail";
 
 /**
@@ -33,6 +34,7 @@ export default function JobStarSky({ onCount, introT0 = null }) {
   const introRef = useRef(introT0);
   introRef.current = introT0;
   const cats = STORY_SETS.job;
+  const lite = useLite();
 
   useEffect(() => {
     api("/api/jobs/").then((d) => setJobs(d.jobs || [])).catch(() => setJobs([]));
@@ -51,6 +53,7 @@ export default function JobStarSky({ onCount, introT0 = null }) {
   }, [jobs, counts, onCount]);
 
   useEffect(() => {
+    if (lite) return; // lite mode: static gradient, no canvas loop
     const canvas = cv.current, ctx = canvas.getContext("2d");
     const still = matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     let W = 0, H = 0, dpr = 1, raf, visible = true;
@@ -115,11 +118,11 @@ export default function JobStarSky({ onCount, introT0 = null }) {
     };
     raf = requestAnimationFrame(frame);
     return () => { cancelAnimationFrame(raf); io.disconnect(); removeEventListener("resize", resize); };
-  }, [cats]);
+  }, [cats, lite]);
 
   return (
     <div className="jss" aria-hidden="true">
-      <canvas ref={cv} className="jss-canvas" />
+      {lite ? <div className="jss-canvas lite-sky lite-sky-job" /> : <canvas ref={cv} className="jss-canvas" />}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 import { useLang, useT } from "../i18n";
+import { LiteToggle } from "../lite";
 import Logo from "./Logo";
 
 const I = {
@@ -101,6 +102,7 @@ export default function Nav() {
           <Link className="mi" to="/stories"><Icon n="star" />{t("Success stories", "সাফল্যের গল্প")}</Link>
           <Link className="mi" to="/efficiency"><Icon n="shield" />{t("Efficiency Test · for employers", "এফিশিয়েন্সি টেস্ট")}</Link>
           {user && <button className="mi" onClick={async () => { await logout(); nav("/"); }}><Icon n="user" />{t("Sign out", "লগআউট")}</button>}
+          <LiteToggle L={lang === "bn"} className="mi lite-toggle" />
           <div className="mfine">Help · Terms of Use · Privacy<br />Dhaka, Bangladesh<br />© 2026 সোনারহরিণ. All rights reserved.</div>
         </div>
       </div>

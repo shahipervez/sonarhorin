@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MAJORS } from "../config";
+import { useLite } from "../lite";
 import { fmt } from "../utils";
 
 const STEPS = [
@@ -20,9 +21,11 @@ export default function LiveWallpaper({ onAnswer }) {
   const [typed, setTyped] = useState("");
   const [picked, setPicked] = useState(null);
   const goLiveRef = useRef(() => {});
+  const lite = useLite();
 
   // ------- wallpaper engine
   useEffect(() => {
+    if (lite) { setAsked(true); return; } // lite mode: static gradient, no video / canvas
     const wall = wallRef.current, vid = vidRef.current, cv = cvRef.current, ctx = cv.getContext("2d");
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let useVideo = false, isLive = false, visible = false, W = 0, H = 0, parts = [], t = 0, last = 0, sweep = -1, raf, askT;
@@ -91,7 +94,7 @@ export default function LiveWallpaper({ onAnswer }) {
       cancelAnimationFrame(raf); io.disconnect(); removeEventListener("resize", onResize); clearTimeout(rt); clearTimeout(askT);
       vid.removeEventListener("loadeddata", onLoaded); vid.removeEventListener("error", onErr);
     };
-  }, []);
+  }, [lite]);
 
   // ------- typewriter
   useEffect(() => {
@@ -117,8 +120,10 @@ export default function LiveWallpaper({ onAnswer }) {
         <div>
           <div ref={wallRef} className={`wall ${live ? "live" : ""} ${asked ? "asked" : ""}`} aria-label="Live wallpaper"
                onPointerEnter={() => goLiveRef.current()} onClick={() => goLiveRef.current()}>
-            <video ref={vidRef} src="/wallpaper.mp4" muted playsInline loop preload="auto" />
-            <canvas ref={cvRef} />
+            {lite ? <div className="lite-sky lite-sky-job" aria-hidden="true" style={{ position: "absolute", inset: 0 }} /> : <>
+              <video ref={vidRef} src="/wallpaper.mp4" muted playsInline loop preload="auto" />
+              <canvas ref={cvRef} />
+            </>}
             <div className="shade" />
             <div className="live-tag"><i />LIVE</div>
             <div className="idle"><i />Hover or tap to wake it up</div>

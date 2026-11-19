@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { useLang } from "../i18n";
+import { useLite } from "../lite";
 
 /**
  * Category "video stories". Each card is a looping story clip (public/stories/<id>.mp4) with just the
@@ -34,6 +35,7 @@ export const storyLink = (kind, s) =>
 function StoryCard({ s, i, L, active, onOpen, onGo }) {
   const ref = useRef(null);
   const [play, setPlay] = useState(false);
+  const lite = useLite();
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, mx: 50, my: 50, hovered: false });
 
   const handleMouseMove = (e) => {
@@ -57,7 +59,7 @@ function StoryCard({ s, i, L, active, onOpen, onGo }) {
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || lite) return; // lite mode: poster image only, never autoplay
     const io = new IntersectionObserver(([e]) => {
       const v = el.querySelector("video");
       if (e.isIntersecting) { v?.play().then(() => setPlay(true)).catch(() => {}); }
@@ -65,7 +67,7 @@ function StoryCard({ s, i, L, active, onOpen, onGo }) {
     }, { threshold: 0.35 });
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [lite]);
 
   return (
     <div
@@ -87,7 +89,11 @@ function StoryCard({ s, i, L, active, onOpen, onGo }) {
       onKeyDown={(e) => e.key === "Enter" && onOpen(i)}
       aria-label={s.name[L]}
     >
-      <video src={`/stories/${s.id}.mp4`} poster={`/stories/${s.id}.jpg`} muted loop playsInline preload="metadata" />
+      {lite ? (
+        <img src={`/stories/${s.id}.jpg`} alt="" loading="lazy" decoding="async" className="sr-poster" />
+      ) : (
+        <video src={`/stories/${s.id}.mp4`} poster={`/stories/${s.id}.jpg`} muted loop playsInline preload="metadata" />
+      )}
 
       {/* Dynamic Ambient Aura / Interactive Glare */}
       <div
@@ -132,6 +138,7 @@ function StoryCard({ s, i, L, active, onOpen, onGo }) {
 
 function StoryViewer({ items, start, L, kind, onClose, onGo }) {
   const [i, setI] = useState(start);
+  const lite = useLite();
   const s = items[i];
   const next = () => (i < items.length - 1 ? setI(i + 1) : onClose());
   const prev = () => i > 0 && setI(i - 1);
@@ -143,7 +150,12 @@ function StoryViewer({ items, start, L, kind, onClose, onGo }) {
   return (
     <div className="sv-bg" onClick={onClose}>
       <div className="sv" style={{ "--c": s.c }} onClick={(e) => e.stopPropagation()}>
-        <video key={s.id} src={`/stories/${s.id}.mp4`} poster={`/stories/${s.id}.jpg`} autoPlay muted playsInline onEnded={next} />
+        {lite ? (
+          // lite mode: poster first; the clip loads only if the viewer taps play
+          <video key={s.id} src={`/stories/${s.id}.mp4`} poster={`/stories/${s.id}.jpg`} muted playsInline controls preload="none" onEnded={next} />
+        ) : (
+          <video key={s.id} src={`/stories/${s.id}.mp4`} poster={`/stories/${s.id}.jpg`} autoPlay muted playsInline onEnded={next} />
+        )}
         <div className="sv-bars">{items.map((x, j) => <span key={x.id} className={j < i ? "done" : j === i ? "cur" : ""}><i key={s.id} /></span>)}</div>
         <div className="sv-top">
           <span className="sr-av"><i>{s.icon}</i><b>{kind === "job" ? (L ? "জব" : "Jobs") : (L ? "ইন্টার্নশিপ" : "Internships")}</b></span>

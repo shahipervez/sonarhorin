@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import CategoryBoxes from "../components/CategoryBoxes";
+import Seo, { jobListLd } from "../components/Seo";
 import StoryRail from "../components/StoryRail";
 import TrustBadge from "../components/TrustBadge";
 import { MAJORS } from "../config";
@@ -197,6 +198,11 @@ function JobsBoard() {
 
   return (
     <div className="page jobs-page">
+      <Seo
+        title={L ? "ফ্রেশার চাকরি — ১-ট্যাপে আবেদন" : "Fresher jobs in Bangladesh — apply in 1 tap"}
+        description="Verified fresher-friendly jobs and trainee programs in Bangladesh (0 years experience). Apply in one tap, by email, or with assisted portal apply."
+        jsonLd={data?.jobs?.length ? jobListLd(data.jobs) : undefined}
+      />
       <div className="wrap">
         {/* Category Boxes — tap any box to filter verified fresher roles */}
         <CategoryBoxes
@@ -476,7 +482,7 @@ function JobCard({ j, onOpen, L, CH }) {
       <header>
         <CompanyLogo company={j.company} />
         <div>
-          <h3>{j.title}</h3>
+          <h3><Link to={`/jobs/${j.id}`} className="jtitle-link">{j.title}</Link></h3>
           <p>
             {j.company.name}
             {j.company.is_partner && <span className="partner">✓ Partner</span>}
@@ -1005,136 +1011,4 @@ function AutoApplyPanel({ matches, onRun, L, CH }) {
   );
 }
 
-export function Applications() {
-  const [d, setD] = useState(null);
-  const [view, setView] = useState(null);
-  const [lang] = useLang();
-  const L = lang === "bn" ? 1 : 0;
-  const CH = getCH(L);
-
-  const load = () =>
-    api("/api/jobs/applications/")
-      .then(setD)
-      .catch(() => setD({ applications: [], counts: {} }));
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  const act = async (id, action) => {
-    await api(`/api/jobs/applications/${id}/${action}/`, { method: "POST" });
-    load();
-  };
-
-  const total = d?.applications?.length || 0;
-
-  return (
-    <div className="page">
-      <div className="wrap">
-        <div className="page-head">
-          <div>
-            <p className="eyebrow">{L ? "আমার আবেদনসমূহ" : "My applications"}</p>
-            <h1 className="h2">
-              {total ? (
-                L ? (
-                  <>মোট {fmt(total)}টি আবেদন <em>চলমান।</em></>
-                ) : (
-                  <>{fmt(total)} applications <em>out there.</em></>
-                )
-              ) : L ? (
-                "এখনও কোনো আবেদন করা হয়নি।"
-              ) : (
-                "No applications yet."
-              )}
-            </h1>
-            <p className="muted lead2">
-              {L
-                ? "তোমার সকল চাকরির আবেদন — ১-ক্লিক, ইমেইল বা পোর্টাল — এক ছাদের নিচে ট্র্যাক করো।"
-                : "Every job you applied to — 1-click, email or portal — in one place."}
-            </p>
-          </div>
-          <Link to="/jobs" className="btn btn-ink">
-            {L ? "আরও চাকরি ব্রাউজ করো →" : "Find more jobs →"}
-          </Link>
-        </div>
-        {d && total > 0 && (
-          <div className="app-counts">
-            {Object.entries(d.counts).map(([k, v]) => (
-              <span key={k} className={`status s-${k}`}>
-                {v} {k.replace("_", " ")}
-              </span>
-            ))}
-          </div>
-        )}
-        <div className="app-list">
-          {d?.applications.map((a) => (
-            <div key={a.id} className="app-row">
-              <CompanyLogo company={a.job.company} />
-              <div className="app-main">
-                <b>{a.job.title}</b>
-                <span>
-                  {a.job.company.name} · {new Date(a.created_at).toLocaleDateString()}{" "}
-                  {a.auto && <em className="autotag">🤖 auto</em>}
-                </span>
-              </div>
-              <span className={`chbadge ${CH[a.channel]?.cls || ""}`}>
-                {CH[a.channel]?.ic} {CH[a.channel]?.t}
-              </span>
-              <span className={`status s-${a.status}`}>{a.status_label}</span>
-              <div className="app-act">
-                {a.status === "needs_action" && (
-                  <>
-                    <a
-                      className="btn btn-out sm"
-                      href={a.job.apply_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {L ? "পোর্টাল ↗" : "Portal ↗"}
-                    </a>
-                    <button className="btn btn-lime sm" onClick={() => act(a.id, "done")}>
-                      {L ? "সাবমিট করেছি ✓" : "Mark submitted ✓"}
-                    </button>
-                  </>
-                )}
-                <button className="link small" onClick={() => setView(a)}>
-                  {L ? "কভার লেটার" : "Letter"}
-                </button>
-                {["needs_action", "submitted", "sent", "done"].includes(a.status) && (
-                  <button className="link small" onClick={() => act(a.id, "withdraw")}>
-                    {L ? "প্রত্যাহার" : "Withdraw"}
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-          {d && total === 0 && (
-            <div className="card share-cta">
-              <p className="muted">
-                {L
-                  ? "তোমার প্রথম ফ্রেশার চাকরিতে আবেদন করো — মাত্র এক ক্লিকেই।"
-                  : "Apply to your first fresher job — it takes one tap."}
-              </p>
-              <Link className="btn btn-ink" to="/jobs">
-                {L ? "চাকরি ব্রাউজ করো" : "Browse jobs"}
-              </Link>
-            </div>
-          )}
-        </div>
-        {view && (
-          <div className="modal-bg" onClick={() => setView(null)}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-              <button className="modal-x" onClick={() => setView(null)} aria-label="Close">
-                ✕
-              </button>
-              <h2 className="h3">
-                {L ? `কভার লেটার — ${view.job.title}` : `Cover letter — ${view.job.title}`}
-              </h2>
-              <pre className="letter">{view.cover_letter}</pre>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+// The application tracker (Kanban) lives in ./Applications.jsx

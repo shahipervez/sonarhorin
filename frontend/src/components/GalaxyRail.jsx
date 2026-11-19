@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
+import { useLite } from "../lite";
 import { catOf, clamp01, hexA, toBn } from "../landing/hero/JobStarSky";
 
 /**
@@ -24,6 +25,7 @@ const TAU = Math.PI * 2;
 function GalaxyOrb({ s, i, L, count, introT0, onGo, mode = "" }) {
   const cv = useRef(null);
   const hot = useRef(0);
+  const lite = useLite();
   const introRef = useRef(introT0);
   introRef.current = introT0;
 
@@ -49,18 +51,21 @@ function GalaxyOrb({ s, i, L, count, introT0, onGo, mode = "" }) {
       if (sh.teeth && kind === "ring") r += Math.cos(th * sh.teeth) > 0.6 ? 0.07 : 0; // gear teeth
       P.push({ r, th, kind, size: kind === "core" ? 0.7 + rnd() * 1.2 : 0.5 + rnd() * 1.3, tw: rnd() * TAU, b: 0.45 + rnd() * 0.55 });
     }
-    let W = 0, H = 0, dpr = 1, raf, visible = true, spin = 0, last = performance.now();
+    let W = 0, H = 0, dpr = 1, raf, visible = true, spin = 0, last = performance.now(), drawn = false;
     const resize = () => {
       dpr = Math.min(2, devicePixelRatio || 1);
       W = canvas.clientWidth; H = canvas.clientHeight;
       canvas.width = W * dpr; canvas.height = H * dpr;
+      // lite mode: the orb is a single still frame — redraw it once after a resize
+      if (lite && drawn) { drawn = false; cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
     };
     resize(); addEventListener("resize", resize);
     const ro = new ResizeObserver(resize); ro.observe(canvas);
     const io = new IntersectionObserver((e) => (visible = e[0].isIntersecting)); io.observe(canvas);
     const cr = Math.cos(sh.rot), sr = Math.sin(sh.rot);
 
-    const frame = (now) => {
+    function frame(now) {
+      if (lite && drawn) return; // lite mode: no animation loop
       raf = requestAnimationFrame(frame);
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
       if (!visible) return;
@@ -101,10 +106,11 @@ function GalaxyOrb({ s, i, L, count, introT0, onGo, mode = "" }) {
       nuc.addColorStop(0, "rgba(255,250,235,0.95)"); nuc.addColorStop(0.4, hexA(s.c, 0.5)); nuc.addColorStop(1, hexA(s.c, 0));
       ctx.fillStyle = nuc; ctx.beginPath(); ctx.arc(cx, cy, R * 0.2, 0, TAU); ctx.fill();
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
-    };
+      if (lite && W > 0) { drawn = true; cancelAnimationFrame(raf); }
+    }
     raf = requestAnimationFrame(frame);
     return () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); removeEventListener("resize", resize); };
-  }, [s, i]);
+  }, [s, i, lite]);
 
   // ease the hover value so the spin-up feels physical
   const [isHot, setHot] = useState(false);
