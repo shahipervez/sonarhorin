@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 import { useLang } from "../i18n";
@@ -169,6 +169,8 @@ export default function Hero({ ready = true }) {
   const [skillTools, setSkillTools] = useState([]);
   const [hasProj, setHasProj] = useState(null);
   const [starCount, setStarCount] = useState(157);
+  const [catCounts, setCatCounts] = useState({});
+  const onStars = useCallback((n, per) => { setStarCount(n); setCatCounts(per); }, []);
   const story = useJobStory((track === "job" || track === "internship") && ready, track);
 
   const toggleTool = (t) => {
@@ -184,7 +186,7 @@ export default function Hero({ ready = true }) {
   return (
     <header className={`hero hero-${track} hero-integrated-categories ${track !== "startup" ? (story.playing ? "jx-play" : story.played ? "jx-after" : "") : ""}`}>
       {/* Visual Effect as the Living Background */}
-      {track === "job" && <JobStarSky key="job" onCount={setStarCount} introT0={story.t0} />}
+      {track === "job" && <JobStarSky key="job" onCount={onStars} introT0={story.t0} />}
       {track !== "startup" && <JobStoryIntro story={story} L={L} kind={track} />}
       {track === "internship" && <PlaneSky key="internship" />}
       {track === "startup" && <LanternSky key="startup" />}
@@ -194,6 +196,7 @@ export default function Hero({ ready = true }) {
         <div className="hero-category-overlay sr-host">
           <StoryRail
             kind={track}
+            galaxy={track === "job" ? { counts: catCounts, introT0: story.t0 } : null}
             onSwitch={(k) => {
               setTrack(k);
               window.history.pushState({ track: k }, "", `/?track=${k}`);

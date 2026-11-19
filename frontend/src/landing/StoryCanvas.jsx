@@ -2,10 +2,12 @@ import { useEffect, useRef } from "react";
 import { STORY_LEN, drawAnime } from "./anime/story";
 
 /**
- * Full-bleed Living Story Background — "Episode 01: প্রথম সুযোগ" (Continuous 24/7 anime loop).
- * Plays edge-to-edge as a borderless full screen background without any box or padding.
+ * The gate's long story — "Episode 01: প্রথম সুযোগ", a ~24 s anime short drawn live on canvas
+ * (see ./anime/story.js). It starts when the girl pulls the curtain (`active` turns true),
+ * plays once on its own clock, then holds on the animated title card.
+ * Toggling `active` off and on again replays it from the start.
  */
-export default function StoryCanvas({ active = true, loop = true, resetKey = 0, className = "" }) {
+export default function StoryCanvas({ active, className = "" }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -19,34 +21,27 @@ export default function StoryCanvas({ active = true, loop = true, resetKey = 0, 
     canvas.height = Math.round(H * dpr);
     const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-    let raf = 0, start = performance.now(), running = true;
+    let raf = 0, start = 0, running = true;
     const render = (now) => {
       if (!running) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (!active) {
-        ctx.fillStyle = "#04060E";
-        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
       } else {
-        const elapsed = (now - start) / 1000;
-        const t = still ? 0 : (loop ? (elapsed % STORY_LEN) : Math.min(elapsed, STORY_LEN));
+        if (!start) start = now;
+        const t = still ? STORY_LEN : (now - start) / 1000;
         drawAnime(ctx, t, W, H);
-        // Cinematic smooth fade-to-black before loop restart
-        if (loop && t > (STORY_LEN - 0.7)) {
-          const fade = (t - (STORY_LEN - 0.7)) / 0.7;
-          ctx.fillStyle = `rgba(4, 6, 14, ${fade})`;
-          ctx.fillRect(0, 0, W, H);
-        }
       }
       raf = requestAnimationFrame(render);
     };
     raf = requestAnimationFrame(render);
     return () => { running = false; cancelAnimationFrame(raf); };
-  }, [active, loop, resetKey]);
+  }, [active]);
 
   return (
     <canvas
       ref={canvasRef}
-      className={`gate-story-canvas ${className}`}
+      className={`ex8-story-left-canvas ${className}`}
       role="img"
       aria-label="সোনারহরিণ — Episode 01: প্রথম সুযোগ (anime story)"
     />

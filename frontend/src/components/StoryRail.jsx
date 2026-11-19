@@ -1,3 +1,4 @@
+import GalaxyRail from "./GalaxyRail";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
@@ -166,7 +167,7 @@ function StoryViewer({ items, start, L, kind, onClose, onGo }) {
  * kind: "job" | "internship"
  * onSelect(s): optional — instead of navigating (used on the Jobs page to filter in place).
  */
-export default function StoryRail({ kind, title, onSwitch, onSelect, active, light, compact, footer }) {
+export default function StoryRail({ kind, title, onSwitch, onSelect, active, light, compact, footer, galaxy }) {
   const [lang] = useLang();
   const L = lang === "bn" ? 1 : 0;
   const nav = useNavigate();
@@ -185,11 +186,15 @@ export default function StoryRail({ kind, title, onSwitch, onSelect, active, lig
           </div>
         )}
       </div>
-      <div className="sr-grid">
-        {items.map((s, i) => (
-          <StoryCard key={kind + s.id} s={s} i={i} L={L} active={active === s.id} onOpen={setOpen} onGo={go} />
-        ))}
-      </div>
+      {galaxy ? (
+        <GalaxyRail items={items} L={L} counts={galaxy.counts} introT0={galaxy.introT0} onGo={go} />
+      ) : (
+        <div className="sr-grid">
+          {items.map((s, i) => (
+            <StoryCard key={kind + s.id} s={s} i={i} L={L} active={active === s.id} onOpen={setOpen} onGo={go} />
+          ))}
+        </div>
+      )}
       {footer && <div className="sr-foot">{footer}</div>}
       {open >= 0 && createPortal(<StoryViewer items={items} start={open} L={L} kind={kind} onClose={() => setOpen(-1)} onGo={go} />, document.body)}
     </div>

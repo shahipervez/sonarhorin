@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
+import CategoryBoxes from "../components/CategoryBoxes";
 import StoryRail from "../components/StoryRail";
 import { MAJORS } from "../config";
 import { useLang, useT } from "../i18n";
@@ -196,21 +197,29 @@ function JobsBoard() {
   return (
     <div className="page jobs-page">
       <div className="wrap">
-        {/* Category video stories — tap the arrow to filter, tap the card to watch */}
-        <StoryRail
+        {/* Category Boxes — tap any box to filter verified fresher roles */}
+        <CategoryBoxes
           kind={trackMode}
-          light
-          compact
           active={trackMode === "job" ? activeJobCat : activeInternCat}
           onSwitch={switchMode}
           onSelect={(s) => {
+            if (!s) {
+              if (trackMode === "job") handleSelectJobCat(null);
+              else handleSelectInternCat(null);
+              return;
+            }
             const cat = { ...s, major: s.major };
             const scroll = () => setTimeout(() => document.querySelector(".job-filters")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
-            if (trackMode === "job") { if (activeJobCat === s.id) handleSelectJobCat(null); else { handleSelectJobCat(cat); scroll(); } }
-            else { if (activeInternCat === s.id) handleSelectInternCat(null); else { handleSelectInternCat(cat); scroll(); } }
+            if (trackMode === "job") {
+              if (activeJobCat === s.id) handleSelectJobCat(null);
+              else { handleSelectJobCat(cat); scroll(); }
+            } else {
+              if (activeInternCat === s.id) handleSelectInternCat(null);
+              else { handleSelectInternCat(cat); scroll(); }
+            }
           }}
           title={
-            <h1 className={`sr-title ${L ? "bn" : ""}`}>
+            <h1 className={`sr-title ${L ? "bn" : ""}`} style={{ color: "#0F172A", textShadow: "none" }}>
               {trackMode === "job" ? (L ? <>ফ্রেশার <em>জব</em></> : <>Fresher <em>Jobs.</em></>) : (L ? <><em>ইন্টার্নশিপ</em></> : <><em>Internships.</em></>)}
             </h1>
           }

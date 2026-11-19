@@ -1,0 +1,364 @@
+/* ================================================================
+   Category Boxes Component Styles (Clean, modern category tiles)
+   ================================================================ */
+
+.cat-boxes-section {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4px 0 24px;
+}
+
+/* Header Row */
+.cat-boxes-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.cat-boxes-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cat-boxes-sub {
+  margin: 0;
+  font-family: var(--sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 14px;
+  color: #64748B;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.cat-boxes-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Clear Filter Button */
+.cat-boxes-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #DC2626;
+  font-family: var(--sans, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.cat-boxes-clear-btn:hover {
+  background: #FEF2F2;
+  border-color: #FCA5A5;
+  transform: translateY(-1px);
+}
+
+/* Track Switch: Jobs / Internships */
+.cat-boxes-switch {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.cat-boxes-switch-btn {
+  border: 0;
+  background: transparent;
+  color: #475569;
+  font-family: var(--sans, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cat-boxes-switch-btn:hover {
+  color: #0F172A;
+}
+
+.cat-boxes-switch-btn.active {
+  background: #FFFFFF;
+  color: #0F172A;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 5 Boxes Grid */
+.cat-boxes-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+/* Individual Box Card */
+.cat-box-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 20px;
+  padding: 18px 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.24s ease,
+              background-color 0.24s ease;
+  user-select: none;
+  animation: catBoxIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--anim-delay, 0ms);
+  min-height: 190px;
+}
+
+@keyframes catBoxIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cat-box-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--cat-color);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08), 0 0 0 1px var(--cat-border-soft);
+}
+
+/* Selected Active State */
+.cat-box-card.selected {
+  border-color: var(--cat-color);
+  background: #FFFFFF;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08), 0 0 0 2.5px var(--cat-color);
+}
+
+/* Card Top: Icon & Salary Chip */
+.cat-box-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.cat-box-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cat-bg-soft);
+  border: 1px solid var(--cat-border-soft);
+  transition: transform 0.25s ease;
+}
+
+.cat-box-card:hover .cat-box-icon-wrap {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+.cat-box-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* Salary / Stipend Chip */
+.cat-box-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  transition: all 0.2s ease;
+}
+
+.cat-box-card.selected .cat-box-chip,
+.cat-box-card:hover .cat-box-chip {
+  background: var(--cat-bg-soft);
+  border-color: var(--cat-border-soft);
+}
+
+.cat-box-chip-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cat-color);
+}
+
+.cat-box-chip-text {
+  font-family: var(--sans, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* Card Body */
+.cat-box-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.cat-box-meta-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.cat-box-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cat-color);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.cat-box-vacancies {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94A3B8;
+}
+
+.cat-box-title {
+  margin: 0;
+  font-family: var(--sans, sans-serif);
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  transition: color 0.2s ease;
+}
+
+.cat-box-title.bn {
+  font-family: 'Hind Siliguri', var(--sans, sans-serif);
+  font-size: 17.5px;
+  font-weight: 700;
+}
+
+.cat-box-card:hover .cat-box-title {
+  color: var(--cat-color);
+}
+
+.cat-box-desc {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #64748B;
+  line-height: 1.35;
+}
+
+/* Card Footer */
+.cat-box-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #F1F5F9;
+  transition: border-color 0.2s ease;
+}
+
+.cat-box-card:hover .cat-box-foot,
+.cat-box-card.selected .cat-box-foot {
+  border-top-color: var(--cat-border-soft);
+}
+
+.cat-box-action-text {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #475569;
+  transition: color 0.2s ease;
+}
+
+.cat-box-card:hover .cat-box-action-text {
+  color: var(--cat-color);
+}
+
+.cat-box-card.selected .cat-box-action-text {
+  color: var(--cat-color);
+  font-weight: 800;
+}
+
+.cat-box-arrow {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  background: #F8FAFC;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+  transition: all 0.22s ease;
+}
+
+.cat-box-card:hover .cat-box-arrow {
+  background: var(--cat-color);
+  color: #FFFFFF;
+  border-color: var(--cat-color);
+  transform: translateX(3px);
+}
+
+.cat-box-card.selected .cat-box-arrow {
+  background: var(--cat-color);
+  color: #FFFFFF;
+  border-color: var(--cat-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1180px) {
+  .cat-boxes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .cat-boxes-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .cat-boxes-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .cat-box-card {
+    min-height: 175px;
+    padding: 15px 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cat-boxes-grid {
+    grid-template-columns: 1fr;
+  }
+}

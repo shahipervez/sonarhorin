@@ -5,6 +5,8 @@ import { useAuth } from "../auth";
 import { STORY_SETS } from "../components/StoryRail";
 import { useLang } from "../i18n";
 import { ApplyModal, CompanyLogo, daysLeft, getCH, money } from "./Jobs";
+import { BEAT_MS, GATE_STORIES } from "./internshipStories";
+import InternSolar from "./InternSolar";
 
 /**
  * INTERNSHIPS — its own layout (not the job list).
@@ -39,6 +41,8 @@ function Flap({ text, className = "" }) {
     }, 45);
     return () => clearInterval(id);
   }, [text]);
+  // Bangla letters combine (কার/ফলা), so never split them into separate tiles
+  if (/[\u0980-\u09FF]/.test(String(text))) return <span className={`ip-flap bn ${className}`}>{text}</span>;
   return <span className={`ip-flap ${className}`}>{shown.split("").map((c, i) => <i key={i}>{c}</i>)}</span>;
 }
 
@@ -107,6 +111,25 @@ export default function Internships() {
   const ticker = (all || []).slice(0, 14);
   const apply = (j) => (user ? setOpen(j) : nav(`/login?next=/internships`));
 
+  // ---- gate stories: auto-play 3 beats per gate, then move to the next gate ----
+  const [gate, setGate] = useState(sp.get("cat") || "paid");
+  const [beat, setBeat] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [beatKey, setBeatKey] = useState(0);
+  useEffect(() => {
+    if (paused) return;
+    const id = setTimeout(() => {
+      if (beat < 2) setBeat(beat + 1);
+      else { const k = cats.findIndex((c) => c.id === gate); setGate(cats[(k + 1) % cats.length].id); setBeat(0); }
+      setBeatKey((n) => n + 1);
+    }, BEAT_MS);
+    return () => clearTimeout(id);
+  }, [beat, gate, paused, beatKey, cats]);
+  const playGate = (id, b = 0) => { setGate(id); setBeat(b); setBeatKey((n) => n + 1); };
+  const gateCat = cats.find((c) => c.id === gate) || cats[0];
+  const story = GATE_STORIES[gate];
+  const gi = cats.findIndex((c) => c.id === gate);
+
   return (
     <div className={`ip-page ${L ? "bn" : ""}`}>
       {/* ============ HERO + DEPARTURES BOARD ============ */}
@@ -118,64 +141,92 @@ export default function Internships() {
         <div className="ip-clouds" aria-hidden="true"><i /><i /><i /><i /></div>
 
         <div className="ip-wrap ip-hero-in">
-          <div className="ip-hero-copy">
-            <p className="ip-kicker">✈ {L ? "লঞ্চপ্যাড · প্রথম বাস্তব অভিজ্ঞতা" : "LAUNCHPAD · YOUR FIRST REAL EXPERIENCE"}</p>
-            <h1 className={`ip-title ${L ? "bn" : ""}`}>
-              {L ? <>তোমার প্রথম <em>ইন্টার্নশিপ</em><br />এখন বোর্ডিং।</> : <>Your first <em>internship</em><br />is now boarding.</>}
+          <div className="ip-hero-head">
+            <p className="ip-kicker">✈ {L ? "ইন্টার্নশিপ টার্মিনাল" : "INTERNSHIP TERMINAL"}</p>
+            <h1 className={`ip-title sm ${L ? "bn" : ""}`}>
+              {L ? <>প্রতিটা গেটের পেছনে <em>একটা গল্প।</em></> : <>Every gate has <em>a story.</em></>}
             </h1>
-            <p className="ip-sub">
-              {L
-                ? "চাকরির লম্বা লিস্ট না — এখানে প্রতিটা ইন্টার্নশিপ একটা বোর্ডিং পাস। গেট বেছে নাও, পাস হাতে নাও, উড়াল দাও।"
-                : "Not another job list — every internship here is a boarding pass. Pick a gate, grab your pass, take off."}
-            </p>
-            <div className="ip-hero-ctas">
-              <a href="#passes" className="ip-btn gold">{L ? "পাসগুলো দেখো" : "See boarding passes"} ↓</a>
-              <Link to="/jobs" className="ip-btn ghost">💼 {L ? "জব দেখো" : "Looking for jobs?"}</Link>
-            </div>
           </div>
 
-          <div className="ip-board" role="tablist" aria-label={L ? "ক্যাটাগরি" : "Categories"}>
+          {/* STORY PLAYER — explains the selected gate in 3 beats */}
+          <div
+            className="ip-story"
+            style={{ "--c": gateCat.c }}
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+          >
+            <div className="ip-story-bars">
+              {[0, 1, 2].map((k) => (
+                <button key={k} type="button" aria-label={`Beat ${k + 1}`} onClick={() => playGate(gate, k)}
+                  className={k < beat ? "done" : k === beat ? "cur" : ""}>
+                  <i key={beatKey} style={{ animationDuration: `${BEAT_MS}ms`, animationPlayState: paused ? "paused" : "running" }} />
+                </button>
+              ))}
+            </div>
+            <div className="ip-story-top">
+              <span className="ip-gate-badge"><Flap text={GATE[gate]} /></span>
+              <b className={L ? "bn" : ""}>{gateCat.icon} {gateCat.name[L]}</b>
+              <small>{story.who[L]}</small>
+            </div>
+
+            <div className={`ip-stage b${beat}`} key={gate + beat}>
+              <span className="ip-runway" aria-hidden="true" />
+              <span className="ip-sun" aria-hidden="true" />
+              {story.beats[beat].actors.map((a, k) => (
+                <span key={k} className={`ip-actor a${k} ${a === "✈️" ? "plane" : ""}`}>{a}</span>
+              ))}
+              <span className="ip-chapter">{L ? `অধ্যায় ${["১", "২", "৩"][beat]}` : `CHAPTER ${beat + 1}`}</span>
+            </div>
+
+            <p className={`ip-story-line ${L ? "bn" : ""}`} key={"t" + gate + beat}>{story.beats[beat].t[L]}</p>
+
+            <div className="ip-story-foot">
+              <p className={`ip-meaning ${L ? "bn" : ""}`}><span>💡</span>{story.meaning[L]}</p>
+              <button type="button" className="ip-btn gold sm" onClick={() => pick(gate)}>
+                {L ? `${n2(counts[gate] || 0, L)}টি ${gateCat.name[L]} দেখো` : `See ${counts[gate] || 0} ${gateCat.name[0]}`} →
+              </button>
+            </div>
+            <button type="button" className="ip-story-nav l" onClick={() => (beat > 0 ? playGate(gate, beat - 1) : playGate(cats[(gi + cats.length - 1) % cats.length].id))} aria-label="Previous">‹</button>
+            <button type="button" className="ip-story-nav r" onClick={() => (beat < 2 ? playGate(gate, beat + 1) : playGate(cats[(gi + 1) % cats.length].id))} aria-label="Next">›</button>
+          </div>
+
+          <div className="ip-board ip-cosmos">
             <div className="ip-board-top">
-              <b>{L ? "ডিপারচার" : "DEPARTURES"}</b>
+              <b>{L ? "সোনারহরিণ সৌরজগৎ" : "SONARHORIN SYSTEM"}</b>
               <time className="ip-clock">{clock.toLocaleTimeString("en-GB", { timeZone: "Asia/Dhaka" })} <small>DAC</small></time>
-              <span><i />{L ? "লাইভ" : "LIVE"} · {n2((all || []).length, L)} {L ? "টি ফ্লাইট" : "flights"}</span>
+              <span><i />{L ? "লাইভ" : "LIVE"} · {n2((all || []).length, L)} {L ? "টি ইন্টার্নশিপ" : "internships"}</span>
             </div>
-            <div className="ip-board-head">
-              <span>{L ? "গেট" : "GATE"}</span><span>{L ? "গন্তব্য" : "DESTINATION"}</span><span>{L ? "সুবিধা" : "PERK"}</span><span>{L ? "স্ট্যাটাস" : "STATUS"}</span>
+
+            <InternSolar
+              cats={cats}
+              gate={gate}
+              counts={counts}
+              onPick={(id) => playGate(id)}
+              L={L}
+              gateCodes={GATE}
+              progressMs={BEAT_MS * (3 - beat)}
+              progressFrom={beat / 3}
+              paused={paused}
+              progKey={beatKey}
+            />
+
+            {/* the planet you're on: its brightest internships right now */}
+            <div className="ip-orbiting" style={{ "--c": gateCat.c }} key={gate}>
+              <div className="ip-orbiting-head">
+                <span className="ip-gate-badge sm">{GATE[gate]}</span>
+                <b className={L ? "bn" : ""}>{gateCat.icon} {gateCat.name[L]}</b>
+                <em className={`ip-status s${tick % 4}`}><i />{statusOf(gate, 0)}</em>
+              </div>
+              {topFor(gate).map((j, k) => (
+                <a key={j.id} href="#passes" className="ip-peek-row" style={{ animationDelay: `${k * 0.07}s` }}
+                  onClick={(e) => { e.preventDefault(); pick(gate); setTimeout(() => document.getElementById(`pass-${j.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 300); }}>
+                  <span>✈</span><b>{j.title}</b><small>{j.company?.name}</small>
+                  <em>{daysLeft(j.deadline) != null ? `${n2(daysLeft(j.deadline), L)}${L ? " দিন" : "d"}` : ""}</em>
+                </a>
+              ))}
+              {!topFor(gate).length && <p className="ip-peek-empty">{L ? "এই গ্রহে এখন কোনো ইন্টার্নশিপ নেই — শীঘ্রই আসছে" : "No internships on this planet right now — coming soon"}</p>}
             </div>
-            {cats.map((c, i) => {
-              const st = statusOf(c.id, i);
-              const open = cat === c.id;
-              return (
-                <div key={c.id} className={`ip-rowwrap ${open ? "open" : ""}`} style={{ "--c": c.c, "--i": i }}>
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={open}
-                    className={`ip-row ${open ? "on" : ""}`}
-                    onClick={() => pick(c.id)}
-                  >
-                    <span className="ip-gate"><Flap text={GATE[c.id]} /></span>
-                    <span className={`ip-dest ${L ? "bn" : ""}`}><i>{c.icon}</i>{L ? c.name[L] : <Flap text={c.name[0].toUpperCase()} />}</span>
-                    <span className="ip-perk">{c.chip[L]}</span>
-                    <span className={`ip-status s${(tick + i) % 4}`}>
-                      <em /><Flap text={st} /> <b>{n2(counts[c.id] || 0, L)}</b>
-                    </span>
-                  </button>
-                  <div className="ip-peek">
-                    <div>
-                      {topFor(c.id).map((j) => (
-                        <a key={j.id} href="#passes" className="ip-peek-row" onClick={(e) => { e.preventDefault(); document.getElementById(`pass-${j.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>
-                          <span>✈</span><b>{j.title}</b><small>{j.company?.name}</small>
-                          <em>{daysLeft(j.deadline) != null ? `${n2(daysLeft(j.deadline), L)}${L ? " দিন" : "d"}` : ""}</em>
-                        </a>
-                      ))}
-                      {!topFor(c.id).length && <p className="ip-peek-empty">{L ? "এই গেটে এখন কোনো ফ্লাইট নেই" : "No flights at this gate right now"}</p>}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+
             {ticker.length > 0 && (
               <div className="ip-ticker" aria-hidden="true">
                 <div>

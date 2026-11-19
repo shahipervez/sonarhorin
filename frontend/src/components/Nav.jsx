@@ -55,7 +55,7 @@ export default function Nav() {
 
   return (
     <nav className={`nav ${solid ? "solid" : ""}`}>
-      <Link to="/" className="logo" aria-label="সোনারহরিণ home"><Logo /></Link>
+      <Link to="/" className="logo" aria-label="সোনারহরিণ home"><Logo bangla={home} /></Link>
       <div className={`nav-links ${focus ? "searching" : ""}`}>
         <form className="nav-search" role="search" onSubmit={search}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>

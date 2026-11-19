@@ -567,39 +567,19 @@ export default function FeaturedCompanies() {
   return (
     <section className="fc" ref={ref} aria-labelledby="fc-h">
       {/* Elevated Compact Header */}
-      <header className="fc-head">
-        <div className="fc-pill-tag">
-          <span className="fc-bd-flag">🇧🇩</span>
-          <span>
-            {L
-              ? "বাংলাদেশের শীর্ষ কর্পোরেট অফিস ও লাইভ ক্যারিয়ার হাব"
-              : "Top Bangladesh Corporate Offices & Official Career Portals"}
-          </span>
-        </div>
-
+      <header className="fc-head fc-head-slim">
         <h2 id="fc-h">
-          {L ? "শীর্ষ কর্পোরেট ক্যারিয়ার পোর্টাল ও জব সার্কুলার" : "Featured Corporate Career Portals & Jobs"}
+          {L ? <>শীর্ষ <em>কর্পোরেট</em> জব</> : <>Top <em>corporate</em> jobs</>}
         </h2>
-
-        <p>
-          {L
-            ? "রোল বেছে নিন — শীর্ষ কর্পোরেট হেডঅফিসগুলোর ভেরিফায়েড লাইভ সার্কুলার ও অফিসিয়াল পোর্টালে সরাসরি আবেদন করুন"
-            : "Select your role — access verified live job circulars and official career portals of Bangladesh's premier corporate houses"}
-          <span className="fc-live">
-            <i />
-            {L
-              ? `${list.length}টি কর্পোরেট প্রতিষ্ঠান · ${totalRoles}টি লাইভ পদ`
-              : `${list.length} Corporates · ${totalRoles} Live Openings`}
-          </span>
-        </p>
+        <span className="fc-live">
+          <i />
+          {L ? `${list.length}টি কোম্পানি · ${totalRoles}টি লাইভ পদ` : `${list.length} companies · ${totalRoles} live`}
+        </span>
       </header>
 
       {/* ================= 1. DYNAMIC ROLE SELECTOR TABS ================= */}
       <div className="fc-roles-container">
-        <div className="fc-roles-label">
-          <span>{L ? "🎯 রোল অনুযায়ী সার্কুলার দেখুন:" : "🎯 Select Role to View Live Jobs:"}</span>
-        </div>
-        <div className="fc-roles-scroll">
+        <div className="fc-roles-scroll fc-roles-wrap">
           {ROLE_CATEGORIES.map((cat) => {
             const count = allJobs.filter(cat.matcher).length;
             const isActive = selectedRole === cat.id;
