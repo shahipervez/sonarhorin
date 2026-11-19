@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "apps.network",
     "apps.startups",
     "apps.career",
+    "apps.alerts",
+    "apps.insights",
 ]
 
 MIDDLEWARE = [

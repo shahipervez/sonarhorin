@@ -134,6 +134,10 @@ class JobApplication(models.Model):
     error = models.CharField(max_length=300, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     sent_at = models.DateTimeField(null=True, blank=True)
+    # The candidate's own tracker column (Kanban). Separate from `status`, which records what the system/employer did.
+    CANDIDATE_STAGES = [("applied", "Applied"), ("screening", "Screening / test"), ("interview", "Interview"),
+                        ("offer", "Offer"), ("hired", "Hired"), ("rejected", "Rejected"), ("archived", "Archived")]
+    candidate_stage = models.CharField(max_length=12, choices=CANDIDATE_STAGES, null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]

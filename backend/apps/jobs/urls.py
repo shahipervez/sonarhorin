@@ -13,6 +13,7 @@ urlpatterns = [
     path("auto-apply/", views.AutoApplyView.as_view()),
     path("auto-apply/run/", views.AutoApplyRunView.as_view()),
     path("applications/", views.MyApplicationsView.as_view()),
+    path("applications/<int:pk>/stage/", views.ApplicationStageView.as_view()),
     path("applications/<int:pk>/<str:action>/", views.ApplicationActionView.as_view()),
     path("employer/applicants/", views.EmployerApplicantsView.as_view()),
     path("<int:pk>/", views.JobDetailView.as_view()),

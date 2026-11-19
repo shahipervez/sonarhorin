@@ -155,6 +155,22 @@ class ApplicationActionView(APIView):
         return Response(ApplicationSerializer(app).data)
 
 
+class ApplicationStageView(APIView):
+    """PATCH /applications/<id>/stage/ {candidate_stage: "interview" | ... | null} — owner moves their own Kanban card."""
+
+    def patch(self, request, pk):
+        app = get_object_or_404(JobApplication, pk=pk, user=request.user)
+        if "candidate_stage" not in request.data:
+            return Response({"candidate_stage": ["This field is required (use null to clear)."]}, status=400)
+        stage = request.data.get("candidate_stage") or None
+        stages = dict(JobApplication.CANDIDATE_STAGES)
+        if stage is not None and stage not in stages:
+            return Response({"candidate_stage": [f"Choose one of: {', '.join(stages)}."]}, status=400)
+        app.candidate_stage = stage
+        app.save(update_fields=["candidate_stage"])
+        return Response(ApplicationSerializer(app).data)
+
+
 class EmployerApplicantsView(APIView):
     """Employers (company.employer_users) see 1-click applicants for their jobs."""
 
