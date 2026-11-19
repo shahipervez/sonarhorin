@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.certifications.services import issue_certificate
+from apps.core.throttles import STRICT
 
 from . import interviewer
 from .models import InterviewSession, InterviewTurn
@@ -35,6 +36,9 @@ def _finish(s: InterviewSession, status="completed"):
 class StartInterviewView(APIView):
     """POST {major?, role?, language?} → 10-minute session + first question."""
 
+    throttle_classes = STRICT
+    throttle_scope = "ai"
+
     def post(self, request):
         InterviewSession.objects.filter(user=request.user, status="active").update(status="expired")
         major = request.data.get("major") or request.user.major
@@ -51,6 +55,9 @@ class StartInterviewView(APIView):
 
 class AnswerView(APIView):
     """POST {turn_id, answer} → evaluation of that answer + next question (or the final report)."""
+
+    throttle_classes = STRICT
+    throttle_scope = "ai"
 
     def post(self, request, pk):
         s = get_object_or_404(InterviewSession, pk=pk, user=request.user)

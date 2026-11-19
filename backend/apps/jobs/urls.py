@@ -16,6 +16,7 @@ urlpatterns = [
     path("applications/<int:pk>/stage/", views.ApplicationStageView.as_view()),
     path("applications/<int:pk>/<str:action>/", views.ApplicationActionView.as_view()),
     path("employer/applicants/", views.EmployerApplicantsView.as_view()),
+    path("report-scam/", views.ReportScamView.as_view()),
     path("<int:pk>/", views.JobDetailView.as_view()),
     path("<int:pk>/preview/", views.PreviewView.as_view()),
     path("<int:pk>/apply/", views.ApplyView.as_view()),

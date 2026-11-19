@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import AutoApplySettings, Company, Job, JobApplication
+from .models import AutoApplySettings, Company, Job, JobApplication, ScamReport
 
 
 class CompanyMini(serializers.ModelSerializer):
@@ -31,7 +31,8 @@ class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = ["id", "title", "company", "location", "remote", "job_type", "job_type_label", "major_list", "experience_max_years",
-                  "salary_min", "salary_max", "description", "requirements", "channel", "apply_url", "posted_at", "deadline", "source", "my_status"]
+                  "salary_min", "salary_max", "description", "requirements", "channel", "apply_url", "posted_at", "deadline", "source", "my_status",
+                  "trust_level", "trust_score", "trust_reasons", "trust_checked_at"]
 
     def get_channel(self, j):
         return j.effective_channel()
@@ -63,3 +64,9 @@ class AutoApplySerializer(serializers.ModelSerializer):
     def validate_channels(self, v):
         ok = [c for c in v.split(",") if c in ("partner", "email")]
         return ",".join(ok) or "partner"
+
+
+class ScamReportSerializer(serializers.Serializer):
+    job_id = serializers.IntegerField(min_value=1)
+    reason = serializers.ChoiceField(choices=ScamReport.REASONS, default="other")
+    details = serializers.CharField(required=False, allow_blank=True, max_length=1000)
