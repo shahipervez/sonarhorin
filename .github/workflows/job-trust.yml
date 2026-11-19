@@ -1,0 +1,23 @@
+# Daily: re-score job postings for trust / scam signals and expire dead links.
+# Skips (green) while the `check_job_trust` command does not exist in the checked-out revision.
+name: Job trust check
+
+on:
+  schedule:
+    - cron: "23 21 * * *"   # 21:23 UTC = 03:23 Asia/Dhaka, low traffic
+  workflow_dispatch:
+
+concurrency:
+  group: job-trust
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  trust:
+    uses: ./.github/workflows/_manage-command.yml
+    with:
+      command: check_job_trust
+      skip_if_missing: true
+    secrets: inherit

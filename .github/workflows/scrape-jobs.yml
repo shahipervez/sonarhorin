@@ -1,0 +1,28 @@
+# Refresh the job board from Bangladesh career sites every 6 hours.
+# Replaces the in-process scheduler thread, which can't run reliably on serverless hosts (Vercel).
+name: Scrape jobs
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # every 6h at :17 (UTC); off the hour to avoid GitHub's busiest minute
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "max items per query"
+        default: "8"
+
+concurrency:
+  group: scrape-jobs
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  scrape:
+    uses: ./.github/workflows/_manage-command.yml
+    with:
+      command: run_job_scraper
+      args: --limit ${{ github.event.inputs.limit || '8' }}
+      skip_if_missing: false
+    secrets: inherit

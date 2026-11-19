@@ -1,0 +1,90 @@
+{
+  // Terminal → Run Task…  (Ctrl/Cmd+Shift+P → "Tasks: Run Task")
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Setup: install + migrate + seed",
+      "detail": "Creates backend/.venv, installs Python + npm packages, migrates and seeds an empty DB",
+      "type": "shell",
+      "command": "./start.sh",
+      "windows": { "command": ".\\start.bat" },
+      "options": { "cwd": "${workspaceFolder}", "env": { "SETUP_ONLY": "1", "NO_BROWSER": "1" } },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Start everything (start script)",
+      "detail": "Same as double-clicking start.sh / start.bat",
+      "type": "shell",
+      "command": "./start.sh",
+      "windows": { "command": ".\\start.bat" },
+      "options": { "cwd": "${workspaceFolder}", "env": { "NO_BROWSER": "1" } },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: runserver",
+      "type": "shell",
+      "command": "${workspaceFolder}/backend/.venv/bin/python manage.py runserver 127.0.0.1:8000",
+      "windows": { "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe manage.py runserver 127.0.0.1:8000" },
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Frontend: vite dev",
+      "type": "npm",
+      "script": "dev",
+      "path": "frontend",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Run both servers",
+      "dependsOn": ["Backend: runserver", "Frontend: vite dev"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: migrate",
+      "type": "shell",
+      "command": "${workspaceFolder}/backend/.venv/bin/python manage.py migrate",
+      "windows": { "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe manage.py migrate" },
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: tests",
+      "type": "shell",
+      "command": "${workspaceFolder}/backend/.venv/bin/python manage.py test",
+      "windows": { "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe manage.py test" },
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Frontend: unit tests",
+      "type": "npm",
+      "script": "test",
+      "path": "frontend",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Frontend: build",
+      "type": "npm",
+      "script": "build",
+      "path": "frontend",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Scrape jobs now",
+      "type": "shell",
+      "command": "${workspaceFolder}/backend/.venv/bin/python manage.py run_job_scraper --limit 5",
+      "windows": { "command": "${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe manage.py run_job_scraper --limit 5" },
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "problemMatcher": []
+    }
+  ]
+}

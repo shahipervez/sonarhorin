@@ -1,0 +1,30 @@
+# Every 15 minutes: queue the daily job-alert digests that are due and send all pending
+# alert deliveries (e-mail / push / Telegram). The command is idempotent and safe to run often.
+# Skips (green) while `send_job_alerts` does not exist in the checked-out revision.
+name: Job alerts
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"   # every 15 min, off the :00 rush (GitHub may delay scheduled runs)
+  workflow_dispatch:
+    inputs:
+      skip_daily:
+        description: "only send already-queued instant alerts (--skip-daily)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: job-alerts
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  alerts:
+    uses: ./.github/workflows/_manage-command.yml
+    with:
+      command: send_job_alerts
+      args: ${{ github.event.inputs.skip_daily == 'true' && '--skip-daily' || '' }}
+      skip_if_missing: true
+    secrets: inherit
