@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { isLite } from "../../lite";
 
 /**
  * "2 AM" — a 6-second story that opens the Find-a-Job hero.
@@ -11,6 +12,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
  */
 export const STORY_END = 5.9;
 const KEY = "sh_job_story_seen";
+/** window CustomEvent fired every time the intro story starts (first play or Replay). detail: { kind } */
+export const STORY_EVENT = "sh-story-start";
 
 export function useJobStory(enabled, kind = "job") {
   const [t0, setT0] = useState(null);
@@ -23,14 +26,16 @@ export function useJobStory(enabled, kind = "job") {
     setPlayed(true);
     try { sessionStorage.setItem(KEY + kind, "1"); } catch { /* ignore */ }
     timer.current = setTimeout(() => setT0(null), STORY_END * 1000);
-  }, []);
+    // Let the rest of the page (e.g. the success-story pop-up on page 1) react to "the story just started".
+    try { window.__shStoryStart = { kind, at: Date.now() }; window.dispatchEvent(new CustomEvent(STORY_EVENT, { detail: { kind } })); } catch { /* ignore */ }
+  }, [kind]);
   const skip = useCallback(() => { clearTimeout(timer.current); setT0(null); }, []);
 
   useEffect(() => {
     if (!enabled) return;
     let seen = false;
     try { seen = !!sessionStorage.getItem(KEY + kind); } catch { /* ignore */ }
-    const still = matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const still = matchMedia?.("(prefers-reduced-motion: reduce)").matches || isLite(); // lite mode: no auto-play (Replay still works)
     if (!seen && !still) start(); else { setT0(null); setPlayed(false); }
     return () => clearTimeout(timer.current);
   }, [enabled, start, kind]);

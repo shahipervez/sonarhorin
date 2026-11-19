@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useLite } from "../../lite";
 import { fmt } from "../../utils";
 
 const IDEAS = ["কৃষকের অনলাইন বাজার", "বাংলা AI টিউটর", "গ্রামে ফুড ডেলিভারি", "হোম শেফ অ্যাপ", "ছাত্রদের মেস ফাইন্ডার", "রিকশা রাইড অ্যাপ",
@@ -17,8 +18,10 @@ const DEER_EDGES = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [4, 6], [6, 7], [2, 
 export default function LanternSky() {
   const rootRef = useRef(null), cvRef = useRef(null), floatRef = useRef(null), fundRef = useRef(null);
   const [toast, setToast] = useState(null);
+  const lite = useLite();
 
   useEffect(() => {
+    if (lite) return; // lite mode: static gradient, no canvas loop
     const root = rootRef.current, cv = cvRef.current, ctx = cv.getContext("2d");
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let W, H, dpr, bg, stars = [], lanterns = [], sparks = [], raf, last = 0, acc = 0, t = 0, visible = true, floating = 1204, funded = 27, lit = 3, box;
@@ -137,13 +140,13 @@ export default function LanternSky() {
     const io = new IntersectionObserver((e) => (visible = e[0].isIntersecting)); io.observe(root);
     raf = requestAnimationFrame(frame);
     return () => { cancelAnimationFrame(raf); io.disconnect(); removeEventListener("resize", onResize); clearTimeout(rt); cv.removeEventListener("pointerdown", onDown); };
-  }, []);
+  }, [lite]);
 
   useEffect(() => { if (!toast) return; const id = setTimeout(() => setToast(null), 5000); return () => clearTimeout(id); }, [toast]);
 
   return (
     <div className="hero-scene scene-startup" ref={rootRef}>
-      <canvas ref={cvRef} className="scene-canvas" aria-hidden="true" />
+      {lite ? <div className="scene-canvas lite-sky lite-sky-startup" aria-hidden="true" /> : <canvas ref={cvRef} className="scene-canvas" aria-hidden="true" />}
       {toast && (
         <div className="rescue-toast" key={toast.at} role="status">
           <span className="ic">🏮</span>

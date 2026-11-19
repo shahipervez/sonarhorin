@@ -1,0 +1,40 @@
+/* /applications — Kanban tracker (src/pages/Applications.jsx) */
+.kb {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(172px, 1fr);
+  gap: 12px; overflow-x: auto; padding: 4px 2px 14px; scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+.kb-col {
+  scroll-snap-align: start; display: flex; flex-direction: column; min-height: 320px;
+  background: #F6F5F0; border: 1.5px solid var(--line, #E6E4DC); border-radius: 18px; padding: 10px;
+  transition: background .15s, border-color .15s;
+}
+.kb-col.over { background: #FFF6DC; border-color: #E8B634; }
+.kb-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 10px; font-size: 13px; }
+.kb-head i { font-style: normal; font-weight: 800; font-size: 12px; background: #fff; border-radius: 99px; padding: 1px 9px; }
+.kb-todo .kb-head b { color: #9A5B00; }
+.kb-offer .kb-head b { color: var(--green2, #1F7A3A); }
+.kb-cards { display: flex; flex-direction: column; gap: 9px; flex: 1; }
+.kb-empty { margin: auto 0; text-align: center; font-size: 12px; color: var(--muted, #777); border: 1.5px dashed #D8D5CA; border-radius: 12px; padding: 18px 8px; }
+.kb-drag { touch-action: manipulation; cursor: grab; border-radius: 14px; background: #fff; border: 1.5px solid var(--line, #E6E4DC); box-shadow: 0 2px 6px rgba(14, 15, 12, .05); }
+.kb-drag:focus-visible { outline: 3px solid #E8B634; outline-offset: 2px; }
+.kb-drag.ghost { opacity: .35; }
+.kb-card { padding: 10px 12px 6px; display: flex; flex-direction: column; gap: 7px; }
+.kb-card.overlay { width: 220px; background: #fff; border-radius: 14px; border: 1.5px solid #E8B634; box-shadow: 0 18px 40px rgba(14, 15, 12, .22); cursor: grabbing; transform: rotate(-2deg); }
+.kb-top { display: flex; gap: 10px; align-items: center; }
+.kb-top .clogo2 { flex: none; }
+.kb-main { min-width: 0; display: flex; flex-direction: column; }
+.kb-title { font-weight: 700; font-size: 14px; line-height: 1.25; color: inherit; }
+.kb-title:hover { text-decoration: underline; }
+.kb-main span { font-size: 12px; color: var(--muted, #777); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kb-meta { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.kb-meta .chbadge, .kb-meta .status { font-size: 11px; }
+.kb-own { font-size: 11px; font-weight: 700; color: #9A5B00; background: #FFF1CC; border-radius: 99px; padding: 2px 8px; }
+.kb-act { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 4px 12px 10px; cursor: default; }
+.kb-moveto { margin-left: auto; max-width: 100%; }
+.kb-moveto select { font: inherit; font-size: 12px; border: 1px solid var(--line, #E6E4DC); border-radius: 8px; padding: 3px 6px; background: #fff; max-width: 100%; }
+.kb-note { margin-top: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (max-width: 760px) {
+  .kb { grid-auto-columns: 84%; }
+}

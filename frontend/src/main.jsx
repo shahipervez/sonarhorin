@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { AuthProvider } from "./auth";
@@ -16,13 +17,17 @@ import "./styles/career.css";
 import "./styles/login.css";
 import "./styles/featured.css";
 import "./styles/refresh.css";
+import "./styles/lite.css";
+import "./lite";
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <ConfigProvider>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </ConfigProvider>
-  </BrowserRouter>,
+  <HelmetProvider>
+    <BrowserRouter>
+      <ConfigProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </ConfigProvider>
+    </BrowserRouter>
+  </HelmetProvider>,
 );

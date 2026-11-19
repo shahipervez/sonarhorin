@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom";
-import { useT } from "../i18n";
+import { useLang, useT } from "../i18n";
+import { LiteToggle } from "../lite";
 import Logo from "./Logo";
 
 export default function Footer() {
   const t = useT();
+  const [lang] = useLang();
   return (
     <footer id="footer">
       <div className="f-top">
         <div className="logo"><Logo /></div>
         <small>{t("Built for freshers. Made in Bangladesh.", "ফ্রেশারদের জন্য, বাংলাদেশে তৈরি।")}</small>
+        <LiteToggle L={lang === "bn"} />
       </div>
       <div className="search">
         <h6>{t("Start your search", "খোঁজা শুরু করো")}</h6>

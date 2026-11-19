@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useLite } from "../../lite";
 import { fmt } from "../../utils";
 
 const BOUNCE = ["No vacancy", "Apply next year", "Unpaid?", "Only CSE", "Seen ✓✓", "Need 1 yr exp", "Waitlist"];
@@ -22,8 +23,10 @@ export default function PlaneSky() {
   const thrownRef = useRef(null);
   const landedRef = useRef(null);
   const [toast, setToast] = useState(null);
+  const lite = useLite();
 
   useEffect(() => {
+    if (lite) return; // lite mode: static gradient, no canvas loop
     const root = rootRef.current;
     const cv = cvRef.current;
     if (!root || !cv) return;
@@ -929,7 +932,7 @@ export default function PlaneSky() {
       clearTimeout(rt);
       cv.removeEventListener("pointerdown", onDown);
     };
-  }, []);
+  }, [lite]);
 
   useEffect(() => {
     if (!toast) return;
@@ -939,7 +942,7 @@ export default function PlaneSky() {
 
   return (
     <div className="hero-scene scene-intern" ref={rootRef}>
-      <canvas ref={cvRef} className="scene-canvas" aria-hidden="true" />
+      {lite ? <div className="scene-canvas lite-sky lite-sky-internship" aria-hidden="true" /> : <canvas ref={cvRef} className="scene-canvas" aria-hidden="true" />}
       {toast && (
         <div className="rescue-toast" key={toast.at} role="status">
           <span className="ic">✈️</span>

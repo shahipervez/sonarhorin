@@ -36,7 +36,14 @@ function Celebrate({ i }) {
   );
 }
 
-/** Page-1 pop-ups: scam warnings slide in on the left, success stories on the right — one at a time, a little apart. */
+/**
+ * Page-1 pop-ups.
+ *  - Right: a success story with the cheering girl. She appears ONCE each time the hero intro story starts
+ *    (first play and every "Replay the story" — via the `sh-story-start` window event from useJobStory),
+ *    plus once when page 1 opens (covers the startup track, reduced motion, or a story already seen this session).
+ *    No timed loop: she does not keep coming back by herself.
+ *  - Left: scam warnings keep their slow loop, but never while the success pop-up is on screen (no overlap).
+ */
 export default function Popups() {
   const [lang] = useLang();
   const bn = lang === "bn";
@@ -46,11 +53,54 @@ export default function Popups() {
   const stories = useRef([]);
   const hover = useRef(false);
   const n = useRef({ s: 0, w: 0 });
+  const winOn = useRef(false);
+  const pending = useRef(false);
+  const lastWin = useRef(0);
+  const winTimers = useRef([]);
+
+  const showWin = useRef(null);
+  showWin.current = (force) => {
+    // one show per story start: ignore duplicates (mount + event fire in the same tick)
+    if (!force && Date.now() - lastWin.current < 4000) return;
+    const list = stories.current;
+    if (!list.length) { pending.current = true; return; }
+    pending.current = false;
+    lastWin.current = Date.now();
+    winTimers.current.forEach(clearTimeout);
+    winTimers.current = [];
+    if (innerWidth < 760) setScam(null);
+    const i = n.current.w++;
+    winOn.current = true;
+    setWin({ ...list[i % list.length], i, at: Date.now() });
+    const hide = () => {
+      if (hover.current) { winTimers.current.push(setTimeout(hide, 1500)); return; }
+      winOn.current = false;
+      setWin(null);
+    };
+    winTimers.current.push(setTimeout(hide, 9500));
+  };
 
   useEffect(() => {
-    api("/api/stories/").then((d) => { stories.current = (d.stories || []).slice(0, 12); }).catch(() => {});
+    let alive = true;
+    api("/api/stories/").then((d) => {
+      if (!alive) return;
+      stories.current = (d.stories || []).slice(0, 12);
+      if (pending.current) showWin.current(true);
+    }).catch(() => {});
+    return () => { alive = false; };
   }, []);
 
+  // Story start (first play + every replay) → show her once. A deliberate replay brings her back even after ✕ (scam pop-ups stay hidden).
+  useEffect(() => {
+    const onStart = () => showWin.current();
+    window.addEventListener("sh-story-start", onStart);
+    // first page load: show once (the story, if it plays, starts in this same tick — deduped above)
+    if (!off) showWin.current();
+    return () => { window.removeEventListener("sh-story-start", onStart); winTimers.current.forEach(clearTimeout); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Left-side scam warnings: slow loop, paused while hovering, never alongside the success pop-up.
   useEffect(() => {
     if (off) return;
     const timers = [];
@@ -60,28 +110,17 @@ export default function Popups() {
     const t0 = Date.now();
     const ready = () => (mobile() ? pastHero() : scrollY > innerHeight * 0.35 || Date.now() - t0 > 18000);
     const showScam = () => {
-      if (hover.current || !ready()) return later(showScam, 2500);
-      if (mobile()) setWin(null);
+      if (hover.current || winOn.current || !ready()) return later(showScam, 2500);
       setScam({ ...SCAMS[n.current.s++ % SCAMS.length], at: Date.now() });
       later(() => setScam(null), 9000);
-      later(showWin, mobile() ? 12000 : 7000);
+      later(showScam, 9000 + (mobile() ? 14000 : 12000));
     };
-    const showWin = () => {
-      const list = stories.current;
-      if (!list.length) return later(showScam, 14000);
-      if (hover.current || !ready()) return later(showWin, 2500);
-      if (mobile()) setScam(null);
-      const i = n.current.w++;
-      setWin({ ...list[i % list.length], i, at: Date.now() });
-      later(() => setWin(null), 9500);
-      later(showScam, mobile() ? 14000 : 12000);
-    };
-    later(showScam, 6000);
+    later(showScam, 11000);
     return () => timers.forEach(clearTimeout);
   }, [off]);
 
-  const close = () => { setOff(true); setScam(null); setWin(null); try { sessionStorage.setItem("prothom_popups_off", "1"); } catch { /* */ } };
-  if (off) return null;
+  const close = () => { setOff(true); setScam(null); setWin(null); winOn.current = false; try { sessionStorage.setItem("prothom_popups_off", "1"); } catch { /* */ } };
+  if (off && !win) return null;
   const hv = { onMouseEnter: () => (hover.current = true), onMouseLeave: () => (hover.current = false) };
 
   return (
@@ -101,7 +140,7 @@ export default function Popups() {
       {win && (
         <aside className="pp pp-win" key={win.at} role="status" {...hv}>
           <button className="pp-x" onClick={close} aria-label="Hide pop-ups">✕</button>
-          <Celebrate i={win.i} />
+          <Celebrate i={0} />
           <div className="pp-body">
             <div className="pp-tag g">🎉 {bn ? "চাকরি পেয়েছে!" : "Got hired!"} {win.is_demo && <em>{bn ? "নমুনা" : "Sample"}</em>}</div>
             <b>{win.name} — {win.role}</b>

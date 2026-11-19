@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /me
+Disallow: /applications
+Disallow: /studio
+Disallow: /coach
+Disallow: /network
+Disallow: /efficiency/
+
+# Sitemap: https://sonarhorin.com/sitemap.xml
