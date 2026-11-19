@@ -2,6 +2,17 @@
 
 Runs periodically in a background daemon thread inside Django, keeping the
 job database refreshed without blocking HTTP workers.
+
+The in-process thread is **opt-in** outside local development: serverless
+platforms (Vercel) freeze or kill the process between requests, and multi-worker
+gunicorn would start one thread per worker. In production, scraping is driven by
+GitHub Actions cron instead (``.github/workflows/scrape-jobs.yml`` runs
+``python manage.py run_job_scraper``).
+
+Control with ``ENABLE_INPROCESS_SCHEDULER``:
+  * ``true``/``1``  -> always start the thread
+  * ``false``/``0`` -> never start it
+  * unset           -> start only for local dev (DEBUG on and not on Vercel)
 """
 import logging
 import os
@@ -21,11 +32,23 @@ _LOCK = threading.Lock()
 INTERVAL_MINUTES = int(os.environ.get("AUTO_SCRAPE_INTERVAL_MINUTES", "60"))
 
 
+def inprocess_enabled():
+    """Whether the in-process scraper thread should run in this process."""
+    explicit = os.environ.get("ENABLE_INPROCESS_SCHEDULER")
+    if explicit is not None and explicit.strip() != "":
+        return explicit.strip().lower() in ("1", "true", "yes", "on")
+    if os.environ.get("VERCEL"):
+        return False
+    from django.conf import settings
+    return bool(getattr(settings, "DEBUG", False))
+
+
 def get_status():
     """Returns the current scheduler status for API and Admin display."""
     from apps.jobs.models import Job
     return {
-        "enabled": True,
+        "enabled": inprocess_enabled(),
+        "mode": "in-process thread" if inprocess_enabled() else "external cron (GitHub Actions)",
         "is_running": _IS_RUNNING,
         "interval_minutes": INTERVAL_MINUTES,
         "last_run": _LAST_RUN.isoformat() if _LAST_RUN else None,
@@ -63,10 +86,9 @@ def _worker_loop():
 def start_scheduler():
     """Start the background scheduler thread if not already running."""
     global _SCHEDULER_THREAD
-    # In Django dev server, autoreload creates two processes. Only run in the main child process.
-    if os.environ.get("RUN_MAIN") != "true" and "gunicorn" not in os.environ.get("SERVER_SOFTWARE", ""):
-        # Check if running under direct manage.py runserver
-        pass
+    if not inprocess_enabled():
+        log.info("In-process job scheduler disabled (set ENABLE_INPROCESS_SCHEDULER=true to enable).")
+        return
 
     if _SCHEDULER_THREAD is not None and _SCHEDULER_THREAD.is_alive():
         return

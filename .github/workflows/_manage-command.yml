@@ -1,0 +1,112 @@
+# Reusable workflow: run one `python manage.py <command>` against the PRODUCTION database.
+# Called by scrape-jobs.yml, job-alerts.yml and job-trust.yml (with `secrets: inherit`).
+#
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   DATABASE_URL       required — postgres://user:pass@host:5432/db?sslmode=require
+#   DJANGO_SECRET_KEY  recommended — same value as production (signed links in e-mails depend on it)
+#   optional, passed through when set: EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
+#   EMAIL_USE_TLS, EMAIL_BACKEND, DEFAULT_FROM_EMAIL, SITE_URL, ANTHROPIC_API_KEY,
+#   VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT, REDIS_URL, ALERTS_FROM_EMAIL, SMS_BACKEND,
+#   SMS_API_URL, SMS_API_KEY, SMS_SENDER_ID, TELEGRAM_BOT_TOKEN, SENTRY_DSN, API_PUBLIC_URL
+name: manage.py command (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      command:
+        description: "manage.py sub-command name, e.g. run_job_scraper"
+        required: true
+        type: string
+      args:
+        description: "extra arguments"
+        required: false
+        type: string
+        default: ""
+      skip_if_missing:
+        description: "succeed (with a notice) when the command does not exist yet"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: manage.py ${{ inputs.command }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DJANGO_DEBUG: "False"
+      ENABLE_INPROCESS_SCHEDULER: "false"
+      SECURE_SSL_REDIRECT: "False"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      # Export only the secrets that are actually set: an empty EMAIL_PORT / EMAIL_BACKEND would
+      # override the defaults in settings.py and break the command.
+      - name: Load secrets
+        id: cfg
+        working-directory: .   # runs before checkout, backend/ doesn't exist yet
+        env:
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          allowed = """DATABASE_URL DJANGO_SECRET_KEY EMAIL_HOST EMAIL_PORT EMAIL_HOST_USER
+          EMAIL_HOST_PASSWORD EMAIL_USE_TLS EMAIL_BACKEND DEFAULT_FROM_EMAIL SITE_URL
+          ANTHROPIC_API_KEY VAPID_PUBLIC_KEY VAPID_PRIVATE_KEY VAPID_SUBJECT REDIS_URL ALERTS_FROM_EMAIL
+          SMS_BACKEND SMS_API_URL SMS_API_KEY SMS_SENDER_ID TELEGRAM_BOT_TOKEN SENTRY_DSN API_PUBLIC_URL""".split()
+          secrets = json.loads(os.environ.get("SECRETS_JSON") or "{}")
+          with open(os.environ["GITHUB_ENV"], "a") as env, open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              for k in allowed:
+                  v = (secrets.get(k) or "").strip()
+                  if v and "\n" not in v:
+                      env.write(f"{k}={v}\n")
+              ok = bool((secrets.get("DATABASE_URL") or "").strip())
+              out.write(f"ok={'true' if ok else 'false'}\n")
+              if not ok:
+                  print("::warning::DATABASE_URL secret is not set; nothing to do. "
+                        "Add it under Settings > Secrets and variables > Actions.")
+          PY
+
+      - uses: actions/checkout@v4
+        if: steps.cfg.outputs.ok == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.cfg.outputs.ok == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        if: steps.cfg.outputs.ok == 'true'
+        run: pip install -r requirements.txt
+
+      - name: Run manage.py ${{ inputs.command }}
+        if: steps.cfg.outputs.ok == 'true'
+        env:
+          CMD: ${{ inputs.command }}
+          ARGS: ${{ inputs.args }}
+          SKIP_IF_MISSING: ${{ inputs.skip_if_missing }}
+        run: |
+          # Settings refuse to start with DEBUG off and no real key; a throwaway one is fine for
+          # commands that don't sign anything (scraping), but set the secret for e-mail jobs.
+          if [ -z "$DJANGO_SECRET_KEY" ]; then
+            echo "::warning::DJANGO_SECRET_KEY secret not set; using a throwaway key for this run."
+            export DJANGO_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(60))')"
+          fi
+          # `help --commands` failing means Django itself is broken: that must fail loudly, not skip.
+          COMMANDS="$(python manage.py help --commands)"
+          if ! grep -qx "$CMD" <<< "$COMMANDS"; then
+            if [ "$SKIP_IF_MISSING" = "true" ]; then
+              echo "::notice::manage.py $CMD does not exist in this revision yet; skipping."
+              exit 0
+            fi
+            echo "::error::manage.py $CMD not found"; exit 1
+          fi
+          # shellcheck disable=SC2086  # ARGS is intentionally word-split
+          python manage.py "$CMD" $ARGS

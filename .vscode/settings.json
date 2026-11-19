@@ -1,0 +1,10 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.extraPaths": ["${workspaceFolder}/backend"],
+  "python.testing.unittestEnabled": false,
+  "files.exclude": { "**/__pycache__": true, "**/.venv": true },
+  "search.exclude": { "**/node_modules": true, "**/dist": true, "**/.venv": true, "**/*.mp4": true },
+  "[javascript][javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "eslint.workingDirectories": ["frontend"]
+}

@@ -1,0 +1,60 @@
+{
+  // Run & Debug (F5). Works in VS Code, Cursor and Google Antigravity.
+  // First time: run the task "Setup: install + migrate + seed" (Terminal → Run Task…),
+  // or just pick "Full stack" — it runs that task automatically before starting.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Django: runserver (API :8000)",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${workspaceFolder}/backend/.venv/bin/python",
+      "windows": { "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe" },
+      "program": "${workspaceFolder}/backend/manage.py",
+      "args": ["runserver", "127.0.0.1:8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "django": true,
+      "justMyCode": true,
+      "console": "integratedTerminal",
+      "env": { "PYTHONUNBUFFERED": "1" }
+    },
+    {
+      "name": "Django: tests",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${workspaceFolder}/backend/.venv/bin/python",
+      "windows": { "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe" },
+      "program": "${workspaceFolder}/backend/manage.py",
+      "args": ["test"],
+      "cwd": "${workspaceFolder}/backend",
+      "django": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Vite: dev server (web :5173)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/frontend",
+      "runtimeExecutable": "npm",
+      "windows": { "runtimeExecutable": "npm.cmd" },
+      "runtimeArgs": ["run", "dev", "--", "--host", "127.0.0.1", "--port", "5173", "--strictPort"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Chrome: open site (debug React)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5173",
+      "webRoot": "${workspaceFolder}/frontend/src"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full stack",
+      "configurations": ["Django: runserver (API :8000)", "Vite: dev server (web :5173)"],
+      "preLaunchTask": "Setup: install + migrate + seed",
+      "stopAll": true
+    }
+  ]
+}
