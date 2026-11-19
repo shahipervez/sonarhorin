@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 import { useLang } from "../i18n";
@@ -156,6 +156,27 @@ export const HERO_INTERN_CATEGORIES = [
   },
 ];
 
+// Tiny rotating tagline under "First Job." — never more than 2 words at a time.
+const TAG_WORDS = [
+  ["Start here.", "শুরু এখানেই।"],
+  ["Zero experience?", "অভিজ্ঞতা নেই?"],
+  ["No problem.", "সমস্যা নেই।"],
+  ["Dream bigger.", "বড় স্বপ্ন দেখো।"],
+];
+function TagWords({ L }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (document.documentElement.classList.contains("lite") || matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => setI((n) => (n + 1) % TAG_WORDS.length), 2600);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <span className={`jss-tag ${L ? "bn" : ""}`} aria-live="off">
+      <span key={i} className="jss-tag-w">{TAG_WORDS[i][L]}</span>
+    </span>
+  );
+}
+
 export default function Hero({ ready = true }) {
   const [track, setTrack] = useTrack();
   const { user } = useAuth();
@@ -168,7 +189,6 @@ export default function Hero({ ready = true }) {
   const [showSkillModal, setShowSkillModal] = useState(false);
   const [skillTools, setSkillTools] = useState([]);
   const [hasProj, setHasProj] = useState(null);
-  const [heroQ, setHeroQ] = useState("");
   const [catCounts, setCatCounts] = useState({});
   const onStars = useCallback((_n, per) => { setCatCounts(per); }, []);
   const story = useJobStory((track === "job" || track === "internship") && ready, track);
@@ -202,40 +222,12 @@ export default function Hero({ ready = true }) {
               window.history.pushState({ track: k }, "", `/?track=${k}`);
             }}
             title={
-              <>
-                <h1 className={`sr-title ${L ? "bn" : ""}`}>
-                  {track === "job"
-                    ? <span className="jss-main">{L ? <>প্রথম <em>চাকরি</em></> : <>First <em>Job.</em></>}</span>
-                    : <span className="jss-main">{L ? <>প্রথম <em>ইন্টার্নশিপ</em></> : <>First <em>Internship.</em></>}</span>}
-                </h1>
-                {track === "job" && (
-                  <div className={`jss-find ${L ? "bn" : ""}`}>
-                    <form
-                      className="jss-search"
-                      role="search"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const q = heroQ.trim();
-                        nav(q ? `/jobs?q=${encodeURIComponent(q)}` : "/jobs");
-                      }}
-                    >
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
-                      <input
-                        value={heroQ}
-                        onChange={(e) => setHeroQ(e.target.value)}
-                        placeholder={L ? "কী কাজ খুঁজছো? যেমন: সফটওয়্যার" : "Search jobs, e.g. software, marketing"}
-                        aria-label={L ? "চাকরি খোঁজো" : "Search jobs"}
-                      />
-                      <button type="submit">{L ? "খোঁজো" : "Search"}</button>
-                    </form>
-                    <ul className="jss-points">
-                      <li><i aria-hidden="true">✅</i>{L ? "স্ক্যাম-চেক করা চাকরি" : "Scam-checked jobs"}</li>
-                      <li><i aria-hidden="true">🎓</i>{L ? "শুধু ফ্রেশারদের জন্য" : "Made for freshers"}</li>
-                      <li><i aria-hidden="true">🆓</i>{L ? "আবেদন একদম ফ্রি" : "Applying is always free"}</li>
-                    </ul>
-                  </div>
-                )}
-              </>
+              <h1 className={`sr-title ${track === "job" ? "has-tag" : ""} ${L ? "bn" : ""}`}>
+                {track === "job"
+                  ? <span className="jss-main">{L ? <>প্রথম <em>চাকরি</em></> : <>First <em>Job.</em></>}</span>
+                  : <span className="jss-main">{L ? <>প্রথম <em>ইন্টার্নশিপ</em></> : <>First <em>Internship.</em></>}</span>}
+                {track === "job" && <TagWords L={L} />}
+              </h1>
             }
             footer={
               track === "job" ? (
