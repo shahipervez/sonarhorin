@@ -206,13 +206,6 @@ export default function Hero({ ready = true }) {
                 {track === "job"
                   ? <span className="jss-main">{L ? <>প্রথম <em>চাকরি</em></> : <>First <em>Job.</em></>}</span>
                   : <span className="jss-main">{L ? <>প্রথম <em>ইন্টার্নশিপ</em></> : <>First <em>Internship.</em></>}</span>}
-                {track === "job" && (
-                  <span className={`jss-headline ${L ? "bn" : ""}`}>
-                    <i className="jss-spark" aria-hidden="true">✦</i>
-                    <span>{L ? <>প্রতিটা তারা <b>আজকের একটা আসল চাকরি।</b></> : <>Every star is <b>a real job, open today.</b></>}</span>
-                    <span className="jss-live"><i />{toBn(starCount, L)} {L ? "টি পদ খোলা" : "live"}</span>
-                  </span>
-                )}
               </h1>
             }
             footer={
