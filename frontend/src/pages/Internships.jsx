@@ -142,9 +142,8 @@ export default function Internships() {
 
         <div className="ip-wrap ip-hero-in">
           <div className="ip-hero-head">
-            <p className="ip-kicker">✈ {L ? "ইন্টার্নশিপ টার্মিনাল" : "INTERNSHIP TERMINAL"}</p>
-            <h1 className={`ip-title sm ${L ? "bn" : ""}`}>
-              {L ? <>প্রতিটা গেটের পেছনে <em>একটা গল্প।</em></> : <>Every gate has <em>a story.</em></>}
+            <h1 className={`ip-title ${L ? "bn" : ""}`}>
+              {L ? "ইন্টার্নশিপ" : "Internships"}
             </h1>
           </div>
 
