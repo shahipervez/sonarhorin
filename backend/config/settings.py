@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "apps.network",
     "apps.startups",
     "apps.career",
+    "apps.reviews",
+    "apps.dbtools",
 ]
 
 MIDDLEWARE = [
@@ -80,8 +82,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# SQLite for development. Set DATABASE_URL-style vars below for PostgreSQL in production.
-if os.getenv("POSTGRES_DB"):
+# Database. Precedence: DATABASE_URL (postgres://user:pass@host:5432/name?sslmode=require, as given by
+# Render/Fly/Heroku) > POSTGRES_* vars (docker-compose) > SQLite for development.
+def _database_from_url(url):
+    from urllib.parse import parse_qsl, unquote, urlsplit
+
+    u = urlsplit(url)
+    if u.scheme in ("sqlite", "sqlite3"):
+        return {"ENGINE": "django.db.backends.sqlite3", "NAME": unquote(u.path[1:]) or BASE_DIR / "db.sqlite3"}
+    if u.scheme not in ("postgres", "postgresql", "pgsql"):
+        from django.core.exceptions import ImproperlyConfigured
+
+        raise ImproperlyConfigured(f"Unsupported DATABASE_URL scheme {u.scheme!r}")
+    return {"ENGINE": "django.db.backends.postgresql", "NAME": unquote(u.path[1:]), "USER": unquote(u.username or ""),
+            "PASSWORD": unquote(u.password or ""), "HOST": u.hostname or "", "PORT": str(u.port or ""),
+            "OPTIONS": dict(parse_qsl(u.query))}
+
+
+if os.getenv("DATABASE_URL"):
+    DATABASES = {"default": _database_from_url(os.environ["DATABASE_URL"])}
+elif os.getenv("POSTGRES_DB"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -94,6 +114,21 @@ if os.getenv("POSTGRES_DB"):
     }
 else:
     DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3"}}
+
+if DATABASES["default"]["ENGINE"].endswith("postgresql"):
+    _db = DATABASES["default"]
+    _db.setdefault("OPTIONS", {})
+    _db["OPTIONS"].setdefault("connect_timeout", int(os.getenv("DB_CONNECT_TIMEOUT", "5")))
+    if env_bool("DB_POOL", False):
+        # Django 5.1+ native psycopg pool (needs `psycopg[pool]`). Mutually exclusive with CONN_MAX_AGE.
+        _db["OPTIONS"]["pool"] = {"min_size": int(os.getenv("DB_POOL_MIN", "2")), "max_size": int(os.getenv("DB_POOL_MAX", "10"))}
+        _db["CONN_MAX_AGE"] = 0
+    else:
+        # Persistent connections: reuse one connection per worker thread instead of reconnecting per request.
+        _db["CONN_MAX_AGE"] = int(os.getenv("CONN_MAX_AGE", "60"))
+    _db["CONN_HEALTH_CHECKS"] = True  # ping a reused connection before handing it out (survives DB restarts)
+    # Behind PgBouncer in *transaction* pooling mode server-side cursors break; set DB_PGBOUNCER=1.
+    _db["DISABLE_SERVER_SIDE_CURSORS"] = env_bool("DB_PGBOUNCER", False)
 
 AUTH_USER_MODEL = "accounts.User"
 

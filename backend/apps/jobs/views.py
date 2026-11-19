@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import services
+from .search import search_jobs
 from .models import AutoApplySettings, Company, Job, JobApplication
 from .serializers import ApplicationSerializer, AutoApplySerializer, JobSerializer
 
@@ -26,7 +27,7 @@ class JobListView(APIView):
         qs = (Job.objects.filter(is_active=True, experience_max_years__lte=services.FRESHER_MAX_YEARS)
               .filter(Q(deadline__isnull=True) | Q(deadline__gte=timezone.localdate())).select_related("company"))
         if (q := p.get("q", "").strip()):
-            qs = qs.filter(Q(title__icontains=q) | Q(company__name__icontains=q) | Q(description__icontains=q))
+            qs = search_jobs(qs, q)
         if (m := p.get("major")):
             qs = qs.filter(Q(majors="") | Q(majors__icontains=m))
         if (loc := p.get("location")):
