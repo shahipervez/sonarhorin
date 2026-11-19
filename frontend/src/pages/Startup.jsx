@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
+import BeyondStartupHero from "../components/BeyondStartupHero";
 import Scribble from "../components/Scribble";
 import StartupStoryExperience from "../components/StartupStoryExperience";
 import { useLang } from "../i18n";
@@ -184,102 +185,116 @@ export default function Startup() {
   const [lang] = useLang();
   const L = lang === "bn" ? 1 : 0;
   const [funded, setFunded] = useState([]);
-  useEffect(() => { api("/api/startups/funded/").then(setFunded).catch(() => {}); }, []);
+  const [showFullStory, setShowFullStory] = useState(false);
+
+  useEffect(() => {
+    api("/api/startups/funded/")
+      .then(setFunded)
+      .catch(() => {});
+  }, []);
+
+  const handleCardClick = (cardId) => {
+    if (cardId === "spark" || cardId === "settle") {
+      setShowFullStory(true);
+      setTimeout(() => {
+        document.getElementById("story-experience")?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else if (cardId === "pitch") {
+      document.getElementById("builder")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
-    <div className="st-page stx">
-      {/* 1 — hero */}
-      <header className="stx-hero">
-        <div className="stx-sky" aria-hidden="true">
-          {Array.from({ length: 14 }).map((_, i) => <i key={i} style={{ "--i": i }} />)}
+    <div className="by-page">
+      {/* 1. Cinematic Beyond-Style Minimal Hero with 3D Video Animation */}
+      <BeyondStartupHero
+        onSelectCard={handleCardClick}
+        onStartPitch={() => document.getElementById("builder")?.scrollIntoView({ behavior: "smooth" })}
+      />
+
+      {/* 2. Interactive Anime Cartoon Story / Video (Cleanly togglable or expandable) */}
+      <section className="stx-sec" id="story-section" style={{ maxWidth: 1100, margin: "1rem auto 3rem", padding: "0 1.5rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+          <span style={{ fontSize: "0.85rem", color: "#8f98af", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>
+            {L ? "💡 ভিজ্যুয়াল অ্যানিমে স্টোরি" : "💡 Visual Anime Story"}
+          </span>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            style={{ fontSize: "0.82rem", padding: "0.3rem 0.8rem", color: "#ffc23d", borderColor: "rgba(255,194,61,0.3)" }}
+            onClick={() => setShowFullStory(!showFullStory)}
+          >
+            {showFullStory ? (L ? "সংক্ষেপ করো ▲" : "Collapse ▲") : (L ? "কার্টুন গল্প ও ভিডিও দেখুন ▼" : "Watch Anime Story & Video ▼")}
+          </button>
         </div>
-        <div className="stx-hero-in">
-          <div className="stx-copy">
-            <p className="stx-kicker">{L ? "সোনারহরিণ স্টার্টআপ ফান্ড" : "SONARHORIN STARTUP FUND"}</p>
-            <h1 className={`stx-title ${L ? "bn" : ""}`}>
-              {L ? <>আইডিয়া<span className="stx-arrow">→</span><em>ফান্ড।</em></> : <>Idea<span className="stx-arrow">→</span><em>Funded.</em></>}
-            </h1>
-            <div className="stx-ctas">
-              <a href="#builder" className="stx-btn gold">{L ? "পিচ শুরু করো" : "Start my pitch"} →</a>
-              <a href="#story" className="stx-btn ghost">▶ {L ? "গল্প" : "Story"}</a>
+
+        {showFullStory && (
+          <div style={{ animation: "fadeIn 0.3s ease" }}>
+            <StartupStoryExperience />
+          </div>
+        )}
+      </section>
+
+      {/* 3. Streamlined Clean Pitch Builder */}
+      <section className="by-builder-sec" id="builder">
+        <div className="by-builder-card">
+          <div className="by-builder-header">
+            <div>
+              <h2 className="by-builder-title">
+                {L ? <>পিচ <em>বিল্ডার</em></> : <>Pitch <em>Builder.</em></>}
+              </h2>
+              <p style={{ margin: "0.4rem 0 0", color: "#8f98af", fontSize: "0.88rem" }}>
+                {L
+                  ? "তোমার স্টার্টআপ আইডিয়া জমা দাও — রেডিনেস স্কোর ৪৫+ হলেই সরাসরি প্যানেল রিভিউ।"
+                  : "Submit your startup idea — reach readiness 45+ to qualify for panel review."}
+              </p>
             </div>
+            <span style={{ fontSize: "0.8rem", color: "#ffc23d", background: "rgba(255,194,61,0.1)", border: "1px solid rgba(255,194,61,0.3)", padding: "4px 12px", borderRadius: 999, fontWeight: 700 }}>
+              PRE-SEED ৳10L
+            </span>
           </div>
-          <div className="stx-phone">
-            <video src="/stories/startup.mp4" poster="/stories/startup.jpg" autoPlay muted loop playsInline />
-            <span className="stx-phone-notch" />
-          </div>
-        </div>
-        <div className="stx-stats">
-          {STATS.map(([n, l]) => (
-            <div key={n}><b>{n}</b><span>{l[L]}</span></div>
-          ))}
-        </div>
-      </header>
 
-      {/* 2 — interactive anime story & video visualization */}
-      <section className="stx-sec" id="story" style={{ paddingTop: "1rem" }}>
-        <div className="stx-wrap">
-          <StartupStoryExperience />
-        </div>
-      </section>
-
-      {/* 3 — the road to funding */}
-      <section className="stx-sec">
-        <div className="stx-wrap">
-          <h2 className={`stx-h2 ${L ? "bn" : ""}`}>{L ? <>ফান্ডিং-এর <em>পথ</em></> : <>The <em>road.</em></>}</h2>
-          <Reveal as="ol" className="stx-road">
-            {JOURNEY.map(([k, t], i) => (
-              <li key={k} style={{ "--i": i }}>
-                <span className="stx-node"><svg viewBox="0 0 24 24">{JICON[k]}</svg></span>
-                <b>{t[L]}</b>
-              </li>
-            ))}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* 4 — pitch builder */}
-      <section className="stx-sec" id="builder">
-        <div className="stx-wrap">
-          <h2 className={`stx-h2 ${L ? "bn" : ""}`}>{L ? <>পিচ <em>বিল্ডার</em></> : <>Pitch <em>builder.</em></>}</h2>
-          {user ? <Builder /> : (
-            <Reveal className="stx-login">
-              <div className="stx-ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" /><circle className="f" cx="60" cy="60" r="50" /></svg><b>45+</b></div>
+          {user ? (
+            <Builder />
+          ) : (
+            <Reveal className="stx-login" style={{ margin: "2rem auto" }}>
+              <div className="stx-ring" aria-hidden="true">
+                <svg viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="50" />
+                  <circle className="f" cx="60" cy="60" r="50" />
+                </svg>
+                <b>45+</b>
+              </div>
               <div className="stx-login-actions">
-                <Link className="stx-btn gold" to="/login?next=/startup">{L ? "লগইন" : "Log in"}</Link>
-                <Link className="stx-btn ghost" to="/register?next=/startup">{L ? "ফ্রি অ্যাকাউন্ট" : "Create free account"}</Link>
+                <Link className="stx-btn gold" to="/login?next=/startup">
+                  {L ? "লগইন করে পিচ করো" : "Log in to Pitch"}
+                </Link>
+                <Link className="stx-btn ghost" to="/register?next=/startup">
+                  {L ? "ফ্রি অ্যাকাউন্ট তৈরি করো" : "Create free account"}
+                </Link>
               </div>
             </Reveal>
           )}
         </div>
       </section>
 
-      {/* 5 — funded founders */}
-      <section className="stx-sec stx-funded">
-        <div className="stx-wrap">
-          <h2 className={`stx-h2 ${L ? "bn" : ""}`}>{L ? <>ফান্ডেড <em>ফাউন্ডার</em></> : <>Funded <em>founders.</em></>}</h2>
-          {funded.length ? (
-            <div className="stx-lanterns">
-              {funded.map((f, i) => (
-                <div key={f.name} className="stx-lantern" style={{ "--i": i }}>
-                  <span className="lan" /><b>{f.name}</b><small>{f.founder} · {f.sector}</small>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="stx-lanterns empty">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="stx-lantern" style={{ "--i": i }}>
-                  <span className="lan" /><b>{i === 1 ? (L ? "তোমার আইডিয়া?" : "Yours?") : "—"}</b>
-                </div>
-              ))}
-            </div>
-          )}
-          <Link className="stx-net" to="/network">
-            <span>🤝 {L ? "কো-ফাউন্ডার খুঁজছো?" : "Find a co-founder"}</span><b>→</b>
-          </Link>
-        </div>
-      </section>
+      {/* 4. Minimal Funded Founders Showcase */}
+      {funded.length > 0 && (
+        <section className="stx-sec stx-funded" id="funded" style={{ maxWidth: 1100, margin: "3rem auto 0", padding: "0 1.5rem" }}>
+          <h2 className={`stx-h2 ${L ? "bn" : ""}`} style={{ fontSize: "1.5rem" }}>
+            {L ? <>ফান্ডেড <em>ফাউন্ডার</em></> : <>Funded <em>Founders.</em></>}
+          </h2>
+          <div className="stx-lanterns">
+            {funded.map((f, i) => (
+              <div key={f.name} className="stx-lantern" style={{ "--i": i }}>
+                <span className="lan" />
+                <b>{f.name}</b>
+                <small>{f.founder} · {f.sector}</small>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
