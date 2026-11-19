@@ -7,7 +7,7 @@ import FunnyTyper, {
   STARTUP_HEADLINES,
   STARTUP_HEADLINES_EN,
 } from "./FunnyTyper";
-import JobStarSky, { toBn } from "./hero/JobStarSky";
+import JobStarSky from "./hero/JobStarSky";
 import JobStoryIntro, { useJobStory } from "./hero/JobStoryIntro";
 import LanternSky from "./hero/LanternSky";
 import PlaneSky from "./hero/PlaneSky";
@@ -168,9 +168,9 @@ export default function Hero({ ready = true }) {
   const [showSkillModal, setShowSkillModal] = useState(false);
   const [skillTools, setSkillTools] = useState([]);
   const [hasProj, setHasProj] = useState(null);
-  const [starCount, setStarCount] = useState(157);
+  const [heroQ, setHeroQ] = useState("");
   const [catCounts, setCatCounts] = useState({});
-  const onStars = useCallback((n, per) => { setStarCount(n); setCatCounts(per); }, []);
+  const onStars = useCallback((_n, per) => { setCatCounts(per); }, []);
   const story = useJobStory((track === "job" || track === "internship") && ready, track);
 
   const toggleTool = (t) => {
@@ -202,18 +202,40 @@ export default function Hero({ ready = true }) {
               window.history.pushState({ track: k }, "", `/?track=${k}`);
             }}
             title={
-              <h1 className={`sr-title ${L ? "bn" : ""}`}>
-                {track === "job"
-                  ? <span className="jss-main">{L ? <>প্রথম <em>চাকরি</em></> : <>First <em>Job.</em></>}</span>
-                  : <span className="jss-main">{L ? <>প্রথম <em>ইন্টার্নশিপ</em></> : <>First <em>Internship.</em></>}</span>}
+              <>
+                <h1 className={`sr-title ${L ? "bn" : ""}`}>
+                  {track === "job"
+                    ? <span className="jss-main">{L ? <>প্রথম <em>চাকরি</em></> : <>First <em>Job.</em></>}</span>
+                    : <span className="jss-main">{L ? <>প্রথম <em>ইন্টার্নশিপ</em></> : <>First <em>Internship.</em></>}</span>}
+                </h1>
                 {track === "job" && (
-                  <span className={`jss-headline ${L ? "bn" : ""}`}>
-                    <i className="jss-spark" aria-hidden="true">✦</i>
-                    <span>{L ? <>প্রতিটা তারা <b>আজকের একটা আসল চাকরি।</b></> : <>Every star is <b>a real job, open today.</b></>}</span>
-                    <span className="jss-live"><i />{toBn(starCount, L)} {L ? "টি পদ খোলা" : "live"}</span>
-                  </span>
+                  <div className={`jss-find ${L ? "bn" : ""}`}>
+                    <form
+                      className="jss-search"
+                      role="search"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const q = heroQ.trim();
+                        nav(q ? `/jobs?q=${encodeURIComponent(q)}` : "/jobs");
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+                      <input
+                        value={heroQ}
+                        onChange={(e) => setHeroQ(e.target.value)}
+                        placeholder={L ? "কী কাজ খুঁজছো? যেমন: সফটওয়্যার" : "Search jobs, e.g. software, marketing"}
+                        aria-label={L ? "চাকরি খোঁজো" : "Search jobs"}
+                      />
+                      <button type="submit">{L ? "খোঁজো" : "Search"}</button>
+                    </form>
+                    <ul className="jss-points">
+                      <li><i aria-hidden="true">✅</i>{L ? "স্ক্যাম-চেক করা চাকরি" : "Scam-checked jobs"}</li>
+                      <li><i aria-hidden="true">🎓</i>{L ? "শুধু ফ্রেশারদের জন্য" : "Made for freshers"}</li>
+                      <li><i aria-hidden="true">🆓</i>{L ? "আবেদন একদম ফ্রি" : "Applying is always free"}</li>
+                    </ul>
+                  </div>
                 )}
-              </h1>
+              </>
             }
             footer={
               track === "job" ? (

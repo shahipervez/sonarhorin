@@ -194,26 +194,36 @@
 .jss-tip b { font: 700 13px var(--sans); }
 .jss-tip span { font: 500 11.5px var(--sans); color: rgba(255, 255, 255, 0.65); }
 
-/* "Every star is a real job, open today." — headline line under the title */
-.jss-headline {
-  display: flex; width: fit-content; margin-top: 14px; align-items: center; flex-wrap: wrap; gap: 10px;
-  font: 400 clamp(17px, 1.7vw, 23px)/1.2 var(--serif, Georgia), serif; font-style: italic;
-  color: rgba(255, 255, 255, 0.86); letter-spacing: 0; text-shadow: none;
+/* Under the "First Job." title: quick search + 3 trust points */
+.jss-find { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; width: min(620px, 100%); }
+.jss-search {
+  display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 14px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
-.jss-headline.bn { font-family: 'Hind Siliguri', var(--sans); font-style: normal; font-weight: 600; }
-.jss-headline b {
-  font-weight: 400;
-  background: linear-gradient(90deg, #FFE29A, #FFC23D 45%, #FF9F43); -webkit-background-clip: text; background-clip: text; color: transparent;
+.jss-search svg { width: 18px; height: 18px; flex: none; fill: none; stroke: #64748B; stroke-width: 2.2; stroke-linecap: round; }
+.jss-search input {
+  flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+  font: 500 15px/1.3 var(--sans); color: #0F172A; padding: 8px 0;
 }
-.jss-headline.bn b { font-weight: 700; }
-.jss-spark { font-style: normal; color: #FFD23F; text-shadow: 0 0 14px #FFC23D; animation: jssSpark 2.4s ease-in-out infinite; display: inline-block; }
-@keyframes jssSpark { 50% { transform: rotate(90deg) scale(1.25); opacity: 0.7; } }
-.jss-live {
-  display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px;
-  font: 800 10.5px/1 monospace; letter-spacing: 0.12em; text-transform: uppercase; font-style: normal;
-  color: #7CF5B8; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4);
+.jss-find.bn .jss-search input { font-family: 'Hind Siliguri', var(--sans); }
+.jss-search input::placeholder { color: #94A3B8; }
+.jss-search button {
+  flex: none; border: 0; border-radius: 999px; padding: 10px 20px; cursor: pointer;
+  font: 700 14px/1 var(--sans); color: #1A1300; background: linear-gradient(90deg, #FFE29A, #FFC23D 55%, #FF9F43);
 }
-.jss-live i { width: 6px; height: 6px; border-radius: 50%; background: #34D399; box-shadow: 0 0 8px #34D399; animation: ex8Pulse 1.6s infinite; }
+.jss-find.bn .jss-search button { font-family: 'Hind Siliguri', var(--sans); }
+.jss-search button:hover { filter: brightness(1.06); }
+.jss-search:focus-within { box-shadow: 0 0 0 3px rgba(255, 194, 61, 0.55), 0 10px 30px rgba(0, 0, 0, 0.35); }
+.jss-points { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0; padding: 0; list-style: none; }
+.jss-points li { display: inline-flex; align-items: center; gap: 6px; font: 600 13.5px/1.2 var(--sans); color: rgba(255, 255, 255, 0.9); text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5); }
+.jss-find.bn .jss-points li { font-family: 'Hind Siliguri', var(--sans); }
+.jss-points i { font-style: normal; }
+@media (max-width: 480px) {
+  .jss-search { padding-left: 12px; }
+  .jss-search input { font-size: 14px; }
+  .jss-search button { padding: 10px 14px; }
+  .jss-points li { font-size: 12.5px; }
+}
 
 .hero-job .sr-card { box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.1); }
 
@@ -519,7 +529,7 @@
 /* hero elements arrive on cue */
 .jx-play .jss-main { display: inline-block; animation: jxTitle 1.1s 4.2s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
 @keyframes jxTitle { from { opacity: 0; filter: blur(14px); transform: translateY(20px); letter-spacing: 0.06em; } }
-.jx-play .jss-headline { animation: jxFade 0.9s 4.5s ease both; }
+.jx-play .jss-find { animation: jxFade 0.9s 4.5s ease both; }
 .jx-play .sr-switch, .jx-play .sr-foot, .jx-play ~ .floating-back-gate { animation: jxFade 0.8s 5.1s ease both; }
 .jx-play .jss-lbl { animation: jxFade 0.8s 3.3s ease both; }
 @keyframes jxFade { from { opacity: 0; transform: translateY(10px); } }
