@@ -128,12 +128,7 @@ function GalaxyOrb({ s, i, L, count, introT0, onGo, mode = "" }) {
       <canvas ref={cv} />
       <span className="gal-lbl">
         <span className="gal-name"><i>{s.icon}</i><b className={L ? "bn" : ""}>{s.name[L]}</b></span>
-        <span className="gal-meta">
-          <em>{s.chip[L]}</em>
-          <small><i />{toBn(count, L)} {L ? "পদ" : "open"}</small>
-        </span>
       </span>
-      <span className="gal-go" aria-hidden="true">{mode === "big" ? (L ? "সব গ্যালাক্সি" : "All galaxies") + " ✕" : (L ? "জব দেখো" : "See jobs") + " ↓"}</span>
     </button>
   );
 }

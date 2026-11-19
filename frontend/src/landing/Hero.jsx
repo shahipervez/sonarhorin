@@ -187,7 +187,6 @@ export default function Hero({ ready = true }) {
     <header className={`hero hero-${track} hero-integrated-categories ${track !== "startup" ? (story.playing ? "jx-play" : story.played ? "jx-after" : "") : ""}`}>
       {/* Visual Effect as the Living Background */}
       {track === "job" && <JobStarSky key="job" onCount={onStars} introT0={story.t0} />}
-      {track !== "startup" && <JobStoryIntro story={story} L={L} kind={track} />}
       {track === "internship" && <PlaneSky key="internship" />}
       {track === "startup" && <LanternSky key="startup" />}
 
@@ -197,32 +196,6 @@ export default function Hero({ ready = true }) {
           <StoryRail
             kind={track}
             galaxy={track === "job" ? { counts: catCounts, introT0: story.t0 } : null}
-            onSwitch={(k) => {
-              setTrack(k);
-              window.history.pushState({ track: k }, "", `/?track=${k}`);
-            }}
-            title={
-              <h1 className={`sr-title ${L ? "bn" : ""}`}>
-                {track === "job"
-                  ? <span className="jss-main">{L ? <>প্রথম <em>চাকরি</em></> : <>First <em>Job.</em></>}</span>
-                  : <span className="jss-main">{L ? <>প্রথম <em>ইন্টার্নশিপ</em></> : <>First <em>Internship.</em></>}</span>}
-              </h1>
-            }
-            footer={
-              track === "job" ? (
-                <>
-                  <Link to="/jobs" className="sr-pill gold">{L ? "সব জব" : "All jobs"} →</Link>
-                  <button type="button" className="sr-pill" onClick={() => setShowTutorialModal(true)}>{L ? "৩-স্টেপ গাইড" : "3-step guide"}</button>
-                  <button type="button" className="sr-pill jx-replay" onClick={story.replay}>↻ {L ? "গল্পটা আবার দেখো" : "Replay the story"}</button>
-                </>
-              ) : (
-                <>
-                  <Link to="/internships" className="sr-pill gold">{L ? "সব ইন্টার্নশিপ" : "All internships"} →</Link>
-                  <button type="button" className="sr-pill" onClick={() => setShowSkillModal(true)}>⚡ {L ? "স্কিল-রেডি?" : "Skill-ready?"}</button>
-                  <button type="button" className="sr-pill jx-replay" onClick={story.replay}>↻ {L ? "গল্পটা আবার দেখো" : "Replay the story"}</button>
-                </>
-              )
-            }
           />
         </div>
       )}

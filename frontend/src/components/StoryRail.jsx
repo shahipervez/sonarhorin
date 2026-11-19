@@ -177,15 +177,17 @@ export default function StoryRail({ kind, title, onSwitch, onSelect, active, lig
 
   return (
     <div className={`story-rail ${light ? "light" : ""} ${compact ? "compact" : ""}`}>
-      <div className="sr-head">
-        {title}
-        {onSwitch && (
-          <div className="sr-switch" role="tablist">
-            <button type="button" className={kind === "job" ? "on" : ""} onClick={() => onSwitch("job")}>💼 {L ? "জব" : "Jobs"}</button>
-            <button type="button" className={kind === "internship" ? "on" : ""} onClick={() => onSwitch("internship")}>🎓 {L ? "ইন্টার্নশিপ" : "Internships"}</button>
-          </div>
-        )}
-      </div>
+      {(title || onSwitch) && (
+        <div className="sr-head">
+          {title}
+          {onSwitch && (
+            <div className="sr-switch" role="tablist">
+              <button type="button" className={kind === "job" ? "on" : ""} onClick={() => onSwitch("job")}>💼 {L ? "জব" : "Jobs"}</button>
+              <button type="button" className={kind === "internship" ? "on" : ""} onClick={() => onSwitch("internship")}>🎓 {L ? "ইন্টার্নশিপ" : "Internships"}</button>
+            </div>
+          )}
+        </div>
+      )}
       {galaxy ? (
         <GalaxyRail items={items} L={L} counts={galaxy.counts} introT0={galaxy.introT0} onGo={go} />
       ) : (
