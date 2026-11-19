@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import Scribble from "../components/Scribble";
+import StartupStoryExperience from "../components/StartupStoryExperience";
 import { useLang } from "../i18n";
 import { confetti, toast } from "../utils";
 
@@ -215,10 +216,10 @@ export default function Startup() {
         </div>
       </header>
 
-      {/* 2 — the 10-second story */}
-      <section className="stx-sec" id="story">
+      {/* 2 — interactive anime story & video visualization */}
+      <section className="stx-sec" id="story" style={{ paddingTop: "1rem" }}>
         <div className="stx-wrap">
-          <Reveal><Film L={L} /></Reveal>
+          <StartupStoryExperience />
         </div>
       </section>
 

@@ -1,0 +1,362 @@
+/* ==========================================================================
+   STARTUP ANIME STORY & VISUALIZATION STYLES
+   ========================================================================== */
+
+.st-story-exp {
+  position: relative;
+  width: 100%;
+  margin: 0 auto 2.5rem;
+  background: radial-gradient(120% 120% at 50% 0%, #151829 0%, #0b0d18 70%, #06070c 100%);
+  border: 1px solid rgba(255, 194, 61, 0.22);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 194, 61, 0.08);
+}
+
+/* Glowing background ambient lights */
+.st-story-exp::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(255, 194, 61, 0.18) 0%, rgba(107, 78, 255, 0.12) 50%, transparent 80%);
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+/* Story Header & Tabs */
+.st-story-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.2rem 1.5rem 1rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.st-story-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 194, 61, 0.12);
+  border: 1px solid rgba(255, 194, 61, 0.35);
+  color: #ffc23d;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  box-shadow: 0 0 16px rgba(255, 194, 61, 0.15);
+}
+
+.st-story-title {
+  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.25;
+  margin: 0 0 0.6rem;
+  max-width: 780px;
+}
+
+.st-story-title em {
+  font-style: normal;
+  background: linear-gradient(90deg, #ffc23d, #ffe27a, #ffa63d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 24px rgba(255, 194, 61, 0.35);
+}
+
+.st-story-sub {
+  color: #a0a6b8;
+  font-size: 0.95rem;
+  max-width: 620px;
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+/* Tab switches */
+.st-story-tabs {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  border-radius: 999px;
+  gap: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.st-tab-btn {
+  background: transparent;
+  border: none;
+  color: #a8b0c4;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.st-tab-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.st-tab-btn.active {
+  background: #ffc23d;
+  color: #0e1017;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(255, 194, 61, 0.35);
+}
+
+/* ==========================================================================
+   INTERACTIVE CARTOON SCENE CONTAINER
+   ========================================================================== */
+.st-scene-stage {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1.5rem 2rem;
+  z-index: 2;
+}
+
+/* Step Bar / Progress Indicator */
+.st-step-tracker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 700px;
+}
+
+.st-step-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.45rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  color: #8b92a5;
+  font-size: 0.85rem;
+}
+
+.st-step-item:hover {
+  border-color: rgba(255, 194, 61, 0.4);
+  color: #ffffff;
+}
+
+.st-step-item.active {
+  background: rgba(255, 194, 61, 0.15);
+  border-color: #ffc23d;
+  color: #ffc23d;
+  box-shadow: 0 0 16px rgba(255, 194, 61, 0.2);
+}
+
+.st-step-item .step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.st-step-item.active .step-num {
+  background: #ffc23d;
+  color: #000;
+}
+
+.st-step-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Scene Canvas Visualizer */
+.st-scene-canvas {
+  width: 100%;
+  max-width: 860px;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(160deg, #181d33 0%, #111422 60%, #0d0f1a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 12px 36px rgba(0, 0, 0, 0.4);
+}
+
+/* Common Anime Character SVG layout */
+.st-anime-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Scene 1: Eureka Spark Animations */
+@keyframes sparkPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px #ffe27a); }
+  50% { transform: scale(1.18); filter: drop-shadow(0 0 28px #ffc23d); }
+}
+
+@keyframes raySpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.spark-bulb {
+  transform-origin: center;
+  animation: sparkPulse 1.8s ease-in-out infinite;
+}
+
+.spark-rays {
+  transform-origin: center;
+  animation: raySpin 12s linear infinite;
+}
+
+.floating-cloud {
+  animation: floatGentle 3s ease-in-out infinite;
+}
+
+/* Scene 3: Phone Notification Life Settle */
+@keyframes phoneRing {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(-3deg); }
+  20%, 40% { transform: rotate(3deg); }
+  50% { transform: rotate(0deg); }
+}
+
+@keyframes notifPop {
+  0% { transform: translateY(20px) scale(0.9); opacity: 0; }
+  70% { transform: translateY(-4px) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes goldGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 194, 61, 0.3); }
+  50% { box-shadow: 0 0 45px rgba(255, 194, 61, 0.7); }
+}
+
+.phone-wrapper {
+  animation: floatGentle 3.5s ease-in-out infinite;
+}
+
+.notif-card {
+  animation: notifPop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scene Bottom Navigation Controls */
+.st-scene-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 860px;
+  margin-top: 1.2rem;
+  gap: 1rem;
+}
+
+.st-ctrl-left, .st-ctrl-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.st-ctrl-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 0.55rem 1.1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.st-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.st-ctrl-btn.gold {
+  background: #ffc23d;
+  border-color: #ffc23d;
+  color: #0e1017;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(255, 194, 61, 0.3);
+}
+
+.st-ctrl-btn.gold:hover {
+  background: #ffd066;
+  transform: translateY(-1px);
+}
+
+/* Video Player Wrapper */
+.st-video-box {
+  width: 100%;
+  max-width: 860px;
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 194, 61, 0.3);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  background: #000;
+}
+
+.st-video-box video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Responsive queries */
+@media (max-width: 768px) {
+  .st-story-exp {
+    border-radius: 18px;
+    margin-bottom: 2rem;
+  }
+  .st-step-tracker {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .st-step-line {
+    display: none;
+  }
+  .st-scene-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .st-ctrl-left, .st-ctrl-right {
+    justify-content: center;
+  }
+}

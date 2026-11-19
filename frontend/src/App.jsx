@@ -7,6 +7,7 @@ import { setTrack } from "./track";
 import Motion from "./components/Motion";
 import Nav from "./components/Nav";
 import RequireAuth from "./components/RequireAuth";
+import SonarGuideBot from "./components/SonarGuideBot";
 
 // Core routes eagerly loaded for instant initial render
 import Home from "./pages/Home";
@@ -109,6 +110,7 @@ export default function App() {
         </Suspense>
       </main>
       {!exam && <Footer />}
+      {!exam && <SonarGuideBot />}
     </>
   );
 }
