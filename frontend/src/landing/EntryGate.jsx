@@ -66,26 +66,6 @@ const ICONS = {
   ),
 };
 
-const WORDS_EN = [
-  { text: "WHAT", highlight: false },
-  { text: "ARE", highlight: false },
-  { text: "YOU", highlight: false },
-  { text: "LOOKING", highlight: true },
-  { text: "FOR?", highlight: true },
-  { text: "HUH!", highlight: true, accent: true },
-];
-
-const WORDS_BN = [
-  { text: "তুমি", highlight: false },
-  { text: "আসলে", highlight: false },
-  { text: "কী", highlight: true },
-  { text: "খুঁজছো?", highlight: true },
-  { text: "বলো!", highlight: true, accent: true },
-];
-
-/**
- * EX8-Inspired Dynamic Monochrome Entry Gate (100% Fully Bilingual)
- */
 export default function EntryGate({ onDone }) {
   const { user, updateMe } = useAuth();
   const [picked, setPicked] = useState(null);
@@ -99,7 +79,6 @@ export default function EntryGate({ onDone }) {
   const storyRef = useRef(null);
   const fxRef = useRef(null);
   const lastT = useRef(0);
-  const words = L ? WORDS_BN : WORDS_EN;
 
   // Lock body scroll while in gate
   useEffect(() => {
@@ -204,9 +183,6 @@ export default function EntryGate({ onDone }) {
             <img src="/logo-gold.png" alt="" className="ex8-bn-deer" aria-hidden="true" />
             <span className="ex8-logo-bn" lang="bn"><span className="ex8-logo-symbol">সোনার</span><span className="ex8-logo-suffix">হরিণ</span></span>
           </div>
-          <span className="ex8-brand-tagline">
-            {L ? "ফ্রেশারদের প্রথম ঠিকানা" : "THE FRESHER'S FIRST STOP"}
-          </span>
         </div>
 
         <div className="ex8-nav-actions">
@@ -244,38 +220,6 @@ export default function EntryGate({ onDone }) {
 
       {/* Main Dynamic Stage */}
       <main className={`ex8-content-stage ${hasPeeked ? "peeked" : ""}`}>
-        {/* Top Meta Line */}
-        <div className="ex8-meta-strip">
-          <span className="ex8-meta-code">
-            {L ? "[ ট্র্যাক নির্বাচন // রুট ]" : "[ TRACK_SELECTION // ROOT ]"}
-          </span>
-          <span className="ex8-meta-sep">•</span>
-          <span className="ex8-meta-text">
-            {L ? "তোমার লক্ষ্য বেছে নাও" : "CHOOSE YOUR MISSION"}
-          </span>
-        </div>
-
-        {/* Dynamic Headline with Kinetic Mask Reveal */}
-        <div className="ex8-headline-wrap">
-          <h1 id="ex8-headline" className="ex8-headline">
-            {words.map((w, idx) => (
-              <span key={idx} className="ex8-word-mask">
-                <span
-                  className={`ex8-word ${w.highlight ? "highlight" : ""} ${
-                    w.accent ? "accent" : ""
-                  }`}
-                  style={{ transitionDelay: `${0.1 + idx * 0.08}s` }}
-                >
-                  {w.text}
-                </span>
-                {idx < words.length - 1 && <span className="ex8-word-space">&nbsp;</span>}
-              </span>
-            ))}
-          </h1>
-
-
-        </div>
-
         {/* STORY CONSOLE — the 3 mission cards sit on top of the (bigger) story screen like channel tabs */}
         <div className={`gx-console ${hover ? "hl-" + hover : ""}`}>
           <div className="ex8-cards-grid gx-tabs">
