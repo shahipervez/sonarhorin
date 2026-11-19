@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "apps.career",
     "apps.reviews",
     "apps.dbtools",
+    "apps.alerts",
+    "apps.insights",
 ]
 
 MIDDLEWARE = [
