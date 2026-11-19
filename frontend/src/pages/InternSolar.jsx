@@ -126,7 +126,6 @@ export default function InternSolar({ cats, gate, counts, onPick, L, gateCodes, 
       <div className="is-sun" style={{ left: cx, top: cy }}>
         <span className="is-sun-rays" aria-hidden="true" />
         <img src="/logo-gold.png" alt="" />
-        <b lang="bn">সোনারহরিণ</b>
       </div>
 
       {cats.map((c, k) => {
