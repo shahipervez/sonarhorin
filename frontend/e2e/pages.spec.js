@@ -31,12 +31,12 @@ test.describe("/jobs", () => {
 });
 
 test.describe("/internships", () => {
-  test("shows the story, departure-board categories and boarding passes", async ({ page, request }) => {
+  test("shows the cartoon story, categories and boarding passes", async ({ page, request }) => {
     const api = await apiGet(request, "/api/jobs/?type=internship");
     await page.goto("/internships");
     const main = page.locator("main").first();
-    await expect(main.getByText(either("Every gate has a story", "গল্প"))).toBeVisible();
-    await expect(main.getByText(/CHAPTER 1|অধ্যায়/).first()).toBeVisible();
+    await expect(main.getByText(either("Every internship has a story", "গল্প"))).toBeVisible();
+    await expect(main.getByText(/Scene 1 of 3|দৃশ্য ১/).first()).toBeVisible();
     for (const [en, bn] of [["Paid", "পেইড"], ["Learning", "লার্নিং"], ["Versity Credit", "ভার্সিটি ক্রেডিট"], ["Corporate", "কর্পোরেট"], ["Remote", "রিমোট"]]) {
       await expect(main.getByText(either(en, bn)).first()).toBeVisible();
     }
