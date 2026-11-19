@@ -10,3 +10,5 @@ frontend/dist/
 frontend/.env
 .DS_Store
 backend/private/
+frontend/test-results/
+frontend/playwright-report/

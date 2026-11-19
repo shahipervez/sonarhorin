@@ -17,7 +17,7 @@ import InternSolar from "./InternSolar";
 const BN = "০১২৩৪৫৬৭৮৯";
 const n2 = (n, L) => (L ? String(n).replace(/\d/g, (d) => BN[d]) : String(n));
 
-const MATCH = {
+export const MATCH = {
   paid: (j) => (j.salary_min || 0) > 0 || /paid|stipend|allowance/i.test(`${j.title} ${j.description || ""}`),
   unpaid: (j) => !(j.salary_min > 0) || /unpaid|learning|volunteer|certificate/i.test(`${j.title} ${j.description || ""}`),
   versity: (j) => /credit|versity|university|academic|final.?year|thesis|practicum/i.test(`${j.title} ${j.description || ""}`),
