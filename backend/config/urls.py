@@ -21,6 +21,7 @@ urlpatterns = [
     path("api/network/", include("apps.network.urls")),
     path("api/startups/", include("apps.startups.urls")),
     path("api/career/", include("apps.career.urls")),
+    path("api/reviews/", include("apps.reviews.urls")),
 ]
 
 if settings.DEBUG:
