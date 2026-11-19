@@ -9,48 +9,15 @@ import StoryCanvas from "./StoryCanvas";
 const CHOICES = [
   {
     k: "job",
-    code: ["01 // CAREER", "০১ // ক্যারিয়ার"],
-    t: ["FIND A JOB", "জব খুঁজছি"],
-    sub: ["Verified Fresher Roles", "ভেরিফাইড ফ্রেশার চাকরি"],
-    d: [
-      "Fresher-only verified jobs with 100% salary transparency. Direct 1-tap apply.",
-      "শুধু ফ্রেশারদের ভেরিফাইড চাকরি। স্যালারি ট্রান্সপারেন্সি ও ১-ট্যাপ আবেদন।",
-    ],
-    specs: [
-      ["৳ 35–60K/mo", "Direct Apply"],
-      ["৳ ৩৫–৬০ হাজার/মাস", "১-ট্যাপ আবেদন"],
-    ],
-    btn: ["EXPLORE JOBS", "জব দেখো"],
+    t: ["Find a Job", "জব খুঁজছি"],
   },
   {
     k: "internship",
-    code: ["02 // LAUNCHPAD", "০২ // লঞ্চপ্যাড"],
-    t: ["INTERNSHIP", "ইন্টার্নশিপ"],
-    sub: ["First Real Experience", "বাস্তব কাজের অভিজ্ঞতা"],
-    d: [
-      "Paid internships, 1:1 corporate mentorship & verified certification.",
-      "পেইড ইন্টার্নশিপ, কর্পোরেট মেন্টরশিপ ও ভেরিফাইড সার্টিফিকেট।",
-    ],
-    specs: [
-      ["Paid / Remote", "1:1 Mentor"],
-      ["পেইড / রিমোট", "১:১ মেন্টর"],
-    ],
-    btn: ["FIND INTERNSHIP", "ইন্টার্নশিপ দেখো"],
+    t: ["Internship", "ইন্টার্নশিপ"],
   },
   {
     k: "startup",
-    code: ["03 // FOUNDER", "০৩ // ফাউন্ডার"],
-    t: ["IDEA TO BUSINESS", "আইডিয়া থেকে বিজনেস"],
-    sub: ["Build & Scale Ventures", "স্টার্টআপ ও ফান্ডিং"],
-    d: [
-      "Pitch your startup idea. Get pre-seed grants, mentorship & find co-founders.",
-      "তোমার আইডিয়া পিচ করো, সীড ফান্ডিং পাও এবং কো-ফাউন্ডার টিম তৈরি করো।",
-    ],
-    specs: [
-      ["Seed Grants", "Co-Founders"],
-      ["সীড ফান্ডিং", "কো-ফাউন্ডার"],
-    ],
-    btn: ["BUILD BUSINESS", "স্টার্টআপ শুরু"],
+    t: ["Ideas to business", "আইডিয়া থেকে বিজনেস"],
   },
 ];
 
@@ -234,20 +201,11 @@ export default function EntryGate({ onDone }) {
                 onFocus={() => setHover(c.k)}
                 onBlur={() => setHover(null)}
               >
-                <span className="gx-num" aria-hidden="true">0{i + 1}</span>
                 <span className="gx-sweep" aria-hidden="true" />
-                <div className="ex8-card-top">
-                  <span className="ex8-card-code">{c.code[L]}</span>
-                  <div className="ex8-action-btn">
-                    <span className="ex8-action-txt">{c.btn[L]}</span>
-                    <span className="ex8-action-arrow">↗</span>
-                  </div>
-                </div>
                 <div className="ex8-card-center">
                   <span className="ex8-card-icon" aria-hidden="true">{ICONS[c.k]}</span>
                   <div className="gx-title-col">
                     <h2 className={`ex8-card-big-title ${L ? "bn" : ""}`}>{c.t[L]}</h2>
-                    <span className="gx-sub">{c.sub[L]}</span>
                   </div>
                 </div>
                 <i className="gx-plug" aria-hidden="true" />

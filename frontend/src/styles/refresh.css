@@ -41,8 +41,8 @@
   --tc: #FFC23D;
   position: relative;
   overflow: hidden;
-  padding: 12px 14px 13px !important;
-  border-radius: 14px 14px 6px 6px !important;
+  padding: 16px 20px !important;
+  border-radius: 16px !important;
   background: linear-gradient(160deg, rgba(26, 22, 12, 0.92), rgba(10, 10, 14, 0.94)) !important;
   border: 1px solid color-mix(in srgb, var(--tc) 40%, transparent) !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
@@ -52,15 +52,22 @@
 .gx-tab .ex8-card-code { color: var(--tc) !important; text-shadow: 0 0 10px color-mix(in srgb, var(--tc) 50%, transparent) !important; }
 .gx-tab .ex8-card-top { margin-bottom: 4px !important; position: relative; z-index: 2; }
 .gx-sub { font: 600 11px/1.2 var(--sans); color: rgba(255, 255, 255, 0.55); letter-spacing: 0.01em; }
-.gx-title-col { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
-.gx-tab .ex8-card-center { align-items: center !important; gap: 10px !important; margin: 0 !important; position: relative; z-index: 2; }
+.gx-title-col { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.gx-tab .ex8-card-center { align-items: center !important; justify-content: center !important; gap: 12px !important; margin: 0 !important; position: relative; z-index: 2; }
 .gx-tab .ex8-card-icon {
-  width: 34px !important; height: 34px !important; border-radius: 10px !important;
+  width: 38px !important; height: 38px !important; border-radius: 11px !important;
   background: color-mix(in srgb, var(--tc) 14%, transparent) !important;
   border-color: color-mix(in srgb, var(--tc) 45%, transparent) !important;
+  flex-shrink: 0 !important;
 }
-.gx-tab .ex8-card-icon svg { width: 19px !important; height: 19px !important; stroke: var(--tc) !important; }
-.gx-tab .ex8-card-big-title { font-size: clamp(14px, 1.25vw, 18px) !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gx-tab .ex8-card-icon svg { width: 20px !important; height: 20px !important; stroke: var(--tc) !important; }
+.gx-tab .ex8-card-big-title {
+  font-size: clamp(16px, 1.35vw, 20px) !important;
+  text-transform: none !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em !important;
+  white-space: nowrap;
+}
 .gx-tab .ex8-action-btn {
   display: inline-flex; align-items: center; white-space: nowrap;
   background: var(--tc) !important; box-shadow: 0 0 14px color-mix(in srgb, var(--tc) 50%, transparent) !important;
