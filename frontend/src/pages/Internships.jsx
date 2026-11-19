@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import { STORY_SETS } from "../components/StoryRail";
+import TrustBadge from "../components/TrustBadge";
 import { useLang } from "../i18n";
 import { ApplyModal, CompanyLogo, daysLeft, getCH, money } from "./Jobs";
 import { BEAT_MS, GATE_STORIES } from "./internshipStories";
@@ -358,6 +359,7 @@ function Pass({ j, i, L, c, onApply }) {
             <b>{j.company?.name}{j.company?.is_partner && <span className="ip-partner">✓</span>}</b>
           </div>
           <span className={`ip-chip ${urgent ? "red" : ""}`}><i />{chip}</span>
+          <TrustBadge job={j} L={L} compact />
         </header>
         <div className="ip-route">
           <div><b>YOU</b><small>{L ? "ফ্রেশার" : "Fresher"}</small></div>

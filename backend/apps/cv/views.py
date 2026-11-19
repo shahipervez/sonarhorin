@@ -3,6 +3,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.core.throttles import STRICT
+
 from . import analyzer
 from .models import CVAnalysis
 from .pdf import build_cv_report_pdf
@@ -11,6 +13,9 @@ from .serializers import CVAnalysisSerializer, CVUploadSerializer
 
 class AnalyzeCVView(APIView):
     """POST multipart {file, major?, target_role?} → score, rejection %, report."""
+
+    throttle_classes = STRICT
+    throttle_scope = "upload"  # file parsing + optional LLM call per request
 
     def post(self, request):
         s = CVUploadSerializer(data=request.data)

@@ -5,9 +5,11 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.core.throttles import STRICT
+
 from . import services
-from .models import AutoApplySettings, Company, Job, JobApplication
-from .serializers import ApplicationSerializer, AutoApplySerializer, JobSerializer
+from .models import AutoApplySettings, Company, Job, JobApplication, ScamReport
+from .serializers import ApplicationSerializer, AutoApplySerializer, JobSerializer, ScamReportSerializer
 
 
 def _my_apps(user):
@@ -167,14 +169,26 @@ class EmployerApplicantsView(APIView):
 
 
 class ScraperTriggerView(APIView):
-    """POST /api/jobs/scraper/run/ or /api/jobs/scrape/ — Trigger live web scrape."""
+    """POST /api/jobs/scraper/run/ or /api/jobs/scrape/ — Trigger live web scrape.
 
-    permission_classes = [permissions.AllowAny]
+    Signed-in users only, with a tight per-user rate ("scrape" scope): each call makes many outbound requests,
+    so an open endpoint was a free DoS / IP-ban amplifier. Inputs are clamped.
+    """
+
+    throttle_classes = STRICT
+    throttle_scope = "scrape"
 
     def post(self, request):
         queries = request.data.get("queries")
-        limit = int(request.data.get("limit", 8))
-        fetch_details = bool(request.data.get("fetch_details", False))
+        if queries is not None:
+            if not isinstance(queries, list):
+                return Response({"detail": "queries must be a list."}, status=400)
+            queries = [str(q)[:80] for q in queries if str(q).strip()][:5] or None
+        try:
+            limit = max(1, min(int(request.data.get("limit", 8)), 10))
+        except (TypeError, ValueError):
+            limit = 8
+        fetch_details = bool(request.data.get("fetch_details", False)) and request.user.is_staff
         from . import scheduler
         res = scheduler.trigger_immediate_scrape(queries=queries, limit=limit, fetch_details=fetch_details)
         return Response(res)
@@ -190,6 +204,32 @@ class ScraperStatusView(APIView):
         return Response(scheduler.get_status())
 
 
+
+
+class ReportScamView(APIView):
+    """POST {job_id, reason, details?} — flag a job as fake / asking for money.
+
+    One report per user per job (re-reporting updates it). 3+ open reports from different users push the job to
+    "caution" until staff review it. Signed-in only + "report" throttle so the count can't be stuffed anonymously.
+    """
+
+    throttle_classes = STRICT
+    throttle_scope = "report"
+
+    def post(self, request):
+        from . import trust
+
+        s = ScamReportSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        job = get_object_or_404(Job.objects.select_related("company"), pk=s.validated_data["job_id"])
+        _, created = ScamReport.objects.update_or_create(
+            job=job, user=request.user,
+            defaults={"reason": s.validated_data["reason"], "details": s.validated_data.get("details", "").strip()[:1000],
+                      "resolved": False})
+        trust.refresh(job)
+        return Response({"ok": True, "created": created, "reports": job.scam_reports.filter(resolved=False).count(),
+                         "trust_level": job.trust_level, "trust_score": job.trust_score, "trust_reasons": job.trust_reasons},
+                        status=201 if created else 200)
 
 
 class FeaturedCompaniesView(APIView):

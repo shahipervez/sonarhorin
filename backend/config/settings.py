@@ -1,5 +1,6 @@
 """Sonarhorin (সোনারহরিণ) — Django settings."""
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -19,7 +20,8 @@ if not DEBUG and (SECRET_KEY.startswith("dev-only") or len(SECRET_KEY) < 40):
     from django.core.exceptions import ImproperlyConfigured
 
     raise ImproperlyConfigured("Set a long random DJANGO_SECRET_KEY before running with DJANGO_DEBUG=False.")
-ALLOWED_HOSTS = ["*"]
+# Comma-separated; render.yaml uses ALLOWED_HOSTS, .env.example uses DJANGO_ALLOWED_HOSTS. "*" only as a fallback.
+ALLOWED_HOSTS = [h.strip() for h in (os.getenv("DJANGO_ALLOWED_HOSTS") or os.getenv("ALLOWED_HOSTS") or "*").split(",") if h.strip()]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -122,15 +124,23 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 # CVs, resumes and pitch decks live here — never served publicly, only through owner-checked API views.
 PRIVATE_MEDIA_ROOT = Path(os.getenv("PRIVATE_MEDIA_ROOT", BASE_DIR / "private"))
+if len(sys.argv) > 1 and sys.argv[1] == "test":  # test uploads must never land in (or get committed from) backend/private
+    import tempfile
+
+    PRIVATE_MEDIA_ROOT = Path(tempfile.mkdtemp(prefix="sonarhorin-test-private-"))
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # Stricter per-endpoint limits: set `throttle_classes = STRICT` (apps.core.throttles) + `throttle_scope` on the view.
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle", "rest_framework.throttling.AnonRateThrottle"],
     "DEFAULT_THROTTLE_RATES": {
         "user": "3000/hour", "anon": os.getenv("ANON_RATE", "1500/hour"),
         "login": "10/min", "register": "8/hour", "ai": os.getenv("AI_RATE", "60/hour"), "upload": "40/hour",
+        # OTP send/verify (phone login) — keep SMS cost + brute force of 6-digit codes in check.
+        "otp": os.getenv("OTP_RATE", "5/hour"), "otp_verify": "10/hour", "social_login": "20/hour",
+        "report": "20/day", "scrape": "4/hour",
     },
 }
 
@@ -153,7 +163,9 @@ LOGIN_MAX_FAILS = 5          # per email + per IP …
 LOGIN_LOCK_MINUTES = 15      # … then locked for this long
 TRUST_X_FORWARDED_FOR = env_bool("TRUST_X_FORWARDED_FOR", False)
 
-CORS_ALLOW_ALL_ORIGINS = True
+# Reflecting *every* origin together with CORS_ALLOW_CREDENTIALS lets any website read authenticated API responses.
+# Default: only in DEBUG. Production should list its frontend(s) in CORS_ALLOWED_ORIGINS (see SECURITY_REVIEW.md).
+CORS_ALLOW_ALL_ORIGINS = env_bool("CORS_ALLOW_ALL_ORIGINS", DEBUG)
 CORS_ALLOWED_ORIGINS = [o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",") if o.strip()]
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
@@ -172,6 +184,9 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
     SESSION_COOKIE_SECURE = env_bool("COOKIE_SECURE", True)
     CSRF_COOKIE_SECURE = env_bool("COOKIE_SECURE", True)
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
 
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 if os.getenv("REDIS_URL"):
@@ -187,6 +202,8 @@ LOGGING = {
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
+FILE_UPLOAD_PERMISSIONS = 0o640  # uploaded CVs are not world-readable on the server
 
 # ---- Sonarhorin settings ----
 DISCORD_INVITE_URL = os.getenv("DISCORD_INVITE_URL", "https://discord.gg/your-invite-code")

@@ -64,6 +64,12 @@ class Job(models.Model):
     posted_at = models.DateTimeField(default=timezone.now)
     deadline = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    # Scam / fake-job detector (apps/jobs/trust.py). Recomputed on every save; backfill with `check_job_trust`.
+    trust_level = models.CharField(max_length=8, default="ok", db_index=True,
+                                   choices=[("verified", "Verified"), ("ok", "OK"), ("caution", "Caution"), ("danger", "Likely scam")])
+    trust_score = models.PositiveSmallIntegerField(null=True, blank=True, help_text="0–100, higher is safer")
+    trust_reasons = models.JSONField(default=list, blank=True)
+    trust_checked_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["-posted_at"]
@@ -83,6 +89,24 @@ class Job(models.Model):
     @property
     def is_open(self):
         return self.is_active and (self.deadline is None or self.deadline >= timezone.localdate())
+
+    TRUST_INPUTS = {"title", "description", "requirements", "company", "company_id", "apply_email", "apply_url", "location",
+                    "salary_min", "salary_max", "experience_max_years"}
+    TRUST_FIELDS = ["trust_level", "trust_score", "trust_reasons", "trust_checked_at"]
+
+    def save(self, *a, **kw):
+        """Score the post with the rule-based scam detector (fast, offline) before every content save."""
+        fields = kw.get("update_fields")
+        if fields is None or self.TRUST_INPUTS & set(fields):
+            from . import trust
+            try:
+                trust.apply_to(self, trust.assess_job(self))
+                if fields is not None:
+                    kw["update_fields"] = list({*fields, *self.TRUST_FIELDS})
+            except Exception:  # a detector bug must never block saving a job
+                import logging
+                logging.getLogger(__name__).exception("trust check failed for job %s", self.pk)
+        super().save(*a, **kw)
 
     def effective_channel(self):
         """What actually happens when someone applies."""
@@ -141,3 +165,24 @@ class JobApplication(models.Model):
 
     def __str__(self):
         return f"{self.user} → {self.job} ({self.status})"
+
+
+class ScamReport(models.Model):
+    """A user flagging a job as fake / asking for money. 3+ distinct reporters → the job drops to "caution"."""
+
+    REASONS = [("asked_money", "Asked me to pay a fee / deposit"), ("fake_company", "Company doesn't exist / fake"),
+               ("personal_info", "Asked for OTP / NID / bank details"), ("chat_only", "Only WhatsApp / Telegram contact"),
+               ("misleading", "Misleading salary or role"), ("other", "Other")]
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="scam_reports")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="scam_reports")
+    reason = models.CharField(max_length=16, choices=REASONS, default="other")
+    details = models.TextField(blank=True, max_length=1000)
+    resolved = models.BooleanField(default=False, help_text="Reviewed by staff")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [models.UniqueConstraint(fields=["job", "user"], name="uniq_scam_report_per_user")]
+
+    def __str__(self):
+        return f"Scam report on {self.job_id} by {self.user_id} ({self.reason})"

@@ -4,6 +4,7 @@ import { api } from "../api";
 import { useAuth } from "../auth";
 import CategoryBoxes from "../components/CategoryBoxes";
 import StoryRail from "../components/StoryRail";
+import TrustBadge from "../components/TrustBadge";
 import { MAJORS } from "../config";
 import { useLang, useT } from "../i18n";
 import { confetti, fmt, toast } from "../utils";
@@ -479,6 +480,7 @@ function JobCard({ j, onOpen, L, CH }) {
           <p>
             {j.company.name}
             {j.company.is_partner && <span className="partner">✓ Partner</span>}
+            <TrustBadge job={j} L={L} compact />
           </p>
         </div>
       </header>
