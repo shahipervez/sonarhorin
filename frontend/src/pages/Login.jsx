@@ -4,6 +4,8 @@ import { useAuth } from "../auth";
 import { useLang } from "../i18n";
 import "../styles/login.css";
 import { createWelcome } from "../landing/anime/welcome";
+import GoogleButton from "../integrations/GoogleButton";
+import PhoneOtpLogin from "../integrations/PhoneOtpLogin";
 
 export default function Login() {
   const { login } = useAuth();
@@ -45,7 +47,13 @@ export default function Login() {
     setErr("");
   };
 
+  const onThirdPartyLogin = () => {
+    const go = () => nav(sp.get("next") || "/me");
+    if (welcome.current) welcome.current.celebrate(go); else go();
+  };
+
   const submit = async (e) => {
+    if (loginMode === "otp") { e.preventDefault(); return; }
     e.preventDefault();
     setBusy(true);
     setErr("");
@@ -141,12 +149,26 @@ export default function Login() {
               </button>
               <button
                 type="button"
+                className={`forest-mode-chip ${loginMode === "otp" ? "active" : ""}`}
+                onClick={() => switchMode("otp")}
+              >
+                <span>🔑 {L ? "ফোনে কোড (OTP)" : "Login with phone"}</span>
+              </button>
+              <button
+                type="button"
                 className={`forest-mode-chip ${loginMode === "admin" ? "active" : ""}`}
                 onClick={() => switchMode("admin")}
               >
                 <span>⚡ {L ? "অ্যাডমিন (জিমেইল)" : "Admin (Gmail)"}</span>
               </button>
             </div>
+
+            {/* Continue with Google — rendered only when VITE_GOOGLE_CLIENT_ID is set */}
+            <GoogleButton L={L} onSuccess={onThirdPartyLogin} onError={(x) => setErr(x.message)} />
+
+            {loginMode === "otp" ? (
+              <PhoneOtpLogin L={L} onSuccess={onThirdPartyLogin} onError={() => welcome.current?.setMode("oops")} />
+            ) : (<>
 
             {/* 1-Click Fast Test Pill */}
             <div className="forest-quick-pill">
@@ -262,6 +284,8 @@ export default function Login() {
             <button type="submit" className="forest-submit-btn" disabled={busy}>
               {busy ? (L ? "লগইন হচ্ছে…" : "Signing in…") : L ? "লগইন" : "Login"}
             </button>
+
+            </>)}
 
             {/* Card Footer: Register Link */}
             <div className="forest-card-footer">

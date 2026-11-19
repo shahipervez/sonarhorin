@@ -27,6 +27,9 @@ urlpatterns = [
     path("api/reviews/", include("apps.reviews.urls")),
     path("api/alerts/", include("apps.alerts.urls")),
     path("api/insights/", include("apps.insights.urls")),
+    # third-party integrations
+    path("api/push/", include("apps.push.urls")),
+    path("api/payments/", include("apps.payments.urls")),
 ]
 
 if settings.DEBUG:
