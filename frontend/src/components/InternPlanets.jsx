@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /**
  * Internship Planetary System — 5 realistic celestial bodies representing the 5 internship categories.
@@ -196,41 +196,10 @@ export default function InternPlanets({
   n2,
 }) {
   const [hover, setHover] = useState("");
-  const [orbiting, setOrbiting] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
-  const [orbitAngle, setOrbitAngle] = useState(0);
-
-  const animRef = useRef(null);
-  const lastTimeRef = useRef(null);
-
   const byId = Object.fromEntries(cats.map((c) => [c.id, c]));
   const cur = sel ? byId[sel] : null;
   const P = sel ? CATEGORY_PLANETS[sel] : null;
   const list = sel ? top(sel) : [];
-
-  // Continuous smooth horizontal orbital revolution
-  useEffect(() => {
-    if (!orbiting || sel || isHovered) {
-      lastTimeRef.current = null;
-      return;
-    }
-
-    const speed = 0.22; // Smooth horizontal rotation speed (radians per second)
-    const loop = (t) => {
-      if (lastTimeRef.current != null) {
-        const dt = Math.min((t - lastTimeRef.current) / 1000, 0.1);
-        setOrbitAngle((prev) => (prev + dt * speed) % (Math.PI * 2));
-      }
-      lastTimeRef.current = t;
-      animRef.current = requestAnimationFrame(loop);
-    };
-
-    animRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      lastTimeRef.current = null;
-    };
-  }, [orbiting, sel, isHovered]);
 
   useEffect(() => {
     if (!sel) return;
@@ -243,64 +212,20 @@ export default function InternPlanets({
     <div className={`ipl ${sel ? "has-sel" : ""}`}>
       <Stars />
 
-      {/* Orbit Header Controls */}
-      <div className="ipl-controls-bar">
-        <span className="ipl-badge">
-          🪐 {L ? "৫টি ক্যাটাগরি — অনুভূমিক কক্ষপথ" : "5 Categories — Horizontal Orbit"}
-        </span>
-        <button
-          type="button"
-          className="ipl-orbit-toggle"
-          onClick={() => setOrbiting(!orbiting)}
-          title={orbiting ? (L ? "কক্ষপথে ঘূর্ণন থামান" : "Pause Orbit") : (L ? "কক্ষপথে ঘূর্ণন চালু করুন" : "Play Orbit")}
-        >
-          {orbiting ? "❚❚ " : "▶ "}
-          {orbiting ? (L ? "কক্ষপথ চালু" : "Orbit Active") : (L ? "কক্ষপথ স্থির" : "Orbit Paused")}
-        </button>
-      </div>
-
-      {/* HORIZONTAL ORBITAL ARENA */}
-      <div
-        className="ipl-orbit-arena"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* Horizontal Elliptical Orbit Track */}
-        <svg className="ipl-orbit-svg" viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true">
-          <ellipse cx="500" cy="120" rx="440" ry="54" />
+      {/* STATIC HORIZONTAL PLANETARY STAGE */}
+      <div className="ipl-stage">
+        {/* Subtle horizontal orbit curve in the background */}
+        <svg className="ipl-orbit-bg" viewBox="0 0 1000 180" preserveAspectRatio="none" aria-hidden="true">
+          <ellipse cx="500" cy="90" rx="480" ry="56" />
         </svg>
 
-        {/* Central Sun with Golden Deer */}
-        <div className="ipl-sun-center" aria-hidden="true">
-          <span className="ipl-sun-aura" />
-          <span className="ipl-sun-deer">🦌</span>
-          <span className="ipl-sun-corona" />
-        </div>
-
-        {/* 5 CATEGORY PLANETS REVOLVING HORIZONTALLY */}
-        <div className="ipl-planetary-field" role="tablist" aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}>
+        {/* 5 CATEGORY PLANETS — STATIC HORIZONTAL ROW */}
+        <div className="ipl-row" role="tablist" aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}>
           {PLANET_ORDER.map((id, i) => {
             const c = byId[id];
             if (!c) return null;
             const on = sel === id;
             const p = CATEGORY_PLANETS[id];
-
-            // Calculate horizontal elliptical coordinates
-            // theta advances horizontally along the horizontal ellipse
-            const step = (Math.PI * 2) / PLANET_ORDER.length;
-            const theta = orbitAngle + i * step;
-
-            // Horizontal X spread: -40% to +40%
-            const cosVal = Math.cos(theta);
-            const sinVal = Math.sin(theta);
-            const xPercent = cosVal * 40; // Horizontal offset in percentage
-            const yOffsetPx = sinVal * 54; // Vertical depth in pixels (flatter ellipse)
-
-            // Front/back depth: sinVal > 0 means in front of sun, sinVal <= 0 means behind sun
-            const inFront = sinVal > 0;
-            const scale = on ? 1.18 : inFront ? 1.02 + sinVal * 0.08 : 0.90 + sinVal * 0.06;
-            const zIndex = on ? 30 : inFront ? 12 : 2;
-            const opacity = sel && !on ? 0.35 : inFront ? 1 : 0.85;
 
             return (
               <button
@@ -308,22 +233,15 @@ export default function InternPlanets({
                 type="button"
                 role="tab"
                 aria-selected={on}
-                className={`ipl-planet-node ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
-                style={{
-                  "--c": c.c,
-                  left: `calc(50% + ${xPercent}%)`,
-                  top: `calc(50% + ${yOffsetPx}px)`,
-                  transform: `translate(-50%, -50%) scale(${scale})`,
-                  zIndex: zIndex,
-                  opacity: opacity,
-                }}
+                className={`ipl-p ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
+                style={{ "--c": c.c, "--i": i }}
                 onClick={() => onSelect(on ? "" : id)}
                 onMouseEnter={() => setHover(id)}
                 onMouseLeave={() => setHover("")}
               >
-                {/* 3D Planet Sphere (Rotates horizontally on its axis) */}
+                {/* 3D Static Planet (No continuous spin/revolve) */}
                 <span className="ipl-planet-wrap">
-                  <Planet id={id} size={on ? 116 : 88} spin={true} />
+                  <Planet id={id} size={on ? 104 : 84} spin={false} />
                 </span>
 
                 {/* ONLY Category Name (NO PLANET NAMES) */}
@@ -361,7 +279,7 @@ export default function InternPlanets({
       {sel && cur && P && (
         <div className="ipl-focus" style={{ "--c": cur.c }} key={sel}>
           <div className="ipl-focus-planet">
-            <Planet id={sel} size={220} spin={true} />
+            <Planet id={sel} size={200} spin={false} />
             <span className="ipl-focus-cat-badge">{cur.icon} {cur.name[L]}</span>
           </div>
 

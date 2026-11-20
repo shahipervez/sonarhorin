@@ -253,30 +253,6 @@ function Hero({ L, user, onLaunch }) {
   );
 }
 
-function SubNav({ L, user, onStart }) {
-  const [stuck, setStuck] = useState(false);
-  useEffect(() => {
-    const on = () => setStuck(scrollY > 140);
-    on(); addEventListener("scroll", on, { passive: true });
-    return () => removeEventListener("scroll", on);
-  }, []);
-  return (
-    <div className={`sc-subnav ${stuck ? "stuck" : ""}`}>
-      <a className="sc-brand" href="#top">startup<b>.</b>{L ? "সোনারহরিণ" : "sonarhorin"}</a>
-      <nav>
-        <a href="#how">{L ? "কিভাবে কাজ করে" : "How it works"}</a>
-        <a href="#builder">{L ? "পিচ বিল্ডার" : "Pitch builder"}</a>
-        <a href="#funded">{L ? "ফান্ডেড" : "Funded"}</a>
-        <a href="#faq">FAQ</a>
-      </nav>
-      <div className="sc-subnav-r">
-        {!user && <Link className="sc-btn soft" to="/login?next=/startup">{L ? "লগইন" : "Login"}</Link>}
-        <button type="button" className="sc-btn navy" onClick={onStart}>{L ? "পিচ শুরু করো" : "Start pitching"}</button>
-      </div>
-    </div>
-  );
-}
-
 function Stats({ L, fundedCount }) {
   const [ref, on] = useInView(0.3);
   const rows = fundedCount > 0 ? [...STATS, ["", fundedCount, "", ["founders funded", "ফাউন্ডার ফান্ডেড"]]] : STATS;
@@ -401,7 +377,6 @@ export default function Startup() {
 
   return (
     <div className="sc-page" id="top">
-      <SubNav L={L} user={user} onStart={() => launch("")} />
       <Hero L={L} user={user} onLaunch={launch} />
       <Stats L={L} fundedCount={funded.length} />
       <Journey L={L} onStart={() => launch("")} />
