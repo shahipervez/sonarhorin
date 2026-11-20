@@ -1,0 +1,90 @@
+/* ==========================================================================
+   INTERNSHIPS — hero guide: 1) pick what you need  2) see what it means
+   Replaces the orbit + auto-playing story with a clear, readable flow.
+   ========================================================================== */
+.ig-hero { padding: 96px 0 56px; }
+.ig-in { position: relative; z-index: 1; }
+
+.ig-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; flex-wrap: wrap; margin-bottom: 30px; }
+.ig-sub { margin-top: 10px; max-width: 520px; font-size: 17px; line-height: 1.5; color: rgba(255, 255, 255, .78); }
+
+.ig-search { position: relative; display: flex; align-items: center; gap: 10px; width: min(520px, 100%); padding: 7px 7px 7px 18px; border-radius: 999px; background: #fff; box-shadow: 0 20px 40px -20px rgba(0, 0, 0, .5); }
+.ig-search svg { width: 20px; height: 20px; flex: none; fill: none; stroke: #6B7394; stroke-width: 2; stroke-linecap: round; }
+.ig-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; font-size: 15px; color: #0B1026; }
+.ig-search button { padding: 11px 20px; border-radius: 999px; background: #0B1026; color: #fff; font-weight: 800; font-size: 14px; }
+.ig-live { position: absolute; right: 18px; top: calc(100% + 10px); display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; color: rgba(255, 255, 255, .8); }
+.ig-live i { width: 8px; height: 8px; border-radius: 50%; background: #34D399; box-shadow: 0 0 0 4px rgba(52, 211, 153, .2); }
+
+.ig-step-label { display: flex; align-items: center; gap: 10px; margin: 28px 0 14px; font-weight: 800; font-size: 17px; color: #fff; }
+.ig-step-label b { width: 28px; height: 28px; flex: none; border-radius: 50%; display: grid; place-items: center; background: #FFD23F; color: #14110a; font-size: 14px; }
+.ig-step-label em { font-style: normal; color: #FFD23F; }
+
+/* step 1 — type cards */
+.ig-types { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.ig-type { --c: #10B981; position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px 16px 14px; border-radius: 20px; text-align: left; color: #fff; background: rgba(255, 255, 255, .07); border: 1.5px solid rgba(255, 255, 255, .14); backdrop-filter: blur(6px); transition: transform .2s, background .2s, border-color .2s, box-shadow .2s; }
+.ig-type:hover { transform: translateY(-3px); background: rgba(255, 255, 255, .12); border-color: color-mix(in srgb, var(--c) 70%, #fff); }
+.ig-type:focus-visible { outline: 3px solid #FFD23F; outline-offset: 2px; }
+.ig-type-ic { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; font-size: 22px; background: color-mix(in srgb, var(--c) 30%, transparent); }
+.ig-type b { font-size: 17px; font-weight: 800; }
+.ig-type small { font-size: 13px; line-height: 1.4; color: rgba(255, 255, 255, .75); min-height: 2.8em; }
+.ig-type em { font-style: normal; margin-top: 2px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: rgba(255, 255, 255, .12); }
+.ig-type.on { background: #fff; color: #0B1026; border-color: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 45%, transparent), 0 20px 40px -18px rgba(0, 0, 0, .55); }
+.ig-type.on small { color: #4A5272; }
+.ig-type.on em { background: var(--c); color: #fff; }
+.ig-type.on::after { content: "✓"; position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--c); color: #fff; font-size: 12px; font-weight: 900; }
+
+/* step 2 — explainer */
+.ig-explain { --c: #10B981; display: grid; grid-template-columns: 1.35fr 1fr; gap: 14px; animation: igIn .45s cubic-bezier(.2, .8, .2, 1) both; }
+.ig-card { border-radius: 24px; background: #fff; color: #0B1026; padding: 22px 24px; box-shadow: 0 24px 50px -28px rgba(0, 0, 0, .6); }
+.ig-meaning { padding: 12px 16px; border-radius: 14px; font-weight: 700; font-size: 15.5px; line-height: 1.45; background: color-mix(in srgb, var(--c) 12%, #fff); border-left: 4px solid var(--c); }
+.ig-person { display: flex; align-items: center; gap: 12px; margin: 18px 0 14px; }
+.ig-avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 18px; color: #fff; background: var(--c); }
+.ig-person small { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #8A90AA; }
+.ig-person b { font-size: 16px; }
+.ig-timeline { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; position: relative; }
+.ig-timeline::before { content: ""; position: absolute; left: 22px; right: 22px; top: 21px; height: 2px; background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, #fff) 0 6px, transparent 6px 12px); }
+.ig-timeline li { position: relative; animation: igIn .5s calc(var(--k) * 120ms + 100ms) both; }
+.ig-dot { position: relative; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; background: #F3F5FB; border: 2px solid #fff; box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 40%, #fff); }
+.ig-timeline li:nth-child(2) .ig-dot { background: var(--c); }
+.ig-timeline small { display: block; margin: 10px 0 4px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--c); }
+.ig-timeline p { font-size: 14px; line-height: 1.5; color: #3A4161; }
+
+.ig-facts h3 { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
+.ig-facts dl { display: grid; gap: 2px; }
+.ig-facts dl div { display: grid; grid-template-columns: 130px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid #EEF0F6; font-size: 14px; }
+.ig-facts dt { display: flex; align-items: center; gap: 7px; font-weight: 700; color: #6B7394; }
+.ig-facts dt i { font-style: normal; }
+.ig-facts dd { font-weight: 600; color: #0B1026; }
+.ig-soon { margin-top: 14px; display: grid; gap: 6px; }
+.ig-soon > small { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #8A90AA; }
+.ig-soon a { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "t e" "c e"; column-gap: 10px; padding: 9px 12px; border-radius: 12px; background: #F5F7FC; transition: background .2s; }
+.ig-soon a:hover { background: color-mix(in srgb, var(--c) 12%, #fff); }
+.ig-soon a b { grid-area: t; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ig-soon a span { grid-area: c; font-size: 12.5px; color: #6B7394; }
+.ig-soon a em { grid-area: e; align-self: center; font-style: normal; font-size: 12px; font-weight: 800; color: #B45309; }
+.ig-soon p { font-size: 13.5px; color: #6B7394; }
+.ig-cta { width: 100%; justify-content: center; margin-top: 16px; }
+.ig-cta:disabled { opacity: .5; cursor: default; box-shadow: none; }
+
+@keyframes igIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 1100px) {
+  .ig-types { grid-template-columns: repeat(3, 1fr); }
+  .ig-explain { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .ig-hero { padding: 84px 0 40px; }
+  .ig-types { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -20px; padding: 4px 20px 10px; }
+  .ig-type { flex: 0 0 72%; scroll-snap-align: start; }
+  .ig-timeline { grid-template-columns: 1fr; }
+  .ig-timeline::before { left: 21px; right: auto; top: 22px; bottom: 22px; width: 2px; height: auto; background: repeating-linear-gradient(180deg, color-mix(in srgb, var(--c) 55%, #fff) 0 6px, transparent 6px 12px); }
+  .ig-timeline li { display: grid; grid-template-columns: 44px 1fr; column-gap: 12px; }
+  .ig-timeline li .ig-dot { grid-row: span 2; }
+  .ig-timeline small { margin-top: 2px; }
+  .ig-facts dl div { grid-template-columns: 1fr; gap: 2px; }
+  .ig-live { display: none; }
+  .ig-search button { padding: 11px 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ig-explain, .ig-timeline li { animation: none; }
+}
