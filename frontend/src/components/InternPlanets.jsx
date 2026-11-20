@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * Internship Planetary System — 5 realistic celestial bodies representing the 5 internship categories.
- * Category names only (no planet names like Venus/Saturn).
- * Realistic physics: Saturn has an authentic 26.7° axial tilt, Cassini ring division, and 3D depth.
- * Realistic orbital revolution around the central career sun with smooth continuous movement and pause-on-hover.
+ * Features:
+ * 1. Horizontal Orbital Revolution: Planets revolve horizontally along the elliptical orbit around the central sun.
+ *    - Closer in front: larger scale, higher z-index, passes in front of the sun.
+ *    - Farther in back: smaller scale, lower z-index, passes behind the sun.
+ *    - Smooth hover-pause and play/pause toggle.
+ * 2. Horizontal Surface Rotation: All planets (including Saturn and its rings) spin horizontally along their equator.
+ * 3. Category Names ONLY (no planet names like Venus or Saturn).
  */
 export const CATEGORY_PLANETS = {
   unpaid: {
@@ -47,7 +51,7 @@ export const CATEGORY_PLANETS = {
   },
   corporate: {
     id: "corporate",
-    cls: "corporate", // Saturn with realistic 3D tilted rings
+    cls: "corporate", // Saturn with realistic horizontal 3D rings
     icon: "🏢",
     themeColor: "#3B82F6",
     subTitle: ["Top MNC + Job Offer (PPO)", "শীর্ষ MNC ও PPO অফার"],
@@ -104,15 +108,12 @@ export const CATEGORY_PLANETS = {
   },
 };
 
-// System order from inner orbit to outer orbit
 export const PLANET_ORDER = ["unpaid", "paid", "corporate", "remote", "versity"];
 
 /**
  * Realistic 3D Planet component.
- * - Corporate (Saturn): realistic 26.7° axial tilt with concentric Cassini division rings,
- *   spherical curvature, surface band rotation, and dual front/back z-index clipping.
- * - Paid (Earth): realistic 23.5° axial tilt with oceanic depth, continents, and cloud layers.
- * - Remote (Uranus): 98° tilt spinning on its side with thin vertical rings.
+ * All planets spin horizontally across their equator.
+ * Corporate (Saturn) has horizontal rings with Cassini division and 3D depth.
  */
 export function Planet({ id, size = 90, spin = true }) {
   const p = CATEGORY_PLANETS[id] || CATEGORY_PLANETS.unpaid;
@@ -125,14 +126,14 @@ export function Planet({ id, size = 90, spin = true }) {
       style={{ "--s": `${size}px` }}
       aria-hidden="true"
     >
-      {/* 3D Ring Back Layer (passes behind the planet sphere) */}
+      {/* 3D Ring Back Layer (passes behind the upper half of the planet) */}
       {(isSaturn || isUranus) && (
         <span className="pl-ring-wrap back">
           <i className="pl-ring back" />
         </span>
       )}
 
-      {/* Spherical Body with 3D shadow and rotating atmospheric bands */}
+      {/* Spherical Body with 3D horizontal surface rotation */}
       <span className="pl-body">
         <span className="pl-surface" />
         <span className="pl-atmosphere" />
@@ -196,10 +197,40 @@ export default function InternPlanets({
 }) {
   const [hover, setHover] = useState("");
   const [orbiting, setOrbiting] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const [orbitAngle, setOrbitAngle] = useState(0);
+
+  const animRef = useRef(null);
+  const lastTimeRef = useRef(null);
+
   const byId = Object.fromEntries(cats.map((c) => [c.id, c]));
   const cur = sel ? byId[sel] : null;
   const P = sel ? CATEGORY_PLANETS[sel] : null;
   const list = sel ? top(sel) : [];
+
+  // Continuous smooth horizontal orbital revolution
+  useEffect(() => {
+    if (!orbiting || sel || isHovered) {
+      lastTimeRef.current = null;
+      return;
+    }
+
+    const speed = 0.22; // Smooth horizontal rotation speed (radians per second)
+    const loop = (t) => {
+      if (lastTimeRef.current != null) {
+        const dt = Math.min((t - lastTimeRef.current) / 1000, 0.1);
+        setOrbitAngle((prev) => (prev + dt * speed) % (Math.PI * 2));
+      }
+      lastTimeRef.current = t;
+      animRef.current = requestAnimationFrame(loop);
+    };
+
+    animRef.current = requestAnimationFrame(loop);
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      lastTimeRef.current = null;
+    };
+  }, [orbiting, sel, isHovered]);
 
   useEffect(() => {
     if (!sel) return;
@@ -209,25 +240,13 @@ export default function InternPlanets({
   }, [sel, onSelect]);
 
   return (
-    <div className={`ipl ${sel ? "has-sel" : ""} ${orbiting && !sel ? "is-orbiting" : ""}`}>
+    <div className={`ipl ${sel ? "has-sel" : ""}`}>
       <Stars />
 
-      {/* Central Career Sun with Golden Deer Core */}
-      <div className="ipl-sun-wrap" aria-hidden="true">
-        <span className="ipl-sun" />
-        <span className="ipl-sun-core">🦌</span>
-        <span className="ipl-sun-corona" />
-      </div>
-
-      {/* Orbit Track Ellipse */}
-      <svg className="ipl-orbit" viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true">
-        <ellipse cx="500" cy="120" rx="480" ry="86" />
-      </svg>
-
-      {/* Top Header / Orbit Controls */}
+      {/* Orbit Header Controls */}
       <div className="ipl-controls-bar">
         <span className="ipl-badge">
-          🪐 {L ? "৫টি ইন্টার্নশিপ ক্যাটাগরি কক্ষপথ" : "5 Internship Category Orbits"}
+          🪐 {L ? "৫টি ক্যাটাগরি — অনুভূমিক কক্ষপথ" : "5 Categories — Horizontal Orbit"}
         </span>
         <button
           type="button"
@@ -240,61 +259,96 @@ export default function InternPlanets({
         </button>
       </div>
 
-      {/* The 5 Category Celestial Nodes (Revolving or stationary based on state) */}
+      {/* HORIZONTAL ORBITAL ARENA */}
       <div
-        className={`ipl-row ${orbiting && !sel ? "orbiting" : ""}`}
-        role="tablist"
-        aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}
+        className="ipl-orbit-arena"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        {PLANET_ORDER.map((id, i) => {
-          const c = byId[id];
-          if (!c) return null;
-          const on = sel === id;
-          const p = CATEGORY_PLANETS[id];
+        {/* Horizontal Elliptical Orbit Track */}
+        <svg className="ipl-orbit-svg" viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true">
+          <ellipse cx="500" cy="120" rx="440" ry="54" />
+        </svg>
 
-          return (
-            <button
-              key={id}
-              type="button"
-              role="tab"
-              aria-selected={on}
-              className={`ipl-p ipl-node-${id} ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
-              style={{
-                "--c": c.c,
-                "--i": i,
-                "--orbit-delay": `${i * -6.5}s`,
-              }}
-              onClick={() => onSelect(on ? "" : id)}
-              onMouseEnter={() => setHover(id)}
-              onMouseLeave={() => setHover("")}
-            >
-              {/* 3D Planet Sphere */}
-              <span className="ipl-float">
-                <Planet id={id} size={on ? 116 : 88} spin={true} />
-              </span>
+        {/* Central Sun with Golden Deer */}
+        <div className="ipl-sun-center" aria-hidden="true">
+          <span className="ipl-sun-aura" />
+          <span className="ipl-sun-deer">🦌</span>
+          <span className="ipl-sun-corona" />
+        </div>
 
-              {/* ONLY CATEGORY NAME (Planet names removed!) */}
-              <b className={L ? "bn" : ""}>
-                {c.name[L]} {c.id === "paid" || c.id === "remote" ? (L ? "ইন্টার্ন" : "") : ""}
-              </b>
+        {/* 5 CATEGORY PLANETS REVOLVING HORIZONTALLY */}
+        <div className="ipl-planetary-field" role="tablist" aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}>
+          {PLANET_ORDER.map((id, i) => {
+            const c = byId[id];
+            if (!c) return null;
+            const on = sel === id;
+            const p = CATEGORY_PLANETS[id];
 
-              {/* Sub-tag with feature highlight */}
-              <small className={L ? "bn" : ""}>
-                {c.icon} {p.subTitle[L]}
-              </small>
+            // Calculate horizontal elliptical coordinates
+            // theta advances horizontally along the horizontal ellipse
+            const step = (Math.PI * 2) / PLANET_ORDER.length;
+            const theta = orbitAngle + i * step;
 
-              {/* Count Pill */}
-              <em>
-                {n2(counts[id] || 0, L)} {L ? "টি সুযোগ" : "openings"}
-              </em>
+            // Horizontal X spread: -40% to +40%
+            const cosVal = Math.cos(theta);
+            const sinVal = Math.sin(theta);
+            const xPercent = cosVal * 40; // Horizontal offset in percentage
+            const yOffsetPx = sinVal * 54; // Vertical depth in pixels (flatter ellipse)
 
-              {/* Hover Tooltip */}
-              {hover === id && !on && facts[id]?.need && (
-                <span className="ipl-tip">“{facts[id].need[L]}”</span>
-              )}
-            </button>
-          );
-        })}
+            // Front/back depth: sinVal > 0 means in front of sun, sinVal <= 0 means behind sun
+            const inFront = sinVal > 0;
+            const scale = on ? 1.18 : inFront ? 1.02 + sinVal * 0.08 : 0.90 + sinVal * 0.06;
+            const zIndex = on ? 30 : inFront ? 12 : 2;
+            const opacity = sel && !on ? 0.35 : inFront ? 1 : 0.85;
+
+            return (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                className={`ipl-planet-node ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
+                style={{
+                  "--c": c.c,
+                  left: `calc(50% + ${xPercent}%)`,
+                  top: `calc(50% + ${yOffsetPx}px)`,
+                  transform: `translate(-50%, -50%) scale(${scale})`,
+                  zIndex: zIndex,
+                  opacity: opacity,
+                }}
+                onClick={() => onSelect(on ? "" : id)}
+                onMouseEnter={() => setHover(id)}
+                onMouseLeave={() => setHover("")}
+              >
+                {/* 3D Planet Sphere (Rotates horizontally on its axis) */}
+                <span className="ipl-planet-wrap">
+                  <Planet id={id} size={on ? 116 : 88} spin={true} />
+                </span>
+
+                {/* ONLY Category Name (NO PLANET NAMES) */}
+                <b className={`ipl-cat-title ${L ? "bn" : ""}`}>
+                  {c.name[L]} {c.id === "paid" || c.id === "remote" ? (L ? "ইন্টার্ন" : "") : ""}
+                </b>
+
+                {/* Category Feature Subtitle */}
+                <small className={`ipl-cat-sub ${L ? "bn" : ""}`}>
+                  {c.icon} {p.subTitle[L]}
+                </small>
+
+                {/* Opening count pill */}
+                <em className="ipl-count-pill">
+                  {n2(counts[id] || 0, L)} {L ? "টি সুযোগ" : "openings"}
+                </em>
+
+                {/* Hover Tooltip */}
+                {hover === id && !on && facts[id]?.need && (
+                  <span className="ipl-tip">“{facts[id].need[L]}”</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {!sel && (

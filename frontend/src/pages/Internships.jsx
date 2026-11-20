@@ -86,19 +86,10 @@ export default function Internships() {
         <div className="ip-clouds" aria-hidden="true"><i /><i /><i /><i /></div>
 
         <div className="ip-wrap ig-in">
-          <div className="ig-top">
-            <div>
-              <h1 className={`ip-title ${L ? "bn" : ""}`}>{L ? "ইন্টার্নশিপ" : "Internships"}</h1>
-              <p className={`ig-sub ${L ? "bn" : ""}`}>
-                {L ? "৫টি ক্যাটাগরি — তোমার ক্যারিয়ারের কক্ষপথ। একটায় চাপ দিয়ে বিস্তারিত সুযোগ ও সার্কুলার দেখো।" : "5 internship categories orbiting your career. Tap one to explore details and openings."}
-              </p>
-            </div>
-            <form className="ig-search" onSubmit={(e) => { e.preventDefault(); document.querySelector(".ip-board-anchor")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
-              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={L ? "রোল, কোম্পানি বা স্কিল খোঁজো…" : "Search role, company or skill…"} aria-label={L ? "ইন্টার্নশিপ খোঁজো" : "Search internships"} />
-              <button type="submit">{L ? "খোঁজো" : "Search"}</button>
-              <span className="ig-live"><i />{n2((all || []).length, L)} {L ? "টি খোলা" : "open now"}</span>
-            </form>
+          <div className="ig-top" style={{ justifyContent: "center", textAlign: "center", marginBottom: "0.5rem" }}>
+            <h1 className={`ip-title ${L ? "bn" : ""}`} style={{ textAlign: "center", margin: "0 auto" }}>
+              {L ? "ইন্টার্নশিপ" : "Internships"}
+            </h1>
           </div>
 
           <InternPlanets
