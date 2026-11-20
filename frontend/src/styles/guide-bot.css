@@ -205,11 +205,11 @@
   max-width: 90%;
 }
 
-.sg-msg.bot {
+.sg-msg.is-bot {
   align-self: flex-start;
 }
 
-.sg-msg.user {
+.sg-msg.is-user {
   align-self: flex-end;
   flex-direction: row-reverse;
 }
@@ -225,7 +225,7 @@
   flex-shrink: 0;
 }
 
-.sg-msg.user .sg-msg-avatar {
+.sg-msg.is-user .sg-msg-avatar {
   background: #3b82f6;
   color: #fff;
 }
@@ -237,14 +237,14 @@
   line-height: 1.45;
 }
 
-.sg-msg.bot .sg-msg-bubble {
+.sg-msg.is-bot .sg-msg-bubble {
   background: #181d33;
   color: #e5e7eb;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-top-left-radius: 4px;
 }
 
-.sg-msg.user .sg-msg-bubble {
+.sg-msg.is-user .sg-msg-bubble {
   background: #ffc23d;
   color: #0d1020;
   font-weight: 600;
@@ -404,3 +404,24 @@
     height: 480px;
   }
 }
+
+/* ---- v2 additions ---- */
+.sg-msg-bubble p { margin: 0; line-height: 1.5; }
+.sg-tip { margin-top: 8px !important; padding: 8px 10px; border-radius: 10px; background: rgba(255, 194, 61, .12); font-size: 12.5px; }
+.sg-chip-btn.strong { background: #ffc23d; color: #14110a; border-color: #ffc23d; font-weight: 800; }
+.sg-chip-btn.ask { border-style: dashed; }
+.sg-chips-grid + .sg-chips-wrap, .sg-nav-card + .sg-chips-wrap { margin-top: 10px; }
+.sg-msg-bubble > .sg-chips-grid { margin-top: 10px; }
+.sg-typing { display: flex; gap: 4px; align-items: center; padding: 12px 14px !important; }
+.sg-typing i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .4; animation: sgDot 1s infinite; }
+.sg-typing i:nth-child(2) { animation-delay: .15s; }
+.sg-typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes sgDot { 0%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+.sg-bot-send:disabled { opacity: .45; cursor: default; }
+@media (max-width: 640px) {
+  /* compact round button so it doesn't cover page content */
+  .sg-bot-trigger { padding: 6px; }
+  .sg-trigger-text { display: none; }
+  .sg-bot-window { height: min(560px, calc(100dvh - 100px)); }
+}
+.sg-msg { flex-shrink: 0; }
