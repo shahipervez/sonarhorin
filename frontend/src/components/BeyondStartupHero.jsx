@@ -85,16 +85,19 @@ export default function BeyondStartupHero({ onSelectCard, onStartPitch }) {
           RA 10h 44m 1s · DEC -44° 16' 39"
         </span>
 
-        {/* Looped 3D Holographic Cube Video */}
-        <div className="by-video-container">
-          <video
-            src="/beyond-ref.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="by-video-bg"
-          />
+        {/* Clean Radiant Centerpiece Hologram & Geometry (No heavy video) */}
+        <div className="by-visual-centerpiece" aria-hidden="true">
+          <div className="by-aura-glow" />
+          <div className="by-hologram-grid" />
+          <div className="by-hologram-rings">
+            <span className="by-ring by-ring-1" />
+            <span className="by-ring by-ring-2" />
+            <span className="by-ring by-ring-3" />
+          </div>
+          <div className="by-center-emblem">
+            <span className="by-emblem-deer">🦌</span>
+            <span className="by-emblem-label">SONARHORIN VENTURE</span>
+          </div>
         </div>
 
         {/* Cinematic Overlay Typography */}
