@@ -1,0 +1,173 @@
+/* ==========================================================================
+   INTERNSHIP SOLAR SYSTEM — 5 CSS planets = 5 internship types
+   ========================================================================== */
+.ipl { position: relative; margin-top: 18px; padding: 28px 0 10px; }
+.ipl-stars { position: absolute; inset: -60px -40px 0; pointer-events: none; }
+.ipl-stars i { position: absolute; border-radius: 50%; background: #fff; opacity: .7; animation: iplTwinkle 3.2s ease-in-out infinite; }
+.ipl-sun { position: absolute; left: -180px; top: 50px; width: 300px; height: 300px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, rgba(255, 214, 102, .55) 0%, rgba(255, 170, 40, .18) 35%, transparent 68%); filter: blur(4px); animation: iplSun 6s ease-in-out infinite; }
+.ipl-orbit { position: absolute; left: 0; right: 0; top: 40px; width: 100%; height: 210px; pointer-events: none; }
+.ipl-orbit ellipse { fill: none; stroke: rgba(255, 255, 255, .18); stroke-width: 1.5; stroke-dasharray: 3 9; vector-effect: non-scaling-stroke; }
+
+/* row of planets */
+.ipl-row { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; gap: 8px; min-height: 250px; }
+.ipl-p { --c: #10B981; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 12px; border-radius: 22px; color: #fff; background: none; border: 1.5px solid transparent; cursor: pointer; transition: transform .35s, opacity .35s, background .3s, border-color .3s; }
+/* planets sit on the orbit ellipse: middle ones lower, edge ones higher */
+.ipl-p:nth-child(1), .ipl-p:nth-child(5) { transform: translateY(-46px); }
+.ipl-p:nth-child(2), .ipl-p:nth-child(4) { transform: translateY(-8px); }
+.ipl-p:nth-child(3) { transform: translateY(8px); }
+.ipl-p:hover { background: rgba(255, 255, 255, .06); border-color: rgba(255, 255, 255, .14); }
+.ipl-p:focus-visible { outline: 3px solid #FFD23F; outline-offset: 2px; }
+.ipl-p b { margin-top: 6px; font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+.ipl-p small { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, .78); }
+.ipl-p em { font-style: normal; margin-top: 2px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: color-mix(in srgb, var(--c) 35%, transparent); border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); }
+.ipl-p.on { background: rgba(255, 255, 255, .1); border-color: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
+.ipl-p.on em { background: var(--c); }
+.ipl-p.dim { opacity: .55; }
+.ipl-p.dim:hover { opacity: 1; }
+.ipl-float { display: grid; place-items: center; height: 130px; animation: iplFloat 6s ease-in-out infinite; animation-delay: calc(var(--i) * -1.2s); }
+.ipl-tip { position: absolute; bottom: calc(100% - 4px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 7px 12px; border-radius: 12px; background: #fff; color: #0B1026; font-size: 12.5px; font-weight: 700; box-shadow: 0 12px 24px -10px rgba(0, 0, 0, .6); animation: iplPop .2s both; z-index: 3; }
+.ipl-hint { position: relative; text-align: center; margin-top: 8px; font-size: 15px; font-weight: 700; color: #FFD23F; animation: iplPulse 2.4s ease-in-out infinite; }
+
+/* ---------------- planets ---------------- */
+.pl { --s: 90px; position: relative; display: inline-grid; place-items: center; width: var(--s); height: var(--s); transition: width .5s cubic-bezier(.2, .8, .2, 1), height .5s cubic-bezier(.2, .8, .2, 1); }
+.pl-body { position: relative; z-index: 1; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; box-shadow: 0 0 calc(var(--s) * .35) var(--glow, rgba(120, 180, 255, .35)); }
+.pl-surface { position: absolute; inset: 0; background-size: 200% 100%; }
+.pl.spin .pl-surface { animation: iplSpin var(--spin, 24s) linear infinite; }
+.pl-shade { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .28) 0%, transparent 32%), radial-gradient(circle at 72% 72%, rgba(0, 0, 0, .6) 0%, transparent 62%); box-shadow: inset calc(var(--s) * -.12) calc(var(--s) * -.08) calc(var(--s) * .18) rgba(0, 0, 0, .55), inset 2px 2px 6px rgba(255, 255, 255, .25); }
+
+/* Venus — creamy sulphur clouds */
+.pl-venus { --glow: rgba(255, 210, 130, .45); --spin: 40s; }
+.pl-venus .pl-surface { background-image:
+  repeating-linear-gradient(170deg, rgba(255, 255, 255, .0) 0 9%, rgba(255, 245, 210, .35) 11%, rgba(255, 255, 255, 0) 14%),
+  radial-gradient(ellipse 30% 18% at 30% 40%, rgba(214, 160, 80, .45), transparent),
+  radial-gradient(ellipse 30% 18% at 80% 65%, rgba(214, 160, 80, .4), transparent),
+  linear-gradient(180deg, #F9E4B3, #E9C27E 50%, #D9A35E); }
+
+/* Earth — oceans, continents, clouds */
+.pl-earth { --glow: rgba(90, 170, 255, .55); --spin: 22s; }
+.pl-earth .pl-surface { background-image:
+  radial-gradient(ellipse 9% 7% at 20% 35%, rgba(255, 255, 255, .85), transparent),
+  radial-gradient(ellipse 12% 5% at 65% 25%, rgba(255, 255, 255, .7), transparent),
+  radial-gradient(ellipse 10% 5% at 85% 75%, rgba(255, 255, 255, .75), transparent),
+  radial-gradient(ellipse 11% 16% at 28% 55%, #3E9B4F 60%, transparent 62%),
+  radial-gradient(ellipse 7% 12% at 36% 32%, #4AA35A 60%, transparent 62%),
+  radial-gradient(ellipse 13% 10% at 72% 45%, #3C8F4A 60%, transparent 62%),
+  radial-gradient(ellipse 6% 9% at 82% 62%, #C9A86A 60%, transparent 62%),
+  radial-gradient(ellipse 30% 8% at 50% 96%, #F2F7FF 60%, transparent 62%),
+  radial-gradient(ellipse 30% 8% at 50% 4%, #F2F7FF 60%, transparent 62%),
+  linear-gradient(180deg, #2B6CD6, #1F57B8 50%, #17468F); }
+
+/* Saturn — banded gas giant + rings */
+.pl-saturn { --glow: rgba(240, 200, 120, .4); --spin: 30s; }
+.pl-saturn .pl-surface { background-image: repeating-linear-gradient(180deg, #E8D3A0 0 9%, #D6B577 9% 15%, #F0DFB5 15% 22%, #C9A262 22% 26%, #E6CC92 26% 34%); }
+.pl-ring { position: absolute; left: 50%; top: 50%; width: 210%; height: 62%; border-radius: 50%; transform: translate(-50%, -50%) rotate(-16deg); pointer-events: none; }
+.pl-saturn .pl-ring { background: radial-gradient(ellipse at center, transparent 47%, rgba(230, 205, 150, .95) 48%, rgba(200, 170, 110, .55) 56%, rgba(240, 220, 170, .9) 60%, rgba(180, 150, 100, .35) 66%, transparent 68%); }
+.pl-ring.back { z-index: 0; }
+.pl-ring.front { z-index: 2; clip-path: inset(50% 0 0 0); }
+
+/* Uranus — pale cyan, tipped on its side */
+.pl-uranus { --glow: rgba(120, 230, 240, .45); --spin: 34s; }
+.pl-uranus .pl-surface { background-image:
+  repeating-linear-gradient(90deg, rgba(255, 255, 255, 0) 0 12%, rgba(255, 255, 255, .12) 14%, rgba(255, 255, 255, 0) 17%),
+  linear-gradient(90deg, #A6EEF2, #7FD9E3 50%, #5DC1D0); }
+.pl-uranus .pl-ring { width: 46%; height: 200%; transform: translate(-50%, -50%) rotate(12deg); background: radial-gradient(ellipse at center, transparent 47%, rgba(200, 245, 255, .7) 49%, transparent 54%); }
+
+/* Neptune — deep blue, great dark spot */
+.pl-neptune { --glow: rgba(70, 110, 255, .55); --spin: 20s; }
+.pl-neptune .pl-surface { background-image:
+  radial-gradient(ellipse 9% 6% at 35% 58%, #1A2C8C 70%, transparent 72%),
+  radial-gradient(ellipse 6% 2% at 37% 52%, rgba(255, 255, 255, .7), transparent),
+  repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0 16%, rgba(160, 190, 255, .18) 18%, rgba(255, 255, 255, 0) 21%),
+  linear-gradient(180deg, #4C7BF0, #3459D6 50%, #2741A8); }
+
+/* ---------------- focus panel ---------------- */
+.ipl-focus { --c: #10B981; position: relative; display: grid; grid-template-columns: 300px 1fr; gap: 10px 34px; margin-top: 18px; padding: 26px 28px 28px; border-radius: 30px; background: linear-gradient(160deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03)); border: 1px solid rgba(255, 255, 255, .16); backdrop-filter: blur(10px); animation: iplIn .5s cubic-bezier(.2, .8, .2, 1) both; }
+.ipl-focus-planet { display: grid; place-items: center; min-height: 270px; }
+.ipl-focus-planet .pl { animation: iplZoom .8s cubic-bezier(.2, .9, .2, 1.1) both; }
+.ipl-focus-text { color: #fff; }
+.ipl-kicker { display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: rgba(255, 255, 255, .85); background: rgba(255, 255, 255, .1); }
+.ipl-kicker b { color: #FFD23F; }
+.ipl-focus-text h2 { margin: 10px 0 12px; font-size: clamp(26px, 3vw, 38px); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+.ipl-why { display: flex; gap: 8px; font-size: 15px; font-style: italic; color: rgba(255, 255, 255, .8); }
+.ipl-so { margin-top: 10px; padding: 12px 16px; border-radius: 14px; font-size: 16px; font-weight: 700; line-height: 1.45; background: color-mix(in srgb, var(--c) 22%, transparent); border-left: 4px solid var(--c); }
+.ipl-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.ipl-facts div { padding: 10px 12px; border-radius: 14px; background: rgba(255, 255, 255, .07); }
+.ipl-facts dt { font-size: 12px; font-weight: 800; color: rgba(255, 255, 255, .65); text-transform: uppercase; letter-spacing: .04em; }
+.ipl-facts dd { margin-top: 3px; font-size: 14px; font-weight: 600; }
+.ipl-story { margin-top: 12px; }
+.ipl-story summary { cursor: pointer; font-size: 14px; font-weight: 700; color: #FFD23F; list-style: none; }
+.ipl-story summary::-webkit-details-marker { display: none; }
+.ipl-story summary::before { content: "▸ "; }
+.ipl-story[open] summary::before { content: "▾ "; }
+.ipl-story ol { list-style: none; display: grid; gap: 6px; margin-top: 10px; }
+.ipl-story li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: rgba(255, 255, 255, .85); }
+.ipl-story li i { font-style: normal; }
+.ipl-close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; color: #fff; background: rgba(255, 255, 255, .12); font-size: 15px; transition: background .2s; }
+.ipl-close:hover { background: rgba(255, 255, 255, .25); }
+
+/* internships dropping out of the planet */
+.ipl-drop { grid-column: 1 / -1; position: relative; margin-top: 8px; }
+.ipl-drop::before { content: ""; position: absolute; left: 150px; top: -40px; width: 2px; height: 40px; background: linear-gradient(transparent, var(--c)); }
+.ipl-drop-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; color: #fff; }
+.ipl-drop-head b { font-size: 17px; }
+.ipl-drop-head span { font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, .7); }
+.ipl-jobs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.ipl-job { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: #fff; color: #0B1026; text-align: left; box-shadow: 0 14px 30px -18px rgba(0, 0, 0, .7); animation: iplDrop .6s cubic-bezier(.2, .9, .3, 1.2) both; animation-delay: calc(var(--k) * 110ms + 350ms); transition: transform .2s; }
+.ipl-job:hover { transform: translateY(-3px); }
+.ipl-job-logo { width: 40px; height: 40px; flex: none; border-radius: 12px; display: grid; place-items: center; color: #fff; font-weight: 800; }
+.ipl-job-txt { flex: 1; min-width: 0; }
+.ipl-job-txt b { display: block; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ipl-job-txt small { font-size: 12.5px; color: #6B7394; }
+.ipl-job-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.ipl-job-meta em { font-style: normal; font-size: 13px; font-weight: 800; color: #0B1026; }
+.ipl-job-meta small { font-size: 12px; font-weight: 700; color: #6B7394; }
+.ipl-job-meta small.hot { color: #DC2626; }
+.ipl-empty { grid-column: 1 / -1; padding: 16px; border-radius: 14px; background: rgba(255, 255, 255, .07); color: rgba(255, 255, 255, .8); }
+.ipl-all { margin-top: 14px; }
+
+/* ---------------- keyframes ---------------- */
+@keyframes iplSpin { from { background-position: 0 0; } to { background-position: -200% 0; } }
+@keyframes iplFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+@keyframes iplTwinkle { 0%, 100% { opacity: .25; } 50% { opacity: .9; } }
+@keyframes iplSun { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes iplPulse { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
+@keyframes iplPop { from { opacity: 0; transform: translate(-50%, 6px); } }
+@keyframes iplIn { from { opacity: 0; transform: translateY(20px); } }
+@keyframes iplZoom { from { transform: scale(.35) translateY(-80px); opacity: .3; } to { transform: none; opacity: 1; } }
+@keyframes iplDrop { from { opacity: 0; transform: translateY(-60px) scale(.9); } to { opacity: 1; transform: none; } }
+
+/* ---------------- responsive ---------------- */
+@media (max-width: 900px) {
+  .ipl-focus { grid-template-columns: 1fr; }
+  .ipl-focus-planet { min-height: 230px; }
+  .ipl-drop::before { left: 50%; }
+}
+@media (max-width: 640px) {
+  .ipl-orbit, .ipl-sun { display: none; }
+  .ipl-row { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 6px; margin: 0 -20px; padding: 10px 20px; min-height: 0; }
+  .ipl-p { flex: 0 0 34%; scroll-snap-align: center; transform: none !important; }
+  .ipl-float { height: 120px; }
+  .ipl-tip { display: none; }
+  .ipl-focus { padding: 20px 16px; }
+  .ipl-facts, .ipl-jobs { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ipl *, .pl * { animation: none !important; }
+}
+
+/* fixes */
+.ipl { overflow-x: clip; }
+.ipl-focus > * { min-width: 0; }
+.ipl-story summary { text-align: left; }
+.ipl-story summary::after { display: none !important; content: none !important; }
+@media (max-width: 640px) {
+  .ipl-focus-planet { min-height: 0; padding: 10px 0; }
+  .ipl-focus-planet .pl { --s: min(170px, 44vw) !important; }
+  .ipl-close { top: 12px; right: 12px; }
+  .ipl-drop::before { display: none; }
+}
+.ipl-jobs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ipl-focus { grid-template-columns: 300px minmax(0, 1fr); }
+.ipl-story summary { display: block; }
+@media (max-width: 900px) { .ipl-focus { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 640px) { .ipl-jobs, .ipl-facts { grid-template-columns: minmax(0, 1fr); } }

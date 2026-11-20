@@ -70,7 +70,7 @@ const THANKS = ["thanks", "thank you", "thx", "ধন্যবাদ", "dhonnoba
 // short tip for the page the visitor is on
 const PAGE_TIPS = {
   "/jobs": ["You're on Jobs — use the search and major filter, then tap Apply.", "তুমি জবস পেজে — সার্চ আর মেজর ফিল্টার দিয়ে খুঁজে Apply চাপো।"],
-  "/internships": ["You're on Internships — pick what you need (paid, learning, credit…) and the list filters for you.", "তুমি ইন্টার্নশিপ পেজে — কী দরকার (পেইড, লার্নিং, ক্রেডিট…) বেছে নাও, লিস্ট নিজেই ফিল্টার হবে।"],
+  "/internships": ["You're on Internships — tap a planet (each one is a type of internship) to see what it means and who's hiring.", "তুমি ইন্টার্নশিপ পেজে — একটা গ্রহে চাপ দাও (প্রতিটা গ্রহ এক ধরনের ইন্টার্নশিপ), দেখো মানে কী আর কারা নিচ্ছে।"],
   "/startup": ["You're on Startup — type your startup name in the hero to start a pitch.", "তুমি স্টার্টআপ পেজে — উপরে স্টার্টআপের নাম লিখে পিচ শুরু করো।"],
   "/cv": ["Upload your CV here and you'll get a rejection % plus a fix list.", "এখানে সিভি আপলোড করলে রিজেকশন % আর ঠিক করার লিস্ট পাবে।"],
 };

@@ -7,6 +7,8 @@ import { useLang } from "../i18n";
 import { ApplyModal, CompanyLogo, daysLeft, getCH, money } from "./Jobs";
 import { GATE_FACTS, GATE_STORIES } from "./internshipStories";
 import "../styles/internships-guide.css";
+import "../styles/intern-planets.css";
+import InternPlanets from "../components/InternPlanets";
 
 /**
  * INTERNSHIPS — its own layout (not the job list).
@@ -70,14 +72,8 @@ export default function Internships() {
   }, [all, cat, q, sort]);
 
   const activeCat = cats.find((c) => c.id === cat);
-  const topFor = (id) => (all || []).filter(MATCH[id]).sort((a, b) => (daysLeft(a.deadline) ?? 999) - (daysLeft(b.deadline) ?? 999)).slice(0, 3);
+  const topFor = (id, n = 3) => (all || []).filter(MATCH[id]).sort((a, b) => (daysLeft(a.deadline) ?? 999) - (daysLeft(b.deadline) ?? 999)).slice(0, n);
   const apply = (j) => (user ? setOpen(j) : nav(`/login?next=/internships`));
-
-  // the type explained in the hero (follows the ?cat= filter when there is one)
-  const [gate, setGate] = useState(sp.get("cat") || "paid");
-  useEffect(() => { if (cat) setGate(cat); }, [cat]);
-  const gateCat = cats.find((c) => c.id === gate) || cats[0];
-  const story = GATE_STORIES[gateCat.id];
 
   return (
     <div className={`ip-page ${L ? "bn" : ""}`}>
@@ -94,7 +90,7 @@ export default function Internships() {
             <div>
               <h1 className={`ip-title ${L ? "bn" : ""}`}>{L ? "ইন্টার্নশিপ" : "Internships"}</h1>
               <p className={`ig-sub ${L ? "bn" : ""}`}>
-                {L ? "তোমার যা দরকার সেটা বেছে নাও — আমরা মিলিয়ে ইন্টার্নশিপ দেখাবো।" : "Pick what you need most — we'll show the internships that match."}
+                {L ? "৫টা গ্রহ, ৫ ধরনের ইন্টার্নশিপ। একটায় চাপ দাও — দেখো মানে কী আর কারা নিচ্ছে।" : "5 planets, 5 kinds of internship. Tap one to see what it means and who's hiring."}
               </p>
             </div>
             <form className="ig-search" onSubmit={(e) => { e.preventDefault(); document.querySelector(".ip-board-anchor")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
@@ -105,64 +101,20 @@ export default function Internships() {
             </form>
           </div>
 
-          {/* STEP 1 — what do you need? */}
-          <p className="ig-step-label"><b>1</b><span>{L ? "তোমার সবচেয়ে বেশি কী দরকার?" : "What do you need most?"}</span></p>
-          <div className="ig-types" role="tablist">
-            {cats.map((c) => {
-              const on = c.id === gate;
-              return (
-                <button key={c.id} type="button" role="tab" aria-selected={on} className={`ig-type ${on ? "on" : ""}`} style={{ "--c": c.c }} onClick={() => setGate(c.id)}>
-                  <span className="ig-type-ic">{c.icon}</span>
-                  <b className={L ? "bn" : ""}>{c.name[L]}</b>
-                  <small className={L ? "bn" : ""}>“{GATE_FACTS[c.id].need[L]}”</small>
-                  <em>{n2(counts[c.id] || 0, L)} {L ? "টি খোলা" : "open"}</em>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* STEP 2 — what it means, in plain words */}
-          <p className="ig-step-label"><b>2</b><span>{L ? <>এই ইন্টার্নশিপ আসলে কী? — <em>{gateCat.icon} {gateCat.name[L]}</em></> : <>What a <em>{gateCat.name[0]}</em> internship really means</>}</span></p>
-          <div className="ig-explain" style={{ "--c": gateCat.c }} key={gate}>
-            <div className="ig-card ig-example">
-              <p className={`ig-meaning ${L ? "bn" : ""}`}>{story.meaning[L]}</p>
-              <div className="ig-person">
-                <span className="ig-avatar">{story.who[0].charAt(0)}</span>
-                <div><small>{L ? "একটা বাস্তব উদাহরণ" : "A real-life example"}</small><b className={L ? "bn" : ""}>{story.who[L]}</b></div>
-              </div>
-              <ol className="ig-timeline">
-                {story.beats.map((bt, k) => (
-                  <li key={k} style={{ "--k": k }}>
-                    <span className="ig-dot">{bt.actors[0]}</span>
-                    <small>{[L ? "আগে" : "Before", L ? "ইন্টার্নশিপে" : "The internship", L ? "পরে" : "After"][k]}</small>
-                    <p className={L ? "bn" : ""}>{bt.t[L]}</p>
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            <div className="ig-card ig-facts">
-              <h3 className={L ? "bn" : ""}>{L ? "এক নজরে" : "At a glance"}</h3>
-              <dl>
-                {[["💰", L ? "টাকা" : "Pay", "pay"], ["⏱️", L ? "সময়কাল" : "Usually lasts", "length"], ["🎯", L ? "কার জন্য" : "Best for", "best"], ["🎁", L ? "যা পাবে" : "You get", "get"]].map(([ic, lab, k]) => (
-                  <div key={k}><dt><i>{ic}</i>{lab}</dt><dd className={L ? "bn" : ""}>{GATE_FACTS[gate][k][L]}</dd></div>
-                ))}
-              </dl>
-              <div className="ig-soon">
-                <small>{L ? "শীঘ্রই শেষ হচ্ছে" : "Closing soon"}</small>
-                {topFor(gate).map((j) => (
-                  <a key={j.id} href={`#pass-${j.id}`} onClick={(e) => { e.preventDefault(); pick(gate); setTimeout(() => document.getElementById(`pass-${j.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 300); }}>
-                    <b>{j.title}</b><span>{j.company?.name}</span>
-                    <em>{daysLeft(j.deadline) != null ? `${n2(daysLeft(j.deadline), L)}${L ? " দিন" : "d left"}` : ""}</em>
-                  </a>
-                ))}
-                {!topFor(gate).length && <p>{L ? "এই ধরনের ইন্টার্নশিপ এখন নেই — শীঘ্রই আসবে।" : "None open right now — new ones arrive weekly."}</p>}
-              </div>
-              <button type="button" className="ip-btn gold ig-cta" onClick={() => pick(gate)} disabled={!counts[gate]}>
-                {counts[gate] ? (L ? `${n2(counts[gate], L)}টি ${gateCat.name[L]} ইন্টার্নশিপ দেখো` : `See all ${counts[gate]} ${gateCat.name[0]} internships`) : (L ? "শীঘ্রই আসছে" : "Coming soon")} ↓
-              </button>
-            </div>
-          </div>
+          <InternPlanets
+            cats={cats}
+            sel={cat}
+            counts={counts}
+            L={L}
+            n2={n2}
+            facts={GATE_FACTS}
+            story={GATE_STORIES}
+            top={(id) => topFor(id, 4)}
+            daysLeft={daysLeft}
+            onSelect={(id) => { setCat(id); setSp(id ? { cat: id } : {}, { replace: true }); }}
+            onSeeAll={() => document.querySelector(".ip-board-anchor")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            onOpenJob={(j) => document.getElementById(`pass-${j.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
+          />
         </div>
       </section>
 
@@ -176,7 +128,7 @@ export default function Internships() {
             </h2>
             <p className="ip-count">
               {all ? (L ? `${n2(list.length, L)}টি পাস পাওয়া গেছে` : `${list.length} pass${list.length === 1 ? "" : "es"} found`) : L ? "লোড হচ্ছে…" : "Loading…"}
-              {cat && <button type="button" className="ip-clear" onClick={() => pick(cat)}>✕ {L ? "ফিল্টার মুছো" : "clear gate"}</button>}
+              {cat && <button type="button" className="ip-clear" onClick={() => pick(cat)}>✕ {L ? "সব গ্রহ দেখো" : "show all planets"}</button>}
             </p>
           </div>
           <div className="ip-tools">
@@ -209,10 +161,10 @@ export default function Internships() {
         {all && list.length === 0 && (
           <div className="ip-empty">
             <span>🛫</span>
-            <b>{L ? "এই গেট থেকে এখন কোনো ফ্লাইট নেই" : "No flights boarding from this gate right now"}</b>
-            <p>{L ? "অন্য গেট দেখো, বা গ্র্যাজুয়েট প্রোগ্রাম ও ট্রেনিং দেখো।" : "Try another gate, or check graduate programs & trainings."}</p>
+            <b>{L ? "এই গ্রহে এখন কোনো ইন্টার্নশিপ নেই" : "No internships on this planet right now"}</b>
+            <p>{L ? "অন্য গ্রহ দেখো, বা গ্র্যাজুয়েট প্রোগ্রাম ও ট্রেনিং দেখো।" : "Try another planet, or check graduate programs & trainings."}</p>
             <div className="ip-hero-ctas">
-              {cat && <button type="button" className="ip-btn gold" onClick={() => pick(cat)}>{L ? "সব গেট দেখো" : "Show all gates"}</button>}
+              {cat && <button type="button" className="ip-btn gold" onClick={() => pick(cat)}>{L ? "সব গ্রহ দেখো" : "Show all planets"}</button>}
               <Link to="/programs" className="ip-btn ghost dark">{L ? "প্রোগ্রাম দেখো →" : "Browse programs →"}</Link>
             </div>
           </div>
