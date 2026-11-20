@@ -5,8 +5,8 @@ import { useAuth } from "../auth";
 import { STORY_SETS } from "../components/StoryRail";
 import { useLang } from "../i18n";
 import { ApplyModal, CompanyLogo, daysLeft, getCH, money } from "./Jobs";
-import { BEAT_MS, GATE_STORIES } from "./internshipStories";
-import InternSolar from "./InternSolar";
+import { GATE_FACTS, GATE_STORIES } from "./internshipStories";
+import "../styles/internships-guide.css";
 
 /**
  * INTERNSHIPS — its own layout (not the job list).
@@ -23,40 +23,7 @@ const MATCH = {
   corporate: (j) => j.company?.is_partner || /corporate|mnc|plc|limited|ltd|group|bank|telecom/i.test(`${j.company?.name || ""} ${j.title}`),
   remote: (j) => !!j.remote || /remote|work from home|wfh/i.test(`${j.title} ${j.location || ""}`),
 };
-const GATE = { paid: "P1", unpaid: "L2", versity: "V3", corporate: "C4", remote: "R5" };
 const code3 = (name = "") => (name.replace(/[^A-Za-z]/g, "").slice(0, 3) || "SHR").toUpperCase();
-
-/** Split-flap (Solari board) text: letters rattle through random glyphs before settling. */
-const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·";
-function Flap({ text, className = "" }) {
-  const [shown, setShown] = useState(text);
-  useEffect(() => {
-    const target = String(text);
-    if (/[\u0980-\u09FF]/.test(target) || matchMedia?.("(prefers-reduced-motion: reduce)").matches) { setShown(target); return; }
-    let f = 0;
-    const id = setInterval(() => {
-      f++;
-      setShown(target.split("").map((ch, i) => (ch === " " || f > 3 + i * 0.6 ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join(""));
-      if (f > 4 + target.length * 0.6) clearInterval(id);
-    }, 45);
-    return () => clearInterval(id);
-  }, [text]);
-  // Bangla letters combine (কার/ফলা), so never split them into separate tiles
-  if (/[\u0980-\u09FF]/.test(String(text))) return <span className={`ip-flap bn ${className}`}>{text}</span>;
-  return <span className={`ip-flap ${className}`}>{shown.split("").map((c, i) => <i key={i}>{c}</i>)}</span>;
-}
-
-function useClock() {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => { const id = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(id); }, []);
-  return now;
-}
-
-function useTick(ms) {
-  const [n, setN] = useState(0);
-  useEffect(() => { const id = setInterval(() => setN((x) => x + 1), ms); return () => clearInterval(id); }, [ms]);
-  return n;
-}
 
 export default function Internships() {
   const { user } = useAuth();
@@ -103,138 +70,98 @@ export default function Internships() {
   }, [all, cat, q, sort]);
 
   const activeCat = cats.find((c) => c.id === cat);
-  const clock = useClock();
-  const tick = useTick(3600);
-  const STATUS = L ? ["বোর্ডিং", "গেট খোলা", "শেষ ডাক", "সময়মতো"] : ["BOARDING", "GATE OPEN", "FINAL CALL", "ON TIME"];
-  const statusOf = (id, i) => (counts[id] ? STATUS[(tick + i) % STATUS.length] : L ? "শীঘ্রই" : "SOON");
   const topFor = (id) => (all || []).filter(MATCH[id]).sort((a, b) => (daysLeft(a.deadline) ?? 999) - (daysLeft(b.deadline) ?? 999)).slice(0, 3);
-  const ticker = (all || []).slice(0, 14);
   const apply = (j) => (user ? setOpen(j) : nav(`/login?next=/internships`));
 
-  // ---- gate stories: auto-play 3 beats per gate, then move to the next gate ----
+  // the type explained in the hero (follows the ?cat= filter when there is one)
   const [gate, setGate] = useState(sp.get("cat") || "paid");
-  const [beat, setBeat] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [beatKey, setBeatKey] = useState(0);
-  useEffect(() => {
-    if (paused) return;
-    const id = setTimeout(() => {
-      if (beat < 2) setBeat(beat + 1);
-      else { const k = cats.findIndex((c) => c.id === gate); setGate(cats[(k + 1) % cats.length].id); setBeat(0); }
-      setBeatKey((n) => n + 1);
-    }, BEAT_MS);
-    return () => clearTimeout(id);
-  }, [beat, gate, paused, beatKey, cats]);
-  const playGate = (id, b = 0) => { setGate(id); setBeat(b); setBeatKey((n) => n + 1); };
+  useEffect(() => { if (cat) setGate(cat); }, [cat]);
   const gateCat = cats.find((c) => c.id === gate) || cats[0];
-  const story = GATE_STORIES[gate];
-  const gi = cats.findIndex((c) => c.id === gate);
+  const story = GATE_STORIES[gateCat.id];
 
   return (
     <div className={`ip-page ${L ? "bn" : ""}`}>
-      {/* ============ HERO + DEPARTURES BOARD ============ */}
-      <section className="ip-hero">
+      {/* ============ HERO: pick what you need → see what it means → see the matches ============ */}
+      <section className="ip-hero ig-hero">
         <svg className="ip-path" viewBox="0 0 1200 400" preserveAspectRatio="none" aria-hidden="true">
           <path id="ipFly" d="M-40 330 C 220 120, 460 380, 700 170 S 1100 60, 1260 120" />
           <g className="ip-plane"><path d="M0 0 L22 8 L0 16 L5 8 Z" /></g>
         </svg>
         <div className="ip-clouds" aria-hidden="true"><i /><i /><i /><i /></div>
 
-        <div className="ip-wrap ip-hero-in">
-          <div className="ip-hero-head">
-            <h1 className={`ip-title ${L ? "bn" : ""}`}>
-              {L ? "ইন্টার্নশিপ" : "Internships"}
-            </h1>
+        <div className="ip-wrap ig-in">
+          <div className="ig-top">
+            <div>
+              <h1 className={`ip-title ${L ? "bn" : ""}`}>{L ? "ইন্টার্নশিপ" : "Internships"}</h1>
+              <p className={`ig-sub ${L ? "bn" : ""}`}>
+                {L ? "তোমার যা দরকার সেটা বেছে নাও — আমরা মিলিয়ে ইন্টার্নশিপ দেখাবো।" : "Pick what you need most — we'll show the internships that match."}
+              </p>
+            </div>
+            <form className="ig-search" onSubmit={(e) => { e.preventDefault(); document.querySelector(".ip-board-anchor")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={L ? "রোল, কোম্পানি বা স্কিল খোঁজো…" : "Search role, company or skill…"} aria-label={L ? "ইন্টার্নশিপ খোঁজো" : "Search internships"} />
+              <button type="submit">{L ? "খোঁজো" : "Search"}</button>
+              <span className="ig-live"><i />{n2((all || []).length, L)} {L ? "টি খোলা" : "open now"}</span>
+            </form>
           </div>
 
-          {/* STORY PLAYER — explains the selected gate in 3 beats */}
-          <div
-            className="ip-story"
-            style={{ "--c": gateCat.c }}
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-          >
-            <div className="ip-story-bars">
-              {[0, 1, 2].map((k) => (
-                <button key={k} type="button" aria-label={`Beat ${k + 1}`} onClick={() => playGate(gate, k)}
-                  className={k < beat ? "done" : k === beat ? "cur" : ""}>
-                  <i key={beatKey} style={{ animationDuration: `${BEAT_MS}ms`, animationPlayState: paused ? "paused" : "running" }} />
+          {/* STEP 1 — what do you need? */}
+          <p className="ig-step-label"><b>1</b><span>{L ? "তোমার সবচেয়ে বেশি কী দরকার?" : "What do you need most?"}</span></p>
+          <div className="ig-types" role="tablist">
+            {cats.map((c) => {
+              const on = c.id === gate;
+              return (
+                <button key={c.id} type="button" role="tab" aria-selected={on} className={`ig-type ${on ? "on" : ""}`} style={{ "--c": c.c }} onClick={() => setGate(c.id)}>
+                  <span className="ig-type-ic">{c.icon}</span>
+                  <b className={L ? "bn" : ""}>{c.name[L]}</b>
+                  <small className={L ? "bn" : ""}>“{GATE_FACTS[c.id].need[L]}”</small>
+                  <em>{n2(counts[c.id] || 0, L)} {L ? "টি খোলা" : "open"}</em>
                 </button>
-              ))}
-            </div>
-            <div className="ip-story-top">
-              <span className="ip-gate-badge"><Flap text={GATE[gate]} /></span>
-              <b className={L ? "bn" : ""}>{gateCat.icon} {gateCat.name[L]}</b>
-              <small>{story.who[L]}</small>
+              );
+            })}
+          </div>
+
+          {/* STEP 2 — what it means, in plain words */}
+          <p className="ig-step-label"><b>2</b><span>{L ? <>এই ইন্টার্নশিপ আসলে কী? — <em>{gateCat.icon} {gateCat.name[L]}</em></> : <>What a <em>{gateCat.name[0]}</em> internship really means</>}</span></p>
+          <div className="ig-explain" style={{ "--c": gateCat.c }} key={gate}>
+            <div className="ig-card ig-example">
+              <p className={`ig-meaning ${L ? "bn" : ""}`}>{story.meaning[L]}</p>
+              <div className="ig-person">
+                <span className="ig-avatar">{story.who[0].charAt(0)}</span>
+                <div><small>{L ? "একটা বাস্তব উদাহরণ" : "A real-life example"}</small><b className={L ? "bn" : ""}>{story.who[L]}</b></div>
+              </div>
+              <ol className="ig-timeline">
+                {story.beats.map((bt, k) => (
+                  <li key={k} style={{ "--k": k }}>
+                    <span className="ig-dot">{bt.actors[0]}</span>
+                    <small>{[L ? "আগে" : "Before", L ? "ইন্টার্নশিপে" : "The internship", L ? "পরে" : "After"][k]}</small>
+                    <p className={L ? "bn" : ""}>{bt.t[L]}</p>
+                  </li>
+                ))}
+              </ol>
             </div>
 
-            <div className={`ip-stage b${beat}`} key={gate + beat}>
-              <span className="ip-runway" aria-hidden="true" />
-              <span className="ip-sun" aria-hidden="true" />
-              {story.beats[beat].actors.map((a, k) => (
-                <span key={k} className={`ip-actor a${k} ${a === "✈️" ? "plane" : ""}`}>{a}</span>
-              ))}
-              <span className="ip-chapter">{L ? `অধ্যায় ${["১", "২", "৩"][beat]}` : `CHAPTER ${beat + 1}`}</span>
-            </div>
-
-            <p className={`ip-story-line ${L ? "bn" : ""}`} key={"t" + gate + beat}>{story.beats[beat].t[L]}</p>
-
-            <div className="ip-story-foot">
-              <p className={`ip-meaning ${L ? "bn" : ""}`}><span>💡</span>{story.meaning[L]}</p>
-              <button type="button" className="ip-btn gold sm" onClick={() => pick(gate)}>
-                {L ? `${n2(counts[gate] || 0, L)}টি ${gateCat.name[L]} দেখো` : `See ${counts[gate] || 0} ${gateCat.name[0]}`} →
+            <div className="ig-card ig-facts">
+              <h3 className={L ? "bn" : ""}>{L ? "এক নজরে" : "At a glance"}</h3>
+              <dl>
+                {[["💰", L ? "টাকা" : "Pay", "pay"], ["⏱️", L ? "সময়কাল" : "Usually lasts", "length"], ["🎯", L ? "কার জন্য" : "Best for", "best"], ["🎁", L ? "যা পাবে" : "You get", "get"]].map(([ic, lab, k]) => (
+                  <div key={k}><dt><i>{ic}</i>{lab}</dt><dd className={L ? "bn" : ""}>{GATE_FACTS[gate][k][L]}</dd></div>
+                ))}
+              </dl>
+              <div className="ig-soon">
+                <small>{L ? "শীঘ্রই শেষ হচ্ছে" : "Closing soon"}</small>
+                {topFor(gate).map((j) => (
+                  <a key={j.id} href={`#pass-${j.id}`} onClick={(e) => { e.preventDefault(); pick(gate); setTimeout(() => document.getElementById(`pass-${j.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 300); }}>
+                    <b>{j.title}</b><span>{j.company?.name}</span>
+                    <em>{daysLeft(j.deadline) != null ? `${n2(daysLeft(j.deadline), L)}${L ? " দিন" : "d left"}` : ""}</em>
+                  </a>
+                ))}
+                {!topFor(gate).length && <p>{L ? "এই ধরনের ইন্টার্নশিপ এখন নেই — শীঘ্রই আসবে।" : "None open right now — new ones arrive weekly."}</p>}
+              </div>
+              <button type="button" className="ip-btn gold ig-cta" onClick={() => pick(gate)} disabled={!counts[gate]}>
+                {counts[gate] ? (L ? `${n2(counts[gate], L)}টি ${gateCat.name[L]} ইন্টার্নশিপ দেখো` : `See all ${counts[gate]} ${gateCat.name[0]} internships`) : (L ? "শীঘ্রই আসছে" : "Coming soon")} ↓
               </button>
             </div>
-            <button type="button" className="ip-story-nav l" onClick={() => (beat > 0 ? playGate(gate, beat - 1) : playGate(cats[(gi + cats.length - 1) % cats.length].id))} aria-label="Previous">‹</button>
-            <button type="button" className="ip-story-nav r" onClick={() => (beat < 2 ? playGate(gate, beat + 1) : playGate(cats[(gi + 1) % cats.length].id))} aria-label="Next">›</button>
-          </div>
-
-          <div className="ip-board ip-cosmos">
-            <div className="ip-board-top">
-              <b>{L ? "সোনারহরিণ সৌরজগৎ" : "SONARHORIN SYSTEM"}</b>
-              <time className="ip-clock">{clock.toLocaleTimeString("en-GB", { timeZone: "Asia/Dhaka" })} <small>DAC</small></time>
-              <span><i />{L ? "লাইভ" : "LIVE"} · {n2((all || []).length, L)} {L ? "টি ইন্টার্নশিপ" : "internships"}</span>
-            </div>
-
-            <InternSolar
-              cats={cats}
-              gate={gate}
-              counts={counts}
-              onPick={(id) => playGate(id)}
-              L={L}
-              gateCodes={GATE}
-              progressMs={BEAT_MS * (3 - beat)}
-              progressFrom={beat / 3}
-              paused={paused}
-              progKey={beatKey}
-            />
-
-            {/* the planet you're on: its brightest internships right now */}
-            <div className="ip-orbiting" style={{ "--c": gateCat.c }} key={gate}>
-              <div className="ip-orbiting-head">
-                <span className="ip-gate-badge sm">{GATE[gate]}</span>
-                <b className={L ? "bn" : ""}>{gateCat.icon} {gateCat.name[L]}</b>
-                <em className={`ip-status s${tick % 4}`}><i />{statusOf(gate, 0)}</em>
-              </div>
-              {topFor(gate).map((j, k) => (
-                <a key={j.id} href="#passes" className="ip-peek-row" style={{ animationDelay: `${k * 0.07}s` }}
-                  onClick={(e) => { e.preventDefault(); pick(gate); setTimeout(() => document.getElementById(`pass-${j.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 300); }}>
-                  <span>✈</span><b>{j.title}</b><small>{j.company?.name}</small>
-                  <em>{daysLeft(j.deadline) != null ? `${n2(daysLeft(j.deadline), L)}${L ? " দিন" : "d"}` : ""}</em>
-                </a>
-              ))}
-              {!topFor(gate).length && <p className="ip-peek-empty">{L ? "এই গ্রহে এখন কোনো ইন্টার্নশিপ নেই — শীঘ্রই আসছে" : "No internships on this planet right now — coming soon"}</p>}
-            </div>
-
-            {ticker.length > 0 && (
-              <div className="ip-ticker" aria-hidden="true">
-                <div>
-                  {[...ticker, ...ticker].map((j, k) => (
-                    <span key={k}>✈ <b>{j.company?.name}</b> — {j.title} <i>{L ? "এখন বোর্ডিং" : "now boarding"}</i></span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </section>

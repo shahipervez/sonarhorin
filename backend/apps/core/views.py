@@ -73,3 +73,64 @@ def videos(request):
 
     return Response([{"id": v.id, "title": v.title, "title_bn": v.title_bn, "kind": v.kind, "youtube_id": v.youtube_id,
                       "speaker": v.speaker, "minutes": v.minutes} for v in Video.objects.filter(is_active=True)[:40]])
+
+
+# ---------------------------------------------------------------------------
+# Guide Bot — answers "where is X / how do I Y" questions about the site.
+# The frontend answers common questions instantly on its own; it only calls this for questions it couldn't match.
+# ---------------------------------------------------------------------------
+GUIDE_PAGES = {
+    "/jobs": "Fresher & entry-level jobs, 1-tap apply, filter by major",
+    "/internships": "Internships: paid, learning (unpaid + certificate), versity credit, corporate (PPO), remote",
+    "/programs": "Graduate programs, internship programs and offline trainings",
+    "/cv": "Judge Yourself: upload a CV, get rejection % and an improvement report (ATS check)",
+    "/studio": "CV Studio: tailor your CV to one specific job",
+    "/quick-test": "Quick Test: major-based MCQ test (BBA/CSE/EEE…)",
+    "/interview": "10-minute AI mock interview with feedback",
+    "/coach": "Interview Coach: AI prep kit for one specific job",
+    "/certificates": "Certifications and certificate verification",
+    "/efficiency": "Efficiency Test (pre-joining test companies use)",
+    "/portfolio": "Portfolio website builder",
+    "/network": "Network: connect and chat with students, find co-founders",
+    "/startup": "Startup fund: pitch builder, readiness score 45+, ৳10L pre-seed, monthly pitch day",
+    "/stories": "Success stories and videos",
+    "/applications": "My applications and their status (login needed)",
+    "/me": "Dashboard (login needed)",
+    "/login": "Log in",
+    "/register": "Create a free account",
+}
+
+
+class GuideThrottle(AnonRateThrottle):
+    scope = "guide"
+    rate = "40/hour"
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def guide(request):
+    """POST {message, page?, lang?} → {reply, links:[path…]}. reply is null when AI is off (frontend falls back)."""
+    from . import ai
+
+    msg = str(request.data.get("message") or "").strip()[:500]
+    if not msg:
+        return Response({"detail": "message is required"}, status=400)
+    if not ai.enabled():
+        return Response({"reply": None, "links": []})
+    if not GuideThrottle().allow_request(request, None):
+        return Response({"detail": "Too many questions — please wait a little."}, status=429)
+    page = str(request.data.get("page") or "/")[:80]
+    lang = "Bangla" if request.data.get("lang") == "bn" else "English"
+    site = "\n".join(f"- {p}: {d}" for p, d in GUIDE_PAGES.items())
+    system = (
+        "You are the Guide Bot of সোনারহরিণ (Sonarhorin), a jobs & career website only for freshers in Bangladesh. "
+        "Help the visitor find the right page and explain briefly how to use it. Pages:\n" + site + "\n"
+        f"The visitor is on {page}. Reply in {lang} (Banglish input is fine), in at most 3 short sentences, friendly. "
+        "Only talk about this website and fresher careers; for anything else, politely steer back. Never invent "
+        "features, prices or jobs. Respond ONLY with JSON: {\"reply\": string, \"links\": [up to 3 paths from the list]}."
+    )
+    data = ai.complete_json(system, ai.untrusted("question", msg), max_tokens=300)
+    if not isinstance(data, dict) or not isinstance(data.get("reply"), str):
+        return Response({"reply": None, "links": []})
+    links = [p for p in (data.get("links") or []) if isinstance(p, str) and p in GUIDE_PAGES][:3]
+    return Response({"reply": data["reply"][:600], "links": links})

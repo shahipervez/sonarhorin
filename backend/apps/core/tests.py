@@ -119,6 +119,19 @@ class SonarhorinFlowTests(TestCase):
         self.assertEqual(again.data["position"], 1)
         self.assertEqual(anon.post("/api/waitlist/", {"email": "nope"}, format="json").status_code, 400)
 
+    # ---- guide bot
+    def test_guide_bot(self):
+        from unittest import mock
+        anon = APIClient()
+        self.assertEqual(anon.post("/api/guide/", {"message": ""}, format="json").status_code, 400)
+        with self.settings(ANTHROPIC_API_KEY=""):
+            r = anon.post("/api/guide/", {"message": "where are jobs?"}, format="json")
+            self.assertEqual((r.status_code, r.data["reply"]), (200, None))
+        fake = {"reply": "Go to Jobs.", "links": ["/jobs", "/hack", 5]}
+        with self.settings(ANTHROPIC_API_KEY="k"), mock.patch("apps.core.ai.complete_json", return_value=fake):
+            r = anon.post("/api/guide/", {"message": "chakri kothay", "lang": "bn", "page": "/"}, format="json")
+            self.assertEqual(r.data, {"reply": "Go to Jobs.", "links": ["/jobs"]})
+
     # ---- 1 & 2: CV judge + report
     def _upload(self, text, name="cv.txt"):
         f = SimpleUploadedFile(name, text.encode(), content_type="text/plain")
