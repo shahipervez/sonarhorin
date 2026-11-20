@@ -90,7 +90,7 @@ export default function Internships() {
             <div>
               <h1 className={`ip-title ${L ? "bn" : ""}`}>{L ? "ইন্টার্নশিপ" : "Internships"}</h1>
               <p className={`ig-sub ${L ? "bn" : ""}`}>
-                {L ? "৫টা গ্রহ, ৫ ধরনের ইন্টার্নশিপ। একটায় চাপ দাও — দেখো মানে কী আর কারা নিচ্ছে।" : "5 planets, 5 kinds of internship. Tap one to see what it means and who's hiring."}
+                {L ? "৫টি ক্যাটাগরি — তোমার ক্যারিয়ারের কক্ষপথ। একটায় চাপ দিয়ে বিস্তারিত সুযোগ ও সার্কুলার দেখো।" : "5 internship categories orbiting your career. Tap one to explore details and openings."}
               </p>
             </div>
             <form className="ig-search" onSubmit={(e) => { e.preventDefault(); document.querySelector(".ip-board-anchor")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
@@ -128,7 +128,7 @@ export default function Internships() {
             </h2>
             <p className="ip-count">
               {all ? (L ? `${n2(list.length, L)}টি পাস পাওয়া গেছে` : `${list.length} pass${list.length === 1 ? "" : "es"} found`) : L ? "লোড হচ্ছে…" : "Loading…"}
-              {cat && <button type="button" className="ip-clear" onClick={() => pick(cat)}>✕ {L ? "সব গ্রহ দেখো" : "show all planets"}</button>}
+              {cat && <button type="button" className="ip-clear" onClick={() => pick(cat)}>✕ {L ? "সব ক্যাটাগরি দেখো" : "show all categories"}</button>}
             </p>
           </div>
           <div className="ip-tools">

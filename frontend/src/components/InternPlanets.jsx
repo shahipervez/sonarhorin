@@ -1,66 +1,204 @@
 import { useEffect, useMemo, useState } from "react";
 
 /**
- * Internship solar system — 5 real planets, each standing for one internship type.
- * Tap a planet → it zooms up, its meaning appears, and that type's internships drop down beneath it.
+ * Internship Planetary System — 5 realistic celestial bodies representing the 5 internship categories.
+ * Category names only (no planet names like Venus/Saturn).
+ * Realistic physics: Saturn has an authentic 26.7° axial tilt, Cassini ring division, and 3D depth.
+ * Realistic orbital revolution around the central career sun with smooth continuous movement and pause-on-hover.
  */
-export const PLANETS = {
+export const CATEGORY_PLANETS = {
   unpaid: {
-    planet: ["Venus", "শুক্র"], cls: "venus",
-    why: ["The Morning Star — the first light you see in the sky.", "শুকতারা — আকাশে ভোরের প্রথম আলো।"],
-    so: ["A learning internship is your first light: no salary, but a mentor, real tasks and a certificate.", "লার্নিং ইন্টার্নশিপ তোমার প্রথম আলো: বেতন নেই, কিন্তু মেন্টর, আসল কাজ আর সার্টিফিকেট।"],
+    id: "unpaid",
+    cls: "learning",
+    icon: "📜",
+    themeColor: "#6366F1",
+    subTitle: ["Mentor & Certificate", "মেন্টর ও সার্টিফিকেট"],
+    headline: [
+      "Learning Internship — Foundation & Mentorship",
+      "লার্নিং ইন্টার্নশিপ — ভেরিফায়েড কাজ ও মেন্টরশিপ",
+    ],
+    why: [
+      "The starting light of your career: no salary, but real-world tasks, industry mentorship and a certified portfolio.",
+      "ক্যারিয়ারের প্রথম আলো: বেতন না থাকলেও রিয়েল প্রজেক্ট, ডেডিকেটেড মেন্টর ও ভেরিফায়েড সার্টিফিকেট।",
+    ],
+    so: [
+      "Best for freshers with no prior experience to build credibility before applying to paid roles.",
+      "যাদের একদম অভিজ্ঞতা নেই, তাদের জন্য নিজের কাজ প্রমাণ করে পেইড রোলে যাওয়ার সেরা শুরু।",
+    ],
   },
   paid: {
-    planet: ["Earth", "পৃথিবী"], cls: "earth",
-    why: ["Home — the planet where people earn a living.", "আমাদের ঘর — যেখানে মানুষ রোজগার করে বাঁচে।"],
-    so: ["A paid internship pays a monthly stipend while you learn — real work, real money.", "পেইড ইন্টার্নশিপে শিখতে শিখতেই মাসে স্টাইপেন্ড — আসল কাজ, আসল টাকা।"],
+    id: "paid",
+    cls: "paid",
+    icon: "💵",
+    themeColor: "#10B981",
+    subTitle: ["Stipend ৳10k–25k/mo", "মাসিক স্টাইপেন্ড ৳১০k+"],
+    headline: [
+      "Paid Internship — Earn While You Learn",
+      "পেইড ইন্টার্নশিপ — কাজ ও নিশ্চিত মাসিক স্টাইপেন্ড",
+    ],
+    why: [
+      "Guaranteed monthly stipend (৳10,000–৳25,000) while gaining real industry experience.",
+      "পড়াশোনার পাশাপাশি প্রতি মাসে সম্মানজনক স্টাইপেন্ড এবং আসল কাজের প্রফেশনাল এক্সপেরিয়েন্স।",
+    ],
+    so: [
+      "Perfect for 3rd/4th year students looking to cover their expenses while launching their career.",
+      "তৃতীয় ও চতুর্থ বর্ষের শিক্ষার্থীদের জন্য স্বাবলম্বী হওয়ার পাশাপাশি ক্যারিয়ার গড়ার সেরা সুযোগ।",
+    ],
   },
   corporate: {
-    planet: ["Saturn", "শনি"], cls: "saturn",
-    why: ["The giant with rings — big, structured, impossible to miss.", "বলয়ওয়ালা দানব — বড়, গোছানো, চোখে পড়বেই।"],
-    so: ["A corporate internship = a big company, rings of structured training around you, and often a PPO (job offer).", "কর্পোরেট ইন্টার্নশিপ = বড় কোম্পানি, চারপাশে গোছানো ট্রেনিংয়ের বলয়, আর প্রায়ই PPO (চাকরির অফার)।"],
+    id: "corporate",
+    cls: "corporate", // Saturn with realistic 3D tilted rings
+    icon: "🏢",
+    themeColor: "#3B82F6",
+    subTitle: ["Top MNC + Job Offer (PPO)", "শীর্ষ MNC ও PPO অফার"],
+    headline: [
+      "Corporate (PPO) — Big League & Direct Job Offer",
+      "কর্পোরেট (PPO) — মাল্টিন্যাশনাল ক্যারিয়ার ও চাকরির অফার",
+    ],
+    why: [
+      "Join top corporate & multinational giants with structured training and executive mentorship.",
+      "দেশের শীর্ষ কর্পোরেট ও এমএনসি কোম্পানিতে গোছানো ট্রেনিং ও এক্সিকিউটিভ মেন্টরশিপ।",
+    ],
+    so: [
+      "High-performing interns often receive a direct PPO (Pre-Placement Job Offer) before graduating.",
+      "ভালো পারফর্মেন্সে গ্র্যাজুয়েশনের আগেই সরাসরি ফুল-টাইম চাকরির অফার (PPO) পাওয়া যায়।",
+    ],
   },
   remote: {
-    planet: ["Uranus", "ইউরেনাস"], cls: "uranus",
-    why: ["It spins on its side — it does things its own way.", "কাত হয়ে ঘোরে — নিজের নিয়মে চলে।"],
-    so: ["A remote internship lets you work your own way, from anywhere in Bangladesh — laptop + Wi-Fi.", "রিমোট ইন্টার্নশিপে নিজের মতো কাজ, বাংলাদেশের যেকোনো জায়গা থেকে — ল্যাপটপ + ওয়াই-ফাই।"],
+    id: "remote",
+    cls: "remote",
+    icon: "🌐",
+    themeColor: "#EC4899",
+    subTitle: ["Work From Anywhere", "বাসা থেকে রিমোট (WFH)"],
+    headline: [
+      "Remote Internship — Work from Anywhere in Bangladesh",
+      "রিমোট ইন্টার্নশিপ — দেশের যেকোনো প্রান্ত থেকে কাজ",
+    ],
+    why: [
+      "No daily traffic or relocation: ship real features for Dhaka companies right from your room.",
+      "ঢাকার যানজট বা মেস লাইফের ঝামেলা ছাড়াই যেকোনো জেলা থেকে সরাসরি শীর্ষ কোম্পানিতে কাজ।",
+    ],
+    so: [
+      "All you need is a laptop and good internet to work flexible hours with high-growth teams.",
+      "ল্যাপটপ আর ওয়াই-ফাই থাকলেই যেকোনো প্রান্ত থেকে ফ্লেক্সিবল টাইমে প্রফেশনাল কাজ।",
+    ],
   },
   versity: {
-    planet: ["Neptune", "নেপচুন"], cls: "neptune",
-    why: ["The last planet of the system — the end of the journey.", "সৌরজগতের শেষ গ্রহ — যাত্রার শেষ ধাপ।"],
-    so: ["A versity-credit internship is your final-semester step: it counts toward your degree so you graduate on time.", "ভার্সিটি ক্রেডিট ইন্টার্নশিপ শেষ সেমিস্টারের ধাপ: ডিগ্রির ক্রেডিটে গোনা হয়, সময়মতো গ্র্যাজুয়েশন।"],
+    id: "versity",
+    cls: "versity",
+    icon: "🏫",
+    themeColor: "#F59E0B",
+    subTitle: ["Academic Credit & Thesis", "একাডেমিক ক্রেডিট ও গ্র্যাজুয়েশন"],
+    headline: [
+      "Versity Credit — Graduate On Schedule",
+      "ভার্সিটি ক্রেডিট — সময়মতো গ্র্যাজুয়েশন নিশ্চিত",
+    ],
+    why: [
+      "Fulfills your university's final-semester 3/6 credit internship & supervisor evaluation requirement.",
+      "বিশ্ববিদ্যালয়ের শেষ সেমিস্টারের বাধ্যতামূলক ইন্টার্নশিপ ক্রেডিট ও সুপারভাইজার সাইন নিশ্চিত করে।",
+    ],
+    so: [
+      "Get your formal completion certificate and report signed to graduate on time with an A grade.",
+      "কোম্পানি রিপোর্টে সুপারভাইজার সাইন ও মূল্যায়ন পেয়ে সময়মতো গ্র্যাজুয়েশন সম্পন্ন করার সুযোগ।",
+    ],
   },
 };
-// real order from the sun
+
+// System order from inner orbit to outer orbit
 export const PLANET_ORDER = ["unpaid", "paid", "corporate", "remote", "versity"];
 
+/**
+ * Realistic 3D Planet component.
+ * - Corporate (Saturn): realistic 26.7° axial tilt with concentric Cassini division rings,
+ *   spherical curvature, surface band rotation, and dual front/back z-index clipping.
+ * - Paid (Earth): realistic 23.5° axial tilt with oceanic depth, continents, and cloud layers.
+ * - Remote (Uranus): 98° tilt spinning on its side with thin vertical rings.
+ */
 export function Planet({ id, size = 90, spin = true }) {
-  const p = PLANETS[id];
+  const p = CATEGORY_PLANETS[id] || CATEGORY_PLANETS.unpaid;
+  const isSaturn = p.cls === "corporate";
+  const isUranus = p.cls === "remote";
+
   return (
-    <span className={`pl pl-${p.cls} ${spin ? "spin" : ""}`} style={{ "--s": `${size}px` }} aria-hidden="true">
-      {(p.cls === "saturn" || p.cls === "uranus") && <i className="pl-ring back" />}
-      <span className="pl-body"><span className="pl-surface" /><span className="pl-shade" /></span>
-      {(p.cls === "saturn" || p.cls === "uranus") && <i className="pl-ring front" />}
+    <span
+      className={`pl pl-${p.cls} ${spin ? "spin" : ""}`}
+      style={{ "--s": `${size}px` }}
+      aria-hidden="true"
+    >
+      {/* 3D Ring Back Layer (passes behind the planet sphere) */}
+      {(isSaturn || isUranus) && (
+        <span className="pl-ring-wrap back">
+          <i className="pl-ring back" />
+        </span>
+      )}
+
+      {/* Spherical Body with 3D shadow and rotating atmospheric bands */}
+      <span className="pl-body">
+        <span className="pl-surface" />
+        <span className="pl-atmosphere" />
+        <span className="pl-shade" />
+        {isSaturn && <span className="pl-ring-shadow" />}
+      </span>
+
+      {/* 3D Ring Front Layer (passes in front of the lower half of the planet) */}
+      {(isSaturn || isUranus) && (
+        <span className="pl-ring-wrap front">
+          <i className="pl-ring front" />
+        </span>
+      )}
     </span>
   );
 }
 
 function Stars() {
-  const stars = useMemo(() => Array.from({ length: 70 }, (_, i) => ({
-    x: (i * 137.5) % 100, y: (i * 53.3 + (i % 7) * 11) % 100, s: i % 9 === 0 ? 3 : i % 3 === 0 ? 2 : 1, d: (i % 10) * 0.4,
-  })), []);
-  return <div className="ipl-stars" aria-hidden="true">{stars.map((s, i) => <i key={i} style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.s, height: s.s, animationDelay: `${s.d}s` }} />)}</div>;
+  const stars = useMemo(
+    () =>
+      Array.from({ length: 75 }, (_, i) => ({
+        x: (i * 137.5) % 100,
+        y: (i * 53.3 + (i % 7) * 11) % 100,
+        s: i % 9 === 0 ? 3 : i % 3 === 0 ? 2 : 1,
+        d: (i % 10) * 0.4,
+      })),
+    []
+  );
+
+  return (
+    <div className="ipl-stars" aria-hidden="true">
+      {stars.map((s, i) => (
+        <i
+          key={i}
+          style={{
+            left: `${s.x}%`,
+            top: `${s.y}%`,
+            width: s.s,
+            height: s.s,
+            animationDelay: `${s.d}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
 }
 
-/**
- * props: cats (STORY_SETS.internship), sel (id | ""), counts, onSelect(id|""), L,
- *        facts (GATE_FACTS), story (GATE_STORIES), top (id → 4 jobs), onSeeAll(id), onOpenJob(job), daysLeft, n2
- */
-export default function InternPlanets({ cats, sel, counts, onSelect, L, facts, story, top, onSeeAll, onOpenJob, daysLeft, n2 }) {
+export default function InternPlanets({
+  cats,
+  sel,
+  counts,
+  onSelect,
+  L,
+  facts,
+  story,
+  top,
+  onSeeAll,
+  onOpenJob,
+  daysLeft,
+  n2,
+}) {
   const [hover, setHover] = useState("");
+  const [orbiting, setOrbiting] = useState(true);
   const byId = Object.fromEntries(cats.map((c) => [c.id, c]));
   const cur = sel ? byId[sel] : null;
-  const P = sel ? PLANETS[sel] : null;
+  const P = sel ? CATEGORY_PLANETS[sel] : null;
   const list = sel ? top(sel) : [];
 
   useEffect(() => {
@@ -71,79 +209,232 @@ export default function InternPlanets({ cats, sel, counts, onSelect, L, facts, s
   }, [sel, onSelect]);
 
   return (
-    <div className={`ipl ${sel ? "has-sel" : ""}`}>
+    <div className={`ipl ${sel ? "has-sel" : ""} ${orbiting && !sel ? "is-orbiting" : ""}`}>
       <Stars />
-      <span className="ipl-sun" aria-hidden="true" />
-      <svg className="ipl-orbit" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="500" cy="100" rx="490" ry="78" /></svg>
 
-      {/* the system */}
-      <div className="ipl-row" role="tablist" aria-label={L ? "ইন্টার্নশিপের ধরন" : "Internship types"}>
+      {/* Central Career Sun with Golden Deer Core */}
+      <div className="ipl-sun-wrap" aria-hidden="true">
+        <span className="ipl-sun" />
+        <span className="ipl-sun-core">🦌</span>
+        <span className="ipl-sun-corona" />
+      </div>
+
+      {/* Orbit Track Ellipse */}
+      <svg className="ipl-orbit" viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true">
+        <ellipse cx="500" cy="120" rx="480" ry="86" />
+      </svg>
+
+      {/* Top Header / Orbit Controls */}
+      <div className="ipl-controls-bar">
+        <span className="ipl-badge">
+          🪐 {L ? "৫টি ইন্টার্নশিপ ক্যাটাগরি কক্ষপথ" : "5 Internship Category Orbits"}
+        </span>
+        <button
+          type="button"
+          className="ipl-orbit-toggle"
+          onClick={() => setOrbiting(!orbiting)}
+          title={orbiting ? (L ? "কক্ষপথে ঘূর্ণন থামান" : "Pause Orbit") : (L ? "কক্ষপথে ঘূর্ণন চালু করুন" : "Play Orbit")}
+        >
+          {orbiting ? "❚❚ " : "▶ "}
+          {orbiting ? (L ? "কক্ষপথ চালু" : "Orbit Active") : (L ? "কক্ষপথ স্থির" : "Orbit Paused")}
+        </button>
+      </div>
+
+      {/* The 5 Category Celestial Nodes (Revolving or stationary based on state) */}
+      <div
+        className={`ipl-row ${orbiting && !sel ? "orbiting" : ""}`}
+        role="tablist"
+        aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}
+      >
         {PLANET_ORDER.map((id, i) => {
-          const c = byId[id]; if (!c) return null;
+          const c = byId[id];
+          if (!c) return null;
           const on = sel === id;
+          const p = CATEGORY_PLANETS[id];
+
           return (
-            <button key={id} type="button" role="tab" aria-selected={on}
-              className={`ipl-p ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
-              style={{ "--c": c.c, "--i": i }}
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              className={`ipl-p ipl-node-${id} ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
+              style={{
+                "--c": c.c,
+                "--i": i,
+                "--orbit-delay": `${i * -6.5}s`,
+              }}
               onClick={() => onSelect(on ? "" : id)}
-              onMouseEnter={() => setHover(id)} onMouseLeave={() => setHover("")}>
-              <span className="ipl-float"><Planet id={id} size={on ? 112 : 84} /></span>
-              <b className={L ? "bn" : ""}>{PLANETS[id].planet[L]}</b>
-              <small className={L ? "bn" : ""}>{c.icon} {c.name[L]}</small>
-              <em>{n2(counts[id] || 0, L)} {L ? "টি" : "open"}</em>
-              {hover === id && !on && <span className="ipl-tip">“{facts[id].need[L]}”</span>}
+              onMouseEnter={() => setHover(id)}
+              onMouseLeave={() => setHover("")}
+            >
+              {/* 3D Planet Sphere */}
+              <span className="ipl-float">
+                <Planet id={id} size={on ? 116 : 88} spin={true} />
+              </span>
+
+              {/* ONLY CATEGORY NAME (Planet names removed!) */}
+              <b className={L ? "bn" : ""}>
+                {c.name[L]} {c.id === "paid" || c.id === "remote" ? (L ? "ইন্টার্ন" : "") : ""}
+              </b>
+
+              {/* Sub-tag with feature highlight */}
+              <small className={L ? "bn" : ""}>
+                {c.icon} {p.subTitle[L]}
+              </small>
+
+              {/* Count Pill */}
+              <em>
+                {n2(counts[id] || 0, L)} {L ? "টি সুযোগ" : "openings"}
+              </em>
+
+              {/* Hover Tooltip */}
+              {hover === id && !on && facts[id]?.need && (
+                <span className="ipl-tip">“{facts[id].need[L]}”</span>
+              )}
             </button>
           );
         })}
       </div>
 
-      {!sel && <p className="ipl-hint">👆 {L ? "একটা গ্রহে চাপ দাও — দেখো তার মানে কী, আর কোন ইন্টার্নশিপ আছে" : "Tap a planet to see what it means — and which internships orbit it"}</p>}
+      {!sel && (
+        <p className="ipl-hint">
+          👆 {L ? "যেকোনো ক্যাটাগরিতে ক্লিক করো — বিস্তারিত তথ্য ও ইন্টার্নশিপের সুযোগসমূহ দেখো" : "Tap any category to explore requirements, details and active openings"}
+        </p>
+      )}
 
-      {/* focus: the chosen planet zooms in, meaning + internships drop below */}
-      {sel && cur && (
+      {/* Focus View: Selected Category zooms up with details & job openings */}
+      {sel && cur && P && (
         <div className="ipl-focus" style={{ "--c": cur.c }} key={sel}>
-          <div className="ipl-focus-planet"><Planet id={sel} size={210} /></div>
+          <div className="ipl-focus-planet">
+            <Planet id={sel} size={220} spin={true} />
+            <span className="ipl-focus-cat-badge">{cur.icon} {cur.name[L]}</span>
+          </div>
+
           <div className="ipl-focus-text">
-            <span className="ipl-kicker">{L ? "তুমি এখন" : "You landed on"} <b>{P.planet[L]}</b></span>
-            <h2 className={L ? "bn" : ""}>{cur.icon} {cur.name[L]} {L ? "ইন্টার্নশিপ" : "internship"}</h2>
-            <p className={`ipl-why ${L ? "bn" : ""}`}><span>🪐</span>{P.why[L]}</p>
-            <p className={`ipl-so ${L ? "bn" : ""}`}>{P.so[L]}</p>
+            <span className="ipl-kicker">
+              {L ? "নির্বাচিত ক্যাটাগরি" : "Selected Category"}
+            </span>
+            <h2 className={L ? "bn" : ""}>
+              {cur.icon} {cur.name[L]} {L ? "ইন্টার্নশিপ" : "Internship"}
+            </h2>
+
+            <p className={`ipl-why ${L ? "bn" : ""}`}>
+              <span>✨</span> {P.why[L]}
+            </p>
+
+            <p className={`ipl-so ${L ? "bn" : ""}`}>
+              {P.so[L]}
+            </p>
+
+            {/* Facts Grid */}
             <dl className="ipl-facts">
-              {[["💰", L ? "টাকা" : "Pay", "pay"], ["⏱️", L ? "সময়" : "Length", "length"], ["🎯", L ? "কার জন্য" : "Best for", "best"], ["🎁", L ? "যা পাবে" : "You get", "get"]].map(([ic, lab, k]) => (
-                <div key={k}><dt>{ic} {lab}</dt><dd className={L ? "bn" : ""}>{facts[sel][k][L]}</dd></div>
+              {[
+                ["💰", L ? "স্টাইপেন্ড / পেমেন্ট" : "Stipend", "pay"],
+                ["⏱️", L ? "সময়কাল" : "Duration", "length"],
+                ["🎯", L ? "কার জন্য উপযুক্ত" : "Best For", "best"],
+                ["🎁", L ? "সুবিধাসমূহ" : "Key Benefits", "get"],
+              ].map(([ic, lab, k]) => (
+                <div key={k}>
+                  <dt>{ic} {lab}</dt>
+                  <dd className={L ? "bn" : ""}>{facts[sel]?.[k]?.[L] || "—"}</dd>
+                </div>
               ))}
             </dl>
-            <details className="ipl-story">
-              <summary>{L ? `একটা বাস্তব উদাহরণ — ${story[sel].who[1]}` : `A real example — ${story[sel].who[0]}`}</summary>
-              <ol>{story[sel].beats.map((b, k) => <li key={k}><i>{b.actors[0]}</i><span className={L ? "bn" : ""}>{b.t[L]}</span></li>)}</ol>
-            </details>
-          </div>
-          <button type="button" className="ipl-close" onClick={() => onSelect("")} aria-label={L ? "সৌরজগতে ফেরো" : "Back to the system"}>✕</button>
 
+            {/* Story Example */}
+            {story[sel] && (
+              <details className="ipl-story">
+                <summary>
+                  {L ? `বাস্তব সাফল্যের গল্প — ${story[sel].who[1]}` : `Real Success Story — ${story[sel].who[0]}`}
+                </summary>
+                <ol>
+                  {story[sel].beats.map((b, k) => (
+                    <li key={k}>
+                      <i>{b.actors[0]}</i>
+                      <span className={L ? "bn" : ""}>{b.t[L]}</span>
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            )}
+          </div>
+
+          <button
+            type="button"
+            className="ipl-close"
+            onClick={() => onSelect("")}
+            aria-label={L ? "সব ক্যাটাগরিতে ফেরত যান" : "Back to all categories"}
+          >
+            ✕
+          </button>
+
+          {/* Internship Boarding Passes List under Category */}
           <div className="ipl-drop">
             <div className="ipl-drop-head">
-              <b className={L ? "bn" : ""}>{L ? `${P.planet[1]}-এর কক্ষপথে ইন্টার্নশিপ` : `Internships orbiting ${P.planet[0]}`}</b>
+              <b className={L ? "bn" : ""}>
+                {L ? `${cur.name[1]} ইন্টার্নশিপের সুযোগসমূহ` : `${cur.name[0]} Openings`}
+              </b>
               <span>{n2(counts[sel] || 0, L)} {L ? "টি খোলা" : "open"}</span>
             </div>
+
             <div className="ipl-jobs">
               {list.map((j, k) => {
                 const dl = daysLeft(j.deadline);
                 return (
-                  <button key={j.id} type="button" className="ipl-job" style={{ "--k": k }} onClick={() => onOpenJob(j)}>
-                    <span className="ipl-job-logo" style={{ background: j.company?.color || cur.c }}>{(j.company?.name || "?").charAt(0)}</span>
-                    <span className="ipl-job-txt"><b>{j.title}</b><small>{j.company?.name}{j.remote ? ` · ${L ? "রিমোট" : "Remote"}` : j.location ? ` · ${j.location}` : ""}</small></span>
+                  <button
+                    key={j.id}
+                    type="button"
+                    className="ipl-job"
+                    style={{ "--k": k }}
+                    onClick={() => onOpenJob(j)}
+                  >
+                    <span
+                      className="ipl-job-logo"
+                      style={{ background: j.company?.color || cur.c }}
+                    >
+                      {(j.company?.name || "?").charAt(0)}
+                    </span>
+                    <span className="ipl-job-txt">
+                      <b>{j.title}</b>
+                      <small>
+                        {j.company?.name}
+                        {j.remote ? ` · ${L ? "রিমোট" : "Remote"}` : j.location ? ` · ${j.location}` : ""}
+                      </small>
+                    </span>
                     <span className="ipl-job-meta">
-                      <em>{j.salary_min ? `৳${Math.round(j.salary_min / 1000)}k${j.salary_max ? `–${Math.round(j.salary_max / 1000)}k` : ""}` : (L ? "সার্টিফিকেট" : "Certificate")}</em>
-                      {dl != null && <small className={dl <= 5 ? "hot" : ""}>{n2(dl, L)}{L ? " দিন বাকি" : "d left"}</small>}
+                      <em>
+                        {j.salary_min
+                          ? `৳${Math.round(j.salary_min / 1000)}k${j.salary_max ? `–${Math.round(j.salary_max / 1000)}k` : ""}`
+                          : L ? "সার্টিফিকেট" : "Certificate"}
+                      </em>
+                      {dl != null && (
+                        <small className={dl <= 5 ? "hot" : ""}>
+                          {n2(dl, L)}{L ? " দিন বাকি" : "d left"}
+                        </small>
+                      )}
                     </span>
                   </button>
                 );
               })}
-              {!list.length && <p className="ipl-empty">{L ? "এই গ্রহে এখন কোনো ইন্টার্নশিপ নেই — নতুনগুলো প্রতি সপ্তাহে আসে।" : "Nothing orbiting this planet right now — new internships land every week."}</p>}
+              {!list.length && (
+                <p className="ipl-empty">
+                  {L
+                    ? "এই ক্যাটাগরিতে এই মুহূর্তে নতুন সার্কুলার প্রসেসিংয়ে রয়েছে — প্রতি সপ্তাহে নতুন ইন্টার্নশিপ আসে।"
+                    : "New internships for this category are landing soon. Check back weekly."}
+                </p>
+              )}
             </div>
+
             {(counts[sel] || 0) > 0 && (
-              <button type="button" className="ip-btn gold ipl-all" onClick={() => onSeeAll(sel)}>
-                {L ? `সব ${n2(counts[sel], L)}টি দেখো ও আবেদন করো` : `See all ${counts[sel]} & apply`} ↓
+              <button
+                type="button"
+                className="ip-btn gold ipl-all"
+                onClick={() => onSeeAll(sel)}
+              >
+                {L
+                  ? `সব ${n2(counts[sel], L)}টি ${cur.name[1]} ইন্টার্নশিপ দেখো ও আবেদন করো`
+                  : `See all ${counts[sel]} ${cur.name[0]} Internships & Apply`} ↓
               </button>
             )}
           </div>

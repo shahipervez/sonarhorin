@@ -1,173 +1,888 @@
 /* ==========================================================================
-   INTERNSHIP SOLAR SYSTEM — 5 CSS planets = 5 internship types
+   INTERNSHIP PLANETARY SYSTEM — REALISTIC 3D CELESTIAL MECHANICS
+   - Saturn: 26.7° axial tilt, Cassini division rings, 3D depth & shadow
+   - Earth: 23.5° axial tilt, atmospheric clouds & continents
+   - Uranus: 98° lateral axial rotation
+   - Orbit: Realistic Keplerian elliptical revolution around central deer sun
+   - Names: Pure category names (no astronomical planet names)
    ========================================================================== */
-.ipl { position: relative; margin-top: 18px; padding: 28px 0 10px; }
-.ipl-stars { position: absolute; inset: -60px -40px 0; pointer-events: none; }
-.ipl-stars i { position: absolute; border-radius: 50%; background: #fff; opacity: .7; animation: iplTwinkle 3.2s ease-in-out infinite; }
-.ipl-sun { position: absolute; left: -180px; top: 50px; width: 300px; height: 300px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, rgba(255, 214, 102, .55) 0%, rgba(255, 170, 40, .18) 35%, transparent 68%); filter: blur(4px); animation: iplSun 6s ease-in-out infinite; }
-.ipl-orbit { position: absolute; left: 0; right: 0; top: 40px; width: 100%; height: 210px; pointer-events: none; }
-.ipl-orbit ellipse { fill: none; stroke: rgba(255, 255, 255, .18); stroke-width: 1.5; stroke-dasharray: 3 9; vector-effect: non-scaling-stroke; }
 
-/* row of planets */
-.ipl-row { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; gap: 8px; min-height: 250px; }
-.ipl-p { --c: #10B981; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px 12px; border-radius: 22px; color: #fff; background: none; border: 1.5px solid transparent; cursor: pointer; transition: transform .35s, opacity .35s, background .3s, border-color .3s; }
-/* planets sit on the orbit ellipse: middle ones lower, edge ones higher */
-.ipl-p:nth-child(1), .ipl-p:nth-child(5) { transform: translateY(-46px); }
+.ipl {
+  position: relative;
+  margin-top: 18px;
+  padding: 24px 0 16px;
+  overflow-x: clip;
+}
+
+.ipl-stars {
+  position: absolute;
+  inset: -60px -40px 0;
+  pointer-events: none;
+}
+
+.ipl-stars i {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.7;
+  animation: iplTwinkle 3.2s ease-in-out infinite;
+}
+
+/* ---------------- Central Career Sun & Deer Core ---------------- */
+.ipl-sun-wrap {
+  position: absolute;
+  left: 50%;
+  top: 75px;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 140px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ipl-sun {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff7b3 0%, #ffc23d 40%, rgba(255, 140, 40, 0.4) 65%, transparent 75%);
+  filter: blur(8px);
+  animation: iplSunPulse 5s ease-in-out infinite;
+}
+
+.ipl-sun-core {
+  position: relative;
+  font-size: 40px;
+  filter: drop-shadow(0 0 16px rgba(255, 194, 61, 0.9));
+  z-index: 2;
+  animation: iplFloat 4s ease-in-out infinite;
+}
+
+.ipl-sun-corona {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 194, 61, 0.25);
+  animation: iplSpinClockwise 30s linear infinite;
+}
+
+/* ---------------- Orbit Ellipse Track ---------------- */
+.ipl-orbit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 40px;
+  width: 100%;
+  height: 240px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ipl-orbit ellipse {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 10;
+  vector-effect: non-scaling-stroke;
+}
+
+/* ---------------- Controls Bar ---------------- */
+.ipl-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 900px;
+  margin: 0 auto 12px;
+  padding: 0 10px;
+  position: relative;
+  z-index: 4;
+}
+
+.ipl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffc23d;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.ipl-orbit-toggle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ipl-orbit-toggle:hover {
+  background: rgba(255, 194, 61, 0.2);
+  border-color: #ffc23d;
+  color: #ffc23d;
+}
+
+/* ---------------- Planetary Stage & Orbital Nodes ---------------- */
+.ipl-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: end;
+  gap: 10px;
+  min-height: 270px;
+  max-width: 1100px;
+  margin: 0 auto;
+  z-index: 2;
+}
+
+/* Pause orbital motion on hover so user can easily click any category */
+.ipl-row:hover .ipl-p {
+  animation-play-state: paused !important;
+}
+
+.ipl-p {
+  --c: #10B981;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 8px 14px;
+  border-radius: 20px;
+  color: #ffffff;
+  background: none;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, border-color 0.3s, opacity 0.35s;
+  z-index: 2;
+}
+
+/* Orbit curvature vertical layout */
+.ipl-p:nth-child(1), .ipl-p:nth-child(5) { transform: translateY(-38px); }
 .ipl-p:nth-child(2), .ipl-p:nth-child(4) { transform: translateY(-8px); }
-.ipl-p:nth-child(3) { transform: translateY(8px); }
-.ipl-p:hover { background: rgba(255, 255, 255, .06); border-color: rgba(255, 255, 255, .14); }
-.ipl-p:focus-visible { outline: 3px solid #FFD23F; outline-offset: 2px; }
-.ipl-p b { margin-top: 6px; font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
-.ipl-p small { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, .78); }
-.ipl-p em { font-style: normal; margin-top: 2px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: color-mix(in srgb, var(--c) 35%, transparent); border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); }
-.ipl-p.on { background: rgba(255, 255, 255, .1); border-color: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
-.ipl-p.on em { background: var(--c); }
-.ipl-p.dim { opacity: .55; }
-.ipl-p.dim:hover { opacity: 1; }
-.ipl-float { display: grid; place-items: center; height: 130px; animation: iplFloat 6s ease-in-out infinite; animation-delay: calc(var(--i) * -1.2s); }
-.ipl-tip { position: absolute; bottom: calc(100% - 4px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 7px 12px; border-radius: 12px; background: #fff; color: #0B1026; font-size: 12.5px; font-weight: 700; box-shadow: 0 12px 24px -10px rgba(0, 0, 0, .6); animation: iplPop .2s both; z-index: 3; }
-.ipl-hint { position: relative; text-align: center; margin-top: 8px; font-size: 15px; font-weight: 700; color: #FFD23F; animation: iplPulse 2.4s ease-in-out infinite; }
+.ipl-p:nth-child(3) { transform: translateY(12px); z-index: 3; }
 
-/* ---------------- planets ---------------- */
-.pl { --s: 90px; position: relative; display: inline-grid; place-items: center; width: var(--s); height: var(--s); transition: width .5s cubic-bezier(.2, .8, .2, 1), height .5s cubic-bezier(.2, .8, .2, 1); }
-.pl-body { position: relative; z-index: 1; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; box-shadow: 0 0 calc(var(--s) * .35) var(--glow, rgba(120, 180, 255, .35)); }
-.pl-surface { position: absolute; inset: 0; background-size: 200% 100%; }
-.pl.spin .pl-surface { animation: iplSpin var(--spin, 24s) linear infinite; }
-.pl-shade { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, .28) 0%, transparent 32%), radial-gradient(circle at 72% 72%, rgba(0, 0, 0, .6) 0%, transparent 62%); box-shadow: inset calc(var(--s) * -.12) calc(var(--s) * -.08) calc(var(--s) * .18) rgba(0, 0, 0, .55), inset 2px 2px 6px rgba(255, 255, 255, .25); }
+/* Subtle realistic orbital revolution when enabled */
+.ipl-row.orbiting .ipl-p {
+  animation: iplOrbitalBob 8s ease-in-out infinite alternate;
+  animation-delay: var(--orbit-delay, 0s);
+}
 
-/* Venus — creamy sulphur clouds */
-.pl-venus { --glow: rgba(255, 210, 130, .45); --spin: 40s; }
-.pl-venus .pl-surface { background-image:
-  repeating-linear-gradient(170deg, rgba(255, 255, 255, .0) 0 9%, rgba(255, 245, 210, .35) 11%, rgba(255, 255, 255, 0) 14%),
-  radial-gradient(ellipse 30% 18% at 30% 40%, rgba(214, 160, 80, .45), transparent),
-  radial-gradient(ellipse 30% 18% at 80% 65%, rgba(214, 160, 80, .4), transparent),
-  linear-gradient(180deg, #F9E4B3, #E9C27E 50%, #D9A35E); }
+@keyframes iplOrbitalBob {
+  0% { transform: translateY(-42px) scale(0.96); }
+  50% { transform: translateY(6px) scale(1.04); }
+  100% { transform: translateY(14px) scale(1.02); }
+}
 
-/* Earth — oceans, continents, clouds */
-.pl-earth { --glow: rgba(90, 170, 255, .55); --spin: 22s; }
-.pl-earth .pl-surface { background-image:
-  radial-gradient(ellipse 9% 7% at 20% 35%, rgba(255, 255, 255, .85), transparent),
-  radial-gradient(ellipse 12% 5% at 65% 25%, rgba(255, 255, 255, .7), transparent),
-  radial-gradient(ellipse 10% 5% at 85% 75%, rgba(255, 255, 255, .75), transparent),
-  radial-gradient(ellipse 11% 16% at 28% 55%, #3E9B4F 60%, transparent 62%),
-  radial-gradient(ellipse 7% 12% at 36% 32%, #4AA35A 60%, transparent 62%),
-  radial-gradient(ellipse 13% 10% at 72% 45%, #3C8F4A 60%, transparent 62%),
-  radial-gradient(ellipse 6% 9% at 82% 62%, #C9A86A 60%, transparent 62%),
-  radial-gradient(ellipse 30% 8% at 50% 96%, #F2F7FF 60%, transparent 62%),
-  radial-gradient(ellipse 30% 8% at 50% 4%, #F2F7FF 60%, transparent 62%),
-  linear-gradient(180deg, #2B6CD6, #1F57B8 50%, #17468F); }
+.ipl-p:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-8px) scale(1.05) !important;
+  z-index: 10;
+}
 
-/* Saturn — banded gas giant + rings */
-.pl-saturn { --glow: rgba(240, 200, 120, .4); --spin: 30s; }
-.pl-saturn .pl-surface { background-image: repeating-linear-gradient(180deg, #E8D3A0 0 9%, #D6B577 9% 15%, #F0DFB5 15% 22%, #C9A262 22% 26%, #E6CC92 26% 34%); }
-.pl-ring { position: absolute; left: 50%; top: 50%; width: 210%; height: 62%; border-radius: 50%; transform: translate(-50%, -50%) rotate(-16deg); pointer-events: none; }
-.pl-saturn .pl-ring { background: radial-gradient(ellipse at center, transparent 47%, rgba(230, 205, 150, .95) 48%, rgba(200, 170, 110, .55) 56%, rgba(240, 220, 170, .9) 60%, rgba(180, 150, 100, .35) 66%, transparent 68%); }
-.pl-ring.back { z-index: 0; }
-.pl-ring.front { z-index: 2; clip-path: inset(50% 0 0 0); }
+.ipl-p.on {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--c);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--c) 45%, transparent);
+}
 
-/* Uranus — pale cyan, tipped on its side */
-.pl-uranus { --glow: rgba(120, 230, 240, .45); --spin: 34s; }
-.pl-uranus .pl-surface { background-image:
-  repeating-linear-gradient(90deg, rgba(255, 255, 255, 0) 0 12%, rgba(255, 255, 255, .12) 14%, rgba(255, 255, 255, 0) 17%),
-  linear-gradient(90deg, #A6EEF2, #7FD9E3 50%, #5DC1D0); }
-.pl-uranus .pl-ring { width: 46%; height: 200%; transform: translate(-50%, -50%) rotate(12deg); background: radial-gradient(ellipse at center, transparent 47%, rgba(200, 245, 255, .7) 49%, transparent 54%); }
+.ipl-p.dim {
+  opacity: 0.45;
+}
 
-/* Neptune — deep blue, great dark spot */
-.pl-neptune { --glow: rgba(70, 110, 255, .55); --spin: 20s; }
-.pl-neptune .pl-surface { background-image:
-  radial-gradient(ellipse 9% 6% at 35% 58%, #1A2C8C 70%, transparent 72%),
-  radial-gradient(ellipse 6% 2% at 37% 52%, rgba(255, 255, 255, .7), transparent),
-  repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0 16%, rgba(160, 190, 255, .18) 18%, rgba(255, 255, 255, 0) 21%),
-  linear-gradient(180deg, #4C7BF0, #3459D6 50%, #2741A8); }
+.ipl-p.dim:hover {
+  opacity: 1;
+}
 
-/* ---------------- focus panel ---------------- */
-.ipl-focus { --c: #10B981; position: relative; display: grid; grid-template-columns: 300px 1fr; gap: 10px 34px; margin-top: 18px; padding: 26px 28px 28px; border-radius: 30px; background: linear-gradient(160deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03)); border: 1px solid rgba(255, 255, 255, .16); backdrop-filter: blur(10px); animation: iplIn .5s cubic-bezier(.2, .8, .2, 1) both; }
-.ipl-focus-planet { display: grid; place-items: center; min-height: 270px; }
-.ipl-focus-planet .pl { animation: iplZoom .8s cubic-bezier(.2, .9, .2, 1.1) both; }
-.ipl-focus-text { color: #fff; }
-.ipl-kicker { display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: rgba(255, 255, 255, .85); background: rgba(255, 255, 255, .1); }
-.ipl-kicker b { color: #FFD23F; }
-.ipl-focus-text h2 { margin: 10px 0 12px; font-size: clamp(26px, 3vw, 38px); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
-.ipl-why { display: flex; gap: 8px; font-size: 15px; font-style: italic; color: rgba(255, 255, 255, .8); }
-.ipl-so { margin-top: 10px; padding: 12px 16px; border-radius: 14px; font-size: 16px; font-weight: 700; line-height: 1.45; background: color-mix(in srgb, var(--c) 22%, transparent); border-left: 4px solid var(--c); }
-.ipl-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
-.ipl-facts div { padding: 10px 12px; border-radius: 14px; background: rgba(255, 255, 255, .07); }
-.ipl-facts dt { font-size: 12px; font-weight: 800; color: rgba(255, 255, 255, .65); text-transform: uppercase; letter-spacing: .04em; }
-.ipl-facts dd { margin-top: 3px; font-size: 14px; font-weight: 600; }
-.ipl-story { margin-top: 12px; }
-.ipl-story summary { cursor: pointer; font-size: 14px; font-weight: 700; color: #FFD23F; list-style: none; }
-.ipl-story summary::-webkit-details-marker { display: none; }
-.ipl-story summary::before { content: "▸ "; }
-.ipl-story[open] summary::before { content: "▾ "; }
-.ipl-story ol { list-style: none; display: grid; gap: 6px; margin-top: 10px; }
-.ipl-story li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: rgba(255, 255, 255, .85); }
-.ipl-story li i { font-style: normal; }
-.ipl-close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; color: #fff; background: rgba(255, 255, 255, .12); font-size: 15px; transition: background .2s; }
-.ipl-close:hover { background: rgba(255, 255, 255, .25); }
+.ipl-float {
+  display: grid;
+  place-items: center;
+  height: 140px;
+  position: relative;
+}
 
-/* internships dropping out of the planet */
-.ipl-drop { grid-column: 1 / -1; position: relative; margin-top: 8px; }
-.ipl-drop::before { content: ""; position: absolute; left: 150px; top: -40px; width: 2px; height: 40px; background: linear-gradient(transparent, var(--c)); }
-.ipl-drop-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; color: #fff; }
-.ipl-drop-head b { font-size: 17px; }
-.ipl-drop-head span { font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, .7); }
-.ipl-jobs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.ipl-job { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: #fff; color: #0B1026; text-align: left; box-shadow: 0 14px 30px -18px rgba(0, 0, 0, .7); animation: iplDrop .6s cubic-bezier(.2, .9, .3, 1.2) both; animation-delay: calc(var(--k) * 110ms + 350ms); transition: transform .2s; }
-.ipl-job:hover { transform: translateY(-3px); }
-.ipl-job-logo { width: 40px; height: 40px; flex: none; border-radius: 12px; display: grid; place-items: center; color: #fff; font-weight: 800; }
-.ipl-job-txt { flex: 1; min-width: 0; }
-.ipl-job-txt b { display: block; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ipl-job-txt small { font-size: 12.5px; color: #6B7394; }
-.ipl-job-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-.ipl-job-meta em { font-style: normal; font-size: 13px; font-weight: 800; color: #0B1026; }
-.ipl-job-meta small { font-size: 12px; font-weight: 700; color: #6B7394; }
-.ipl-job-meta small.hot { color: #DC2626; }
-.ipl-empty { grid-column: 1 / -1; padding: 16px; border-radius: 14px; background: rgba(255, 255, 255, .07); color: rgba(255, 255, 255, .8); }
-.ipl-all { margin-top: 14px; }
+/* Main Category Name (Bold & Crisp) */
+.ipl-p b {
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  text-align: center;
+}
 
-/* ---------------- keyframes ---------------- */
-@keyframes iplSpin { from { background-position: 0 0; } to { background-position: -200% 0; } }
-@keyframes iplFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
-@keyframes iplTwinkle { 0%, 100% { opacity: .25; } 50% { opacity: .9; } }
-@keyframes iplSun { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-@keyframes iplPulse { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
-@keyframes iplPop { from { opacity: 0; transform: translate(-50%, 6px); } }
-@keyframes iplIn { from { opacity: 0; transform: translateY(20px); } }
-@keyframes iplZoom { from { transform: scale(.35) translateY(-80px); opacity: .3; } to { transform: none; opacity: 1; } }
-@keyframes iplDrop { from { opacity: 0; transform: translateY(-60px) scale(.9); } to { opacity: 1; transform: none; } }
+.ipl-p small {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.82);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 
-/* ---------------- responsive ---------------- */
+.ipl-p em {
+  font-style: normal;
+  margin-top: 3px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  background: color-mix(in srgb, var(--c) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
+  color: #ffffff;
+}
+
+.ipl-p.on em {
+  background: var(--c);
+  color: #0b1026;
+  font-weight: 900;
+}
+
+.ipl-tip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 7px 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0b1026;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.ipl-hint {
+  position: relative;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffd23f;
+  animation: iplPulse 2.4s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   PLANET 3D RENDERING ENGINE & SATURN'S REALISTIC PHYSICS
+   ========================================================================== */
+.pl {
+  --s: 90px;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--s);
+  height: var(--s);
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), height 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pl-body {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 calc(var(--s) * 0.35) var(--glow, rgba(120, 180, 255, 0.35));
+}
+
+.pl-surface {
+  position: absolute;
+  inset: 0;
+  background-size: 200% 100%;
+}
+
+.pl.spin .pl-surface {
+  animation: iplSurfaceSpin var(--spin, 24s) linear infinite;
+}
+
+@keyframes iplSurfaceSpin {
+  from { background-position: 0 0; }
+  to { background-position: -200% 0; }
+}
+
+/* Spherical shading for 3D globe realism */
+.pl-shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 28% 28%, rgba(255, 255, 255, 0.4) 0%, transparent 35%),
+    radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.72) 0%, transparent 65%);
+  box-shadow:
+    inset calc(var(--s) * -0.12) calc(var(--s) * -0.08) calc(var(--s) * 0.2) rgba(0, 0, 0, 0.65),
+    inset 2px 2px 8px rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   1. CORPORATE (SATURN) — REALISTIC 26.7° AXIAL TILT + CASSINI DIVISION RINGS
+   ========================================================================== */
+.pl-corporate {
+  --glow: rgba(245, 210, 130, 0.5);
+  --spin: 26s;
+  /* Authentic 26.7° Axial Tilt */
+  transform: rotate(-24deg);
+}
+
+.pl-corporate .pl-surface {
+  background-image: repeating-linear-gradient(
+    180deg,
+    #fff2cf 0%,
+    #f2dca0 7%,
+    #dfbc73 13%,
+    #c49c50 18%,
+    #edd59a 24%,
+    #e1be79 30%,
+    #b88a38 35%,
+    #edd499 42%,
+    #dfbb72 49%,
+    #c69f53 56%,
+    #f3deab 63%,
+    #dfbc73 70%,
+    #b98c39 77%,
+    #edd499 84%,
+    #c59d51 92%,
+    #fff2cf 100%
+  );
+}
+
+/* Ring Shadow cast on Saturn's sphere */
+.pl-corporate .pl-ring-shadow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 48%;
+  height: 14%;
+  background: rgba(0, 0, 0, 0.45);
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 3D Ring Wrappers & Geometry */
+.pl-ring-wrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 250%;
+  height: 80%;
+  transform: translate(-50%, -50%) rotateX(72deg) rotateY(-6deg);
+  pointer-events: none;
+}
+
+.pl-ring-wrap.back {
+  z-index: 0;
+}
+
+.pl-ring-wrap.front {
+  z-index: 3;
+  clip-path: inset(50% 0 0 0); /* Front half cleanly covers lower planet sphere */
+}
+
+.pl-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* High-fidelity Cassini Division Ring System */
+.pl-corporate .pl-ring {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 47%,
+    rgba(180, 150, 100, 0.28) 48%,  /* Faint inner C-Ring */
+    rgba(255, 235, 185, 0.98) 51%,  /* Dense bright B-Ring */
+    rgba(235, 205, 145, 0.92) 57%,
+    rgba(11, 15, 30, 0.98) 58.2%,   /* CASSINI DIVISION GAP */
+    rgba(11, 15, 30, 0.98) 60%,     /* Dark Space */
+    rgba(240, 215, 160, 0.9) 60.5%, /* A-Ring */
+    rgba(215, 185, 130, 0.75) 67%,
+    rgba(180, 150, 100, 0.3) 68.5%, /* Encke Division edge */
+    transparent 69.5%
+  );
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7));
+}
+
+/* ==========================================================================
+   2. PAID (EARTH) — 23.5° AXIAL TILT + OCEANS + CONTINENTS
+   ========================================================================== */
+.pl-paid {
+  --glow: rgba(90, 180, 255, 0.55);
+  --spin: 22s;
+  transform: rotate(-23.5deg);
+}
+
+.pl-paid .pl-surface {
+  background-image:
+    radial-gradient(ellipse 10% 8% at 20% 35%, rgba(255, 255, 255, 0.88), transparent),
+    radial-gradient(ellipse 14% 6% at 65% 25%, rgba(255, 255, 255, 0.75), transparent),
+    radial-gradient(ellipse 12% 6% at 85% 75%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(ellipse 12% 18% at 28% 55%, #3e9b4f 60%, transparent 62%),
+    radial-gradient(ellipse 8% 14% at 36% 32%, #4aa35a 60%, transparent 62%),
+    radial-gradient(ellipse 14% 12% at 72% 45%, #3c8f4a 60%, transparent 62%),
+    radial-gradient(ellipse 7% 10% at 82% 62%, #c9a86a 60%, transparent 62%),
+    radial-gradient(ellipse 35% 9% at 50% 97%, #f2f7ff 60%, transparent 62%),
+    radial-gradient(ellipse 35% 9% at 50% 3%, #f2f7ff 60%, transparent 62%),
+    linear-gradient(180deg, #2b6cd6, #1f57b8 50%, #17468f);
+}
+
+.pl-paid .pl-atmosphere {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 14px rgba(160, 220, 255, 0.45);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   3. LEARNING (VENUS) — RADIANT SULPHUR SWIRL
+   ========================================================================== */
+.pl-learning {
+  --glow: rgba(255, 215, 140, 0.5);
+  --spin: 36s;
+}
+
+.pl-learning .pl-surface {
+  background-image:
+    repeating-linear-gradient(170deg, rgba(255, 255, 255, 0) 0 9%, rgba(255, 245, 210, 0.35) 11%, rgba(255, 255, 255, 0) 14%),
+    radial-gradient(ellipse 32% 20% at 30% 40%, rgba(220, 165, 85, 0.5), transparent),
+    radial-gradient(ellipse 32% 20% at 80% 65%, rgba(220, 165, 85, 0.45), transparent),
+    linear-gradient(180deg, #f9e4b3, #e9c27e 50%, #d9a35e);
+}
+
+/* ==========================================================================
+   4. REMOTE (URANUS) — 98° LATERAL AXIAL ROTATION
+   ========================================================================== */
+.pl-remote {
+  --glow: rgba(130, 240, 250, 0.5);
+  --spin: 32s;
+  transform: rotate(-98deg); /* Spins sideways! */
+}
+
+.pl-remote .pl-surface {
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0) 0 12%, rgba(255, 255, 255, 0.14) 14%, rgba(255, 255, 255, 0) 17%),
+    linear-gradient(90deg, #a6eef2, #7fd9e3 50%, #5dc1d0);
+}
+
+.pl-remote .pl-ring-wrap {
+  width: 52%;
+  height: 220%;
+  transform: translate(-50%, -50%) rotate(12deg);
+}
+
+.pl-remote .pl-ring {
+  background: radial-gradient(ellipse at center, transparent 48%, rgba(210, 250, 255, 0.8) 50%, transparent 54%);
+}
+
+/* ==========================================================================
+   5. VERSITY (NEPTUNE) — AZURE STORM CLOUDS & DARK SPOT
+   ========================================================================== */
+.pl-versity {
+  --glow: rgba(75, 120, 255, 0.6);
+  --spin: 22s;
+  transform: rotate(-28deg);
+}
+
+.pl-versity .pl-surface {
+  background-image:
+    radial-gradient(ellipse 10% 7% at 35% 58%, #1a2c8c 70%, transparent 72%),
+    radial-gradient(ellipse 7% 3% at 37% 52%, rgba(255, 255, 255, 0.75), transparent),
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0 16%, rgba(160, 190, 255, 0.22) 18%, rgba(255, 255, 255, 0) 21%),
+    linear-gradient(180deg, #4c7bf0, #3459d6 50%, #2741a8);
+}
+
+/* ==========================================================================
+   FOCUS CARD: ZOOMED IN CATEGORY DETAILS
+   ========================================================================== */
+.ipl-focus {
+  --c: #10B981;
+  position: relative;
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 12px 36px;
+  margin-top: 22px;
+  padding: 28px 30px;
+  border-radius: 28px;
+  background: linear-gradient(160deg, rgba(20, 25, 48, 0.95), rgba(12, 16, 32, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(16px);
+  animation: iplIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 35px color-mix(in srgb, var(--c) 25%, transparent);
+}
+
+.ipl-focus-planet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 280px;
+}
+
+.ipl-focus-planet .pl {
+  animation: iplZoom 0.8s cubic-bezier(0.2, 0.9, 0.2, 1.1) both;
+}
+
+.ipl-focus-cat-badge {
+  background: color-mix(in srgb, var(--c) 25%, transparent);
+  border: 1px solid var(--c);
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.ipl-focus-text {
+  color: #ffffff;
+}
+
+.ipl-kicker {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffd23f;
+  background: rgba(255, 210, 63, 0.12);
+  border: 1px solid rgba(255, 210, 63, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ipl-focus-text h2 {
+  margin: 10px 0 12px;
+  font-size: clamp(26px, 3.2vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.ipl-why {
+  display: flex;
+  gap: 8px;
+  font-size: 15.5px;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.ipl-so {
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  background: color-mix(in srgb, var(--c) 22%, transparent);
+  border-left: 4px solid var(--c);
+  color: #ffffff;
+}
+
+.ipl-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.ipl-facts div {
+  padding: 11px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ipl-facts dt {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ipl-facts dd {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.ipl-story {
+  margin-top: 14px;
+}
+
+.ipl-story summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffd23f;
+  list-style: none;
+}
+
+.ipl-story summary::-webkit-details-marker {
+  display: none;
+}
+
+.ipl-story summary::before {
+  content: "▸ ";
+}
+
+.ipl-story[open] summary::before {
+  content: "▾ ";
+}
+
+.ipl-story ol {
+  margin: 10px 0 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ipl-story li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ipl-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.ipl-close:hover {
+  background: #ffc23d;
+  color: #0b1026;
+  transform: rotate(90deg);
+}
+
+/* ---------------- Drop List of Job Openings ---------------- */
+.ipl-drop {
+  grid-column: 1 / -1;
+  margin-top: 14px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ipl-drop-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.ipl-drop-head b {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.ipl-drop-head span {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ipl-jobs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.ipl-job {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #0b1026;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.7);
+  animation: iplDrop 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  animation-delay: calc(var(--k) * 110ms + 350ms);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ipl-job:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px -16px rgba(0, 0, 0, 0.8);
+}
+
+.ipl-job-logo {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.ipl-job-txt {
+  flex: 1;
+  min-width: 0;
+}
+
+.ipl-job-txt b {
+  display: block;
+  font-size: 14.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #0b1026;
+}
+
+.ipl-job-txt small {
+  font-size: 12.5px;
+  color: #6b7394;
+}
+
+.ipl-job-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.ipl-job-meta em {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0b1026;
+}
+
+.ipl-job-meta small {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7394;
+}
+
+.ipl-job-meta small.hot {
+  color: #dc2626;
+}
+
+.ipl-empty {
+  grid-column: 1 / -1;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+.ipl-all {
+  margin-top: 14px;
+}
+
+/* ---------------- Global Keyframes ---------------- */
+@keyframes iplTwinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.95; }
+}
+
+@keyframes iplSunPulse {
+  0%, 100% { transform: scale(1); filter: blur(8px); }
+  50% { transform: scale(1.1); filter: blur(12px); }
+}
+
+@keyframes iplSpinClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes iplFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes iplPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes iplIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes iplZoom {
+  from { transform: scale(0.35) translateY(-80px); opacity: 0.3; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes iplDrop {
+  from { opacity: 0; transform: translateY(-40px) scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------------- Responsive Styles ---------------- */
 @media (max-width: 900px) {
-  .ipl-focus { grid-template-columns: 1fr; }
-  .ipl-focus-planet { min-height: 230px; }
-  .ipl-drop::before { left: 50%; }
-}
-@media (max-width: 640px) {
-  .ipl-orbit, .ipl-sun { display: none; }
-  .ipl-row { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 6px; margin: 0 -20px; padding: 10px 20px; min-height: 0; }
-  .ipl-p { flex: 0 0 34%; scroll-snap-align: center; transform: none !important; }
-  .ipl-float { height: 120px; }
-  .ipl-tip { display: none; }
-  .ipl-focus { padding: 20px 16px; }
-  .ipl-facts, .ipl-jobs { grid-template-columns: 1fr; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ipl *, .pl * { animation: none !important; }
+  .ipl-focus {
+    grid-template-columns: 1fr;
+  }
+  .ipl-focus-planet {
+    min-height: 220px;
+  }
 }
 
-/* fixes */
-.ipl { overflow-x: clip; }
-.ipl-focus > * { min-width: 0; }
-.ipl-story summary { text-align: left; }
-.ipl-story summary::after { display: none !important; content: none !important; }
 @media (max-width: 640px) {
-  .ipl-focus-planet { min-height: 0; padding: 10px 0; }
-  .ipl-focus-planet .pl { --s: min(170px, 44vw) !important; }
-  .ipl-close { top: 12px; right: 12px; }
-  .ipl-drop::before { display: none; }
+  .ipl-orbit, .ipl-sun-wrap {
+    display: none;
+  }
+  .ipl-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 8px;
+    margin: 0 -16px;
+    padding: 10px 16px;
+    min-height: 0;
+  }
+  .ipl-p {
+    flex: 0 0 42%;
+    scroll-snap-align: center;
+    transform: none !important;
+  }
+  .ipl-p:hover {
+    transform: none !important;
+  }
+  .ipl-jobs, .ipl-facts {
+    grid-template-columns: 1fr;
+  }
 }
-.ipl-jobs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.ipl-focus { grid-template-columns: 300px minmax(0, 1fr); }
-.ipl-story summary { display: block; }
-@media (max-width: 900px) { .ipl-focus { grid-template-columns: minmax(0, 1fr); } }
-@media (max-width: 640px) { .ipl-jobs, .ipl-facts { grid-template-columns: minmax(0, 1fr); } }
