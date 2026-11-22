@@ -165,17 +165,6 @@ const STATS = [
   ["", 14, "", ["days to review", "দিনে রিভিউ"]],
   ["৳", 0, "", ["to apply", "আবেদন ফি"]],
 ];
-const PERKS = [
-  ["৳10L Pre-Seed", "৳১০ লাখ প্রি-সিড"], ["1:1 VC Mentorship", "১:১ ভিসি মেন্টরশিপ"], ["Co-Founder match", "কো-ফাউন্ডার ম্যাচ"],
-  ["Monthly Pitch Day", "মাসিক পিচ ডে"], ["0% Equity Cut", "০% ইকুইটি কাট"],
-];
-const FAQ = [
-  [["Who can apply?", "কে আবেদন করতে পারবে?"], ["Students and fresh graduates in Bangladesh with an idea, a prototype or early users. Solo founders are welcome.", "বাংলাদেশের শিক্ষার্থী ও ফ্রেশ গ্র্যাজুয়েট — আইডিয়া, প্রোটোটাইপ বা প্রথম ইউজার থাকলেই হবে। একা ফাউন্ডারও চলবে।"]],
-  [["What does 45+ mean?", "৪৫+ মানে কী?"], ["The builder scores your pitch out of 100 against an investor-style rubric. At 45 you can submit; the tips show exactly what to add.", "বিল্ডার ইনভেস্টর-স্টাইল রুব্রিকে ১০০-তে স্কোর দেয়। ৪৫ হলেই সাবমিট — টিপস দেখাবে কী যোগ করতে হবে।"]],
-  [["Does it cost anything?", "কোনো খরচ আছে?"], ["No. Applying is free and your draft autosaves while you write.", "না। আবেদন ফ্রি, আর লেখার সময় ড্রাফট নিজে থেকেই সেভ হয়।"]],
-  [["What happens after I submit?", "সাবমিটের পর কী হয়?"], ["The panel reviews within 14 days. Shortlisted founders are invited to the monthly Pitch Day; feedback appears right on your pitch.", "প্যানেল ১৪ দিনে রিভিউ করে। শর্টলিস্টেডরা মাসিক পিচ ডে-তে ডাক পায়; ফিডব্যাক তোমার পিচেই দেখা যাবে।"]],
-];
-
 function useInView(threshold = 0.2) {
   const ref = useRef(null);
   const [on, setOn] = useState(false);
@@ -209,6 +198,8 @@ function CountUp({ to, run }) {
 
 function Hero({ L, user, onLaunch }) {
   const [name, setName] = useState("");
+  const [launch, setLaunch] = useState(0);
+  const busy = useRef(false);
   const heroRef = useRef(null);
   const onMove = (e) => {
     const el = heroRef.current; if (!el) return;
@@ -216,21 +207,43 @@ function Hero({ L, user, onLaunch }) {
     el.style.setProperty("--mx", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
     el.style.setProperty("--my", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
   };
-  const submit = (e) => { e.preventDefault(); onLaunch(name); };
+  const onLeave = () => { heroRef.current?.style.setProperty("--mx", 0); heroRef.current?.style.setProperty("--my", 0); };
+  // scroll = camera: the view dollies into the kiosk as you scroll past the hero
+  useEffect(() => {
+    let raf = 0;
+    const on = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const el = heroRef.current; if (!el) return;
+        const p = Math.min(1, Math.max(0, -el.getBoundingClientRect().top / (el.offsetHeight * 0.8)));
+        el.style.setProperty("--sp", p.toFixed(3));
+      });
+    };
+    on(); addEventListener("scroll", on, { passive: true });
+    return () => { removeEventListener("scroll", on); cancelAnimationFrame(raf); };
+  }, []);
+  // Enter = the idea launches out of the kiosk, then we go to the pitch builder
+  const submit = (e) => {
+    e.preventDefault();
+    if (busy.current) return;
+    busy.current = true;
+    setLaunch((n) => n + 1);
+    // the whole view rumbles at lift-off
+    heroRef.current?.querySelector(".sc-scene-wrap")?.animate(
+      [{ transform: "none" }, { transform: "translate(-6px, 3px) rotate(-.4deg)" }, { transform: "translate(5px, -3px) rotate(.4deg)" }, { transform: "translate(-3px, 2px)" }, { transform: "none" }],
+      { duration: 600, delay: 450, easing: "ease-in-out" });
+    setTimeout(() => { busy.current = false; onLaunch(name); }, 1700);
+  };
   return (
-    <section className="sc-hero" ref={heroRef} onPointerMove={onMove}>
-      <ClayScene name={name} bn={!!L} />
+    <section className={`sc-hero ${launch ? "launched" : ""}`} ref={heroRef} onPointerMove={onMove} onPointerLeave={onLeave}>
+      <div className="sc-scene-wrap"><ClayScene name={name} bn={!!L} launch={launch} /></div>
       <div className="sc-hero-fade" />
       <div className="sc-hero-copy">
         <span className="sc-live"><i />{L ? "আবেদন চলছে · প্রি-সিড ৳১০ লাখ" : "Applications open · ৳10L pre-seed"}</span>
         <h1 className={L ? "bn" : ""}>
           {L ? <>তোমার স্টার্টআপ<br />লঞ্চ করো <em>আজই!</em></> : <>Launch your<br />startup <em>now!</em></>}
         </h1>
-        <p>
-          {L
-            ? "সোনারহরিণে যেকোনো ফ্রেশার একটা আইডিয়া থেকে ফান্ডেড স্টার্টআপ বানাতে পারে। পিচ লেখো, ৪৫+ স্কোর করো, আসল ইনভেস্টরের সামনে পিচ করো — একদম ফ্রি।"
-            : "With সোনারহরিণ, any fresher can turn an idea into a funded startup. Write your pitch, score 45+, and pitch to real investors. It's free."}
-        </p>
+        <p>{L ? "আইডিয়া থেকে ফান্ডেড স্টার্টআপ — ফ্রি।" : "From idea to funded startup — free."}</p>
         <form className="sc-namebar" onSubmit={submit}>
           <span className="sc-namebar-tag">
             <svg viewBox="0 0 24 24"><path d="M4 10l1.5-5h13L20 10M4 10h16M4 10v9h16v-9M9 19v-5h6v5" /></svg>
@@ -242,13 +255,10 @@ function Hero({ L, user, onLaunch }) {
             <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </button>
         </form>
-        <small className="sc-hint">
-          {user ? (L ? "নামটা দোকানের সাইনবোর্ডে দেখো — Enter দিলেই পিচ শুরু।" : "Watch your name go up on the sign — press Enter to start the pitch.")
-            : (L ? "ফ্রি অ্যাকাউন্ট লাগবে — নামটা আমরা মনে রাখবো।" : "Needs a free account — we'll keep the name for you.")}
-        </small>
+        <small className="sc-hint">{L ? "নাম লেখো → Enter → লঞ্চ 🚀" : "Type a name → Enter → launch 🚀"}</small>
       </div>
-      <div className="sc-chip c1"><b>45+</b>{L ? "রেডিনেস → সাবমিট" : "readiness → submit"}</div>
-      <div className="sc-chip c2"><i className="ok">✓</i>{L ? "১৪ দিনে প্যানেল রিভিউ" : "Panel review in 14 days"}</div>
+      <div className="sc-chip c1"><b>45+</b>{L ? "স্কোর → সাবমিট" : "score → submit"}</div>
+      <div className="sc-chip c2"><i className="ok">✓</i>{L ? "১৪ দিনে রিভিউ" : "14-day review"}</div>
     </section>
   );
 }
@@ -269,35 +279,42 @@ function Stats({ L, fundedCount }) {
 }
 
 function Journey({ L, onStart }) {
-  const [act, setAct] = useState(0);
-  const [hold, setHold] = useState(false);
+  // the idea box travels the track as you scroll through the section
+  const ref = useRef(null);
+  const [p, setP] = useState(0);
   useEffect(() => {
-    if (hold) return;
-    const id = setInterval(() => setAct((a) => (a + 1) % JOURNEY.length), 2400);
-    return () => clearInterval(id);
-  }, [hold]);
+    let raf = 0;
+    const on = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const el = ref.current; if (!el) return;
+        const r = el.getBoundingClientRect();
+        const v = (innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.3);
+        setP(Math.min(1, Math.max(0, v)));
+      });
+    };
+    on(); addEventListener("scroll", on, { passive: true });
+    return () => { removeEventListener("scroll", on); cancelAnimationFrame(raf); };
+  }, []);
+  const act = Math.min(JOURNEY.length - 1, Math.floor(p * JOURNEY.length));
   return (
-    <section className="sc-sec" id="how">
+    <section className="sc-sec" id="how" ref={ref}>
       <Reveal className="sc-head">
-        <span className="sc-eyebrow">{L ? "কিভাবে কাজ করে" : "How it works"}</span>
-        <h2 className={L ? "bn" : ""}>{L ? <>আইডিয়া থেকে <em>ফান্ডিং</em> — ৫ ধাপে</> : <>From idea to <em>funded</em> in 5 steps</>}</h2>
+        <h2 className={L ? "bn" : ""}>{L ? <>আইডিয়া থেকে <em>ফান্ডিং</em></> : <>Idea to <em>funded</em></>}</h2>
       </Reveal>
-      <div className="sc-track" onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}>
-        <div className="sc-track-line"><span style={{ width: `${(act / (JOURNEY.length - 1)) * 100}%` }} /></div>
-        {JOURNEY.map(([k, t, d], i) => (
-          <Reveal key={k} delay={i * 80} className={`sc-step ${i === act ? "on" : ""} ${i < act ? "done" : ""}`} onMouseEnter={() => setAct(i)}>
-            <div className="sc-step-cube">
-              <svg viewBox="0 0 24 24">{JICON[k]}</svg>
-            </div>
+      <div className="sc-track">
+        <div className="sc-track-line"><span style={{ width: `${p * 100}%` }} /></div>
+        <span className="sc-rider" style={{ left: `calc(10% + ${p * 80}%)` }} aria-hidden="true">{act === JOURNEY.length - 1 ? "🚀" : "📦"}</span>
+        {JOURNEY.map(([k, t], i) => (
+          <div key={k} className={`sc-step ${i === act ? "on" : ""} ${i < act ? "done" : ""}`}>
+            <div className="sc-step-cube"><svg viewBox="0 0 24 24">{JICON[k]}</svg></div>
             <small>0{i + 1}</small>
             <b>{t[L]}</b>
-            <p>{d[L]}</p>
-          </Reveal>
+          </div>
         ))}
       </div>
       <div className="sc-perks">
-        {PERKS.map((p) => <span key={p[0]}>{p[L]}</span>)}
-        <button type="button" className="sc-btn pink" onClick={onStart}>{L ? "এখনই শুরু করো →" : "Start now →"}</button>
+        <button type="button" className="sc-btn pink" onClick={onStart}>{L ? "শুরু করো →" : "Start now →"}</button>
       </div>
     </section>
   );
@@ -311,8 +328,6 @@ function FundedWall({ L, funded, onStart }) {
       <Reveal className="sc-head">
         <span className="sc-eyebrow">{L ? "ফান্ডেড ফাউন্ডার" : "Funded founders"}</span>
         <h2 className={L ? "bn" : ""}>{L ? <>সোনারহরিণ <em>স্ট্রিট</em></> : <>The সোনারহরিণ <em>street</em></>}</h2>
-        <p>{ghosts ? (L ? "প্রথম ব্যাচের দোকানগুলো এখনো খালি — তোমারটা হতে পারে প্রথম।" : "The first shops on the street are still empty — yours could open first.")
-          : (L ? "যারা পিচ থেকে ফান্ডিং পর্যন্ত পৌঁছেছে।" : "Founders who went from pitch to pre-seed.")}</p>
       </Reveal>
       <div className="sc-shops">
         {list.map((f, i) => ghosts ? (
@@ -329,25 +344,6 @@ function FundedWall({ L, funded, onStart }) {
             {f.one_liner && <p>{f.one_liner}</p>}
             <small>{f.founder}{f.university ? ` · ${f.university}` : ""}</small>
             <div className="sc-shop-foot"><span>{f.sector}</span>{f.amount ? <em>৳{Number(f.amount).toLocaleString("en-IN")}</em> : null}</div>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Faq({ L }) {
-  return (
-    <section className="sc-sec sc-faq" id="faq">
-      <Reveal className="sc-head">
-        <span className="sc-eyebrow">FAQ</span>
-        <h2 className={L ? "bn" : ""}>{L ? <>যা সবাই <em>জানতে চায়</em></> : <>Questions founders <em>ask</em></>}</h2>
-      </Reveal>
-      <div className="sc-faq-list">
-        {FAQ.map(([q, a], i) => (
-          <Reveal key={q[0]} as="details" delay={i * 60}>
-            <summary>{q[L]}<i>+</i></summary>
-            <p>{a[L]}</p>
           </Reveal>
         ))}
       </div>
@@ -400,7 +396,6 @@ export default function Startup() {
             <div>
               <span className="sc-eyebrow">{L ? "পিচ বিল্ডার" : "Pitch builder"}</span>
               <h2 className={L ? "bn" : ""}>{L ? <>তোমার পিচ, <em>লাইভ স্কোর</em> সহ</> : <>Your pitch, <em>scored live</em></>}</h2>
-              <p>{L ? "লিখতে থাকো — অটোসেভ হবে, আর রেডিনেস স্কোর ৪৫+ হলেই প্যানেল রিভিউতে জমা দাও।" : "Keep writing — it autosaves, and once readiness hits 45+ you can submit for panel review."}</p>
             </div>
             <span className="sc-badge">PRE-SEED ৳10L</span>
           </div>
@@ -409,7 +404,6 @@ export default function Startup() {
               <div className="sc-gate-ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" /><circle className="f" cx="60" cy="60" r="50" /></svg><b>45+</b></div>
               <div>
                 <b>{L ? "পিচ লিখতে লগইন করো" : "Log in to start your pitch"}</b>
-                <p>{L ? "ড্রাফট তোমার অ্যাকাউন্টে সেভ থাকবে — যেকোনো ডিভাইস থেকে চালিয়ে যাও।" : "Drafts are saved to your account — continue from any device."}</p>
                 <div className="sc-gate-actions">
                   <Link className="sc-btn navy" to="/login?next=/startup">{L ? "লগইন" : "Log in"}</Link>
                   <Link className="sc-btn soft" to="/register?next=/startup">{L ? "ফ্রি অ্যাকাউন্ট" : "Create free account"}</Link>
@@ -421,13 +415,11 @@ export default function Startup() {
       </section>
 
       <FundedWall L={L} funded={funded} onStart={() => launch("")} />
-      <Faq L={L} />
 
       <section className="sc-sec">
         <Reveal className="sc-cta">
           <div className="sc-cta-boxes" aria-hidden="true"><i /><i /><i /></div>
           <h2 className={L ? "bn" : ""}>{L ? <>পরের দোকানটা <em>তোমার</em>।</> : <>The next shop on the street is <em>yours</em>.</>}</h2>
-          <p>{L ? "আবেদন ফ্রি · ১৪ দিনে রিভিউ · ০% ইকুইটি কাট" : "Free to apply · 14-day review · 0% equity cut"}</p>
           <button type="button" className="sc-btn pink big" onClick={() => launch("")}>{L ? "পিচ শুরু করো →" : "Start your pitch →"}</button>
         </Reveal>
       </section>
