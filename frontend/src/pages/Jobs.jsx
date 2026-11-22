@@ -242,8 +242,57 @@ function JobsBoard() {
           }
         />
 
-        {/* Search bar immediately below Category Boxes */}
-        <div className="job-filters" style={{ marginTop: 14 }}>
+        {/* Compact Action Bar right after Category: Live Scraper Sync & Auto-Apply */}
+        <div className="jobs-bottom-bar">
+          <div className="jbb-left">
+            <button
+              type="button"
+              className={`jbb-btn scraper-btn ${scraping ? "busy" : ""}`}
+              onClick={triggerScraperSync}
+              disabled={scraping}
+              title={L ? "বিডি ক্যারিয়ার পোর্টাল থেকে লাইভ নতুন জব স্ক্র্যাপ করো" : "Sync latest jobs from Bangladesh portals"}
+            >
+              <span>{scraping ? "⏳" : "⚡"}</span>
+              <span>
+                {scraping
+                  ? (L ? "স্ক্র্যাপ হচ্ছে…" : "Syncing live jobs…")
+                  : (L ? "লাইভ জব স্ক্র্যাপার সিঙ্ক" : "Sync Live BD Jobs")}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="jbb-btn auto-btn"
+              onClick={() => setShowAutoModal(true)}
+              title={L ? "অটো-অ্যাপ্লাই সেটিংস ও রুলস" : "Auto-apply settings"}
+            >
+              <span>🤖</span>
+              <span>{L ? "অটো-অ্যাপ্লাই" : "Auto-Apply"}</span>
+              {eligible > 0 && <span className="jbb-badge">{eligible}</span>}
+            </button>
+          </div>
+
+          <div className="jbb-right">
+            <div className="jbb-channels">
+              <span className="jbb-ch-label">{L ? "চ্যানেল:" : "Channel:"}</span>
+              {Object.entries(CH).map(([k, c]) => (
+                <button
+                  key={k}
+                  type="button"
+                  className={`jbb-ch-pill ${f.channel === k ? "active" : ""}`}
+                  onClick={() => setF({ ...f, channel: f.channel === k ? "" : k })}
+                >
+                  <span>{c.ic}</span>
+                  <span>{c.t}</span>
+                  <small>{data?.by_channel?.[k] ?? 0}</small>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Search bar immediately below Toolbar */}
+        <div className="job-filters" style={{ marginTop: 10 }}>
           <div style={{ flex: "1 1 260px", position: "relative" }}>
             <input
               className="inp"
@@ -354,55 +403,6 @@ function JobsBoard() {
               {L ? "এই ফিল্টারের সাথে কোনো সার্কুলার পাওয়া যায়নি।" : "No jobs match these filters yet."}
             </p>
           )}
-        </div>
-
-        {/* Compact Bottom Toolbar for Live Scraper Sync & Auto-Apply (Moved from top to bottom) */}
-        <div className="jobs-bottom-bar">
-          <div className="jbb-left">
-            <button
-              type="button"
-              className={`jbb-btn scraper-btn ${scraping ? "busy" : ""}`}
-              onClick={triggerScraperSync}
-              disabled={scraping}
-              title={L ? "বিডি ক্যারিয়ার পোর্টাল থেকে লাইভ নতুন জব স্ক্র্যাপ করো" : "Sync latest jobs from Bangladesh portals"}
-            >
-              <span>{scraping ? "⏳" : "⚡"}</span>
-              <span>
-                {scraping
-                  ? (L ? "স্ক্র্যাপ হচ্ছে…" : "Syncing live jobs…")
-                  : (L ? "লাইভ জব স্ক্র্যাপার সিঙ্ক" : "Sync Live BD Jobs")}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              className="jbb-btn auto-btn"
-              onClick={() => setShowAutoModal(true)}
-              title={L ? "অটো-অ্যাপ্লাই সেটিংস ও রুলস" : "Auto-apply settings"}
-            >
-              <span>🤖</span>
-              <span>{L ? "অটো-অ্যাপ্লাই" : "Auto-Apply"}</span>
-              {eligible > 0 && <span className="jbb-badge">{eligible}</span>}
-            </button>
-          </div>
-
-          <div className="jbb-right">
-            <div className="jbb-channels">
-              <span className="jbb-ch-label">{L ? "চ্যানেল:" : "Channel:"}</span>
-              {Object.entries(CH).map(([k, c]) => (
-                <button
-                  key={k}
-                  type="button"
-                  className={`jbb-ch-pill ${f.channel === k ? "active" : ""}`}
-                  onClick={() => setF({ ...f, channel: f.channel === k ? "" : k })}
-                >
-                  <span>{c.ic}</span>
-                  <span>{c.t}</span>
-                  <small>{data?.by_channel?.[k] ?? 0}</small>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
