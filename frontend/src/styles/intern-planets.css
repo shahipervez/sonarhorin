@@ -219,7 +219,7 @@
 }
 
 /* HORIZONTAL CONTINUOUS SURFACE SPIN */
-.pl.spin .pl-surface {
+.pl.pl-spin .pl-surface {
   animation: iplSurfaceSpin var(--spin, 24s) linear infinite;
 }
 

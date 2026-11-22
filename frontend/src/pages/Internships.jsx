@@ -5,10 +5,10 @@ import { useAuth } from "../auth";
 import { STORY_SETS } from "../components/StoryRail";
 import { useLang } from "../i18n";
 import { ApplyModal, CompanyLogo, daysLeft, getCH, money } from "./Jobs";
-import { GATE_FACTS, GATE_STORIES } from "./internshipStories";
 import "../styles/internships-guide.css";
 import "../styles/intern-planets.css";
-import InternPlanets from "../components/InternPlanets";
+import InternSystem from "../components/InternSystem";
+import "../styles/intern-system.css";
 
 /**
  * INTERNSHIPS — its own layout (not the job list).
@@ -92,14 +92,12 @@ export default function Internships() {
             </h1>
           </div>
 
-          <InternPlanets
+          <InternSystem
             cats={cats}
             sel={cat}
             counts={counts}
             L={L}
             n2={n2}
-            facts={GATE_FACTS}
-            story={GATE_STORIES}
             top={(id) => topFor(id, 4)}
             daysLeft={daysLeft}
             onSelect={(id) => { setCat(id); setSp(id ? { cat: id } : {}, { replace: true }); }}
