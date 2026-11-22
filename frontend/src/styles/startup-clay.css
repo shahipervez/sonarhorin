@@ -243,3 +243,42 @@
   .sc-page *, .sc-page *::before, .sc-page *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition: none !important; }
   .sc-crate { animation: none !important; display: none; }
 }
+
+/* ==========================================================================
+   v1 motion — mouse tilt, scroll camera, launch sequence, journey rider
+   ========================================================================== */
+.sc-hero { --sp: 0; }
+.sc-scene-wrap { position: absolute; inset: 0; perspective: 1400px; }
+.sc-scene-wrap .sc-scene { transform-origin: 68% 45%; transform: rotateY(calc(var(--mx) * 8deg)) rotateX(calc(var(--my) * -6deg)) scale(calc(1 + var(--sp) * .38)) translate(calc(var(--sp) * -5%), calc(var(--sp) * 5%)); transition: transform .7s cubic-bezier(.2, .8, .2, 1); will-change: transform; }
+.sc-hero-copy { transform: translateY(calc(var(--sp) * -70px)); opacity: calc(1 - var(--sp) * 1.3); }
+.sc-chip { opacity: calc(1 - var(--sp) * 1.6); }
+
+/* rocket lift-off from the kiosk roof */
+.sc-rocket { animation: scRocket 2.1s both; }
+.sc-flame { transform-box: fill-box; transform-origin: 50% 0; animation: scFlame .1s linear infinite alternate; }
+.sc-flame.in { animation-duration: .07s; }
+.sc-smoke { opacity: 0; transform-box: fill-box; transform-origin: center; animation: scSmoke 1.7s calc(.55s + var(--i) * 70ms) ease-out both; }
+.sc-burst { opacity: 0; animation: scBurst 1.5s calc(.6s + var(--d)) cubic-bezier(.2, .8, .3, 1) both; }
+@keyframes scRocket {
+  0% { transform: translateY(70px) scale(.15); opacity: 0; animation-timing-function: cubic-bezier(.2, .9, .3, 1.3); }
+  18% { transform: translateY(0) scale(1); opacity: 1; }
+  24% { transform: translate(-2px, 2px); }
+  28% { transform: translate(2px, -1px); }
+  32% { transform: translate(0, 0); animation-timing-function: cubic-bezier(.6, 0, .9, .5); }
+  100% { transform: translateY(-820px) scale(.9); opacity: 1; }
+}
+@keyframes scFlame { from { transform: scaleY(.75) scaleX(.9); } to { transform: scaleY(1.3) scaleX(1.05); } }
+@keyframes scSmoke { 0% { opacity: .95; transform: scale(.2); } 100% { opacity: 0; transform: translate(calc((var(--i) - 2) * 26px), 34px) scale(2.8); } }
+@keyframes scBurst {
+  0% { opacity: 0; transform: translate(0, 0) scale(.3); }
+  12% { opacity: 1; }
+  55% { transform: translate(var(--dx), var(--dy)) scale(1); opacity: 1; }
+  100% { transform: translate(calc(var(--dx) * 1.25), calc(var(--dy) + 230px)) scale(.9) rotate(200deg); opacity: 0; }
+}
+
+/* journey: the idea box rides the track with your scroll */
+.sc-rider { position: absolute; top: 24px; z-index: 3; font-size: 32px; transform: translateX(-50%); transition: left .25s linear; filter: drop-shadow(0 8px 10px rgba(54, 48, 110, .35)); animation: scBob 1.2s ease-in-out infinite; pointer-events: none; }
+.sc-step { padding-top: 64px; }
+.sc-step-cube { margin-top: 0; }
+@media (max-width: 1000px) { .sc-rider { display: none; } .sc-step { padding-top: 18px; } }
+.sc-track-line { z-index: 2; }

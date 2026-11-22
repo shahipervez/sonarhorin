@@ -122,7 +122,7 @@ export function Planet({ id, size = 90, spin = true }) {
 
   return (
     <span
-      className={`pl pl-${p.cls} ${spin ? "spin" : ""}`}
+      className={`pl pl-${p.cls} ${spin ? "pl-spin" : ""}`}
       style={{ "--s": `${size}px` }}
       aria-hidden="true"
     >

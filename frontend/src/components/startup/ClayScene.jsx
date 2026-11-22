@@ -45,7 +45,7 @@ function Crate({ label, delay }) {
 
 const TILE = 180;
 
-export default function ClayScene({ name = "", bn = false }) {
+export default function ClayScene({ name = "", bn = false, launch = 0 }) {
   const sign = (name || "").trim() || (bn ? "সোনারহরিণ" : "sonarhorin");
   const long = sign.length > 11;
   const tiles = [];
@@ -53,7 +53,7 @@ export default function ClayScene({ name = "", bn = false }) {
   const crates = bn ? ["আইডিয়া", "পিচ", "MVP", "ডেক"] : ["idea", "pitch", "MVP", "deck"];
 
   return (
-    <svg className="sc-scene" viewBox="-300 -150 1340 780" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+    <svg className={`sc-scene ${launch > 0 ? "is-launch" : ""}`} viewBox="-300 -150 1340 780" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
       <defs>
         <filter id="scBlur6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" /></filter>
         <filter id="scBlur18" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18" /></filter>
@@ -167,6 +167,30 @@ export default function ClayScene({ name = "", bn = false }) {
               d="M0 -9 C1.5 -2 2 -1.5 9 0 C2 1.5 1.5 2 0 9 C-1.5 2 -2 1.5 -9 0 C-2 -1.5 -1.5 -2 0 -9Z" fill={d === 1.1 ? "#F2C14E" : "#E64BD2"} />
           </g>
         ))}
+        {/* LAUNCH: the idea leaves the kiosk as a rocket, funding coins burst out */}
+        {launch > 0 && (
+          <g key={launch} className="sc-launch" transform="translate(640 150)">
+            {[0, 1, 2, 3, 4].map((i) => <circle key={i} className="sc-smoke" style={{ "--i": i }} cx={(i - 2) * 16} cy="20" r="18" fill="#FFFFFF" />)}
+            <g className="sc-rocket">
+              <path className="sc-flame" d="M-11 34 Q0 78 11 34 Z" fill="#FFB020" />
+              <path className="sc-flame in" d="M-6 34 Q0 60 6 34 Z" fill="#FFF1B0" />
+              <path d="M-26 22 L-14 -2 L-14 30 Z" fill="#B532C4" />
+              <path d="M26 22 L14 -2 L14 30 Z" fill="#B532C4" />
+              <path d="M0 -62 C20 -40 18 6 14 34 L-14 34 C-18 6 -20 -40 0 -62 Z" fill="#FFFFFF" stroke="#E2DEEF" strokeWidth="2" />
+              <path d="M0 -62 C9 -52 13 -42 14 -34 L-14 -34 C-13 -42 -9 -52 0 -62 Z" fill="#E64BD2" />
+              <circle cx="0" cy="-12" r="8" fill="#6FC3FF" stroke="#FFFFFF" strokeWidth="3" />
+            </g>
+            {Array.from({ length: 9 }, (_, i) => {
+              const a = (-160 + i * 17.5) * (Math.PI / 180);
+              return (
+                <g key={i} className="sc-burst" style={{ "--dx": `${Math.cos(a) * (150 + (i % 3) * 40)}px`, "--dy": `${Math.sin(a) * (120 + (i % 2) * 50)}px`, "--d": `${i * 30}ms` }}>
+                  <circle r="11" fill="url(#scCoin)" stroke="#B9821A" strokeWidth="1.5" />
+                  <text y="4.5" textAnchor="middle" fontSize="12" fontWeight="800" fill="#A86E0C">৳</text>
+                </g>
+              );
+            })}
+          </g>
+        )}
       </g>
 
       {/* the ৳ coin rolls in */}
