@@ -4,13 +4,17 @@ import "../styles/category-boxes.css";
 export const SUB_CATEGORIES = {
   it: [
     { id: "any", name: ["Any type", "সব ধরনের"], query: "" },
-    { id: "frontend", name: ["Frontend", "ফ্রন্টএন্ড"], query: "frontend react" },
-    { id: "backend", name: ["Backend", "ব্যাকএন্ড"], query: "backend python node django" },
+    { id: "data_eng", name: ["Data Engineer", "ডাটা ইঞ্জিনিয়ার"], query: "data engineer analytics sql python" },
+    { id: "ai_eng", name: ["AI Engineer", "এআই ইঞ্জিনিয়ার"], query: "ai engineer machine learning python" },
+    { id: "swe", name: ["Software Engineer (SWE)", "সফটওয়্যার ইঞ্জিনিয়ার (SWE)"], query: "software engineer swe developer" },
+    { id: "web_dev", name: ["Web Developer", "ওয়েব ডেভেলপার"], query: "web developer react node frontend backend" },
+    { id: "it_sol", name: ["IT Solution & Network", "আইটি সলিউশন ও নেটওয়ার্ক"], query: "it solution support network system" },
+    { id: "frontend", name: ["Frontend Developer", "ফ্রন্টএন্ড"], query: "frontend react" },
+    { id: "backend", name: ["Backend Developer", "ব্যাকএন্ড"], query: "backend python django node" },
     { id: "fullstack", name: ["Full Stack", "ফুল স্ট্যাক"], query: "full stack" },
     { id: "mobile", name: ["Mobile App", "মোবাইল অ্যাপ"], query: "mobile android flutter ios" },
     { id: "qa", name: ["SQA / Testing", "SQA ও টেস্টিং"], query: "qa sqa testing" },
     { id: "uiux", name: ["UI/UX Design", "ইউআই/ইউএক্স"], query: "ui ux designer figma" },
-    { id: "ai_data", name: ["AI & Data", "এআই ও ডাটা"], query: "ai python data machine learning" },
     { id: "devops", name: ["DevOps & Cloud", "ডেভঅপস ও ক্লাউড"], query: "devops cloud aws docker" },
   ],
   business: [
@@ -20,6 +24,7 @@ export const SUB_CATEGORIES = {
     { id: "sales", name: ["Sales & BD", "সেলস ও বিডি"], query: "sales business development" },
     { id: "finance", name: ["Finance & Accounts", "ফাইন্যান্স ও একাউন্টস"], query: "finance accounts audit" },
     { id: "hr", name: ["HR & Admin", "এইচআর ও এডমিন"], query: "hr admin human resources" },
+    { id: "supply", name: ["Supply Chain", "সাপ্লাই চেইন"], query: "supply chain operations" },
   ],
   agriculture: [
     { id: "any", name: ["Any type", "সব ধরনের"], query: "" },
@@ -276,43 +281,23 @@ export default function CategoryBoxes({
                 }
               }}
             >
-              {/* Top Row: Icon + Salary Chip */}
-              <div className="cat-box-top">
+              {/* Ultra Compact Card Inner Layout */}
+              <div className="cat-box-compact-inner">
                 <div className="cat-box-icon-wrap">
                   <span className="cat-box-icon">{cat.icon}</span>
                 </div>
-                <div className="cat-box-chip">
-                  <span className="cat-box-chip-dot" />
-                  <span className="cat-box-chip-text">{cat.chip[L]}</span>
+                <div className="cat-box-info">
+                  <div className="cat-box-title-row">
+                    <h3 className={`cat-box-title ${L ? "bn" : ""}`}>
+                      {cat.name[L]}
+                    </h3>
+                    <span className="cat-box-badge">{cat.chip[L]}</span>
+                  </div>
+                  <div className="cat-box-meta-row">
+                    <span className="cat-box-desc">{cat.sub[L]}</span>
+                    {isSelected && <span className="cat-box-sel-dot">✓</span>}
+                  </div>
                 </div>
-              </div>
-
-              {/* Main Content: Title + Subtitle */}
-              <div className="cat-box-body">
-                <div className="cat-box-meta-line">
-                  <span className="cat-box-badge">{cat.badge[L]}</span>
-                  {cat.vacancies && (
-                    <span className="cat-box-vacancies">{cat.vacancies[L]}</span>
-                  )}
-                </div>
-                <h3 className={`cat-box-title ${L ? "bn" : ""}`}>
-                  {cat.name[L]}
-                </h3>
-                <p className="cat-box-desc">
-                  {cat.sub[L]}
-                </p>
-              </div>
-
-              {/* Bottom Action Footer */}
-              <div className="cat-box-foot">
-                <span className="cat-box-action-text">
-                  {isSelected
-                    ? (L ? "নির্বাচিত ✓" : "Selected ✓")
-                    : (L ? "এক্সপ্লোর" : "Explore")}
-                </span>
-                <span className="cat-box-arrow" aria-hidden="true">
-                  {isSelected ? "✓" : "→"}
-                </span>
               </div>
             </div>
           );

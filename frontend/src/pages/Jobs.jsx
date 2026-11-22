@@ -2,11 +2,20 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
-import CategoryBoxes from "../components/CategoryBoxes";
+import CategoryBoxes, { SUB_CATEGORIES } from "../components/CategoryBoxes";
 import StoryRail from "../components/StoryRail";
 import { MAJORS } from "../config";
 import { useLang, useT } from "../i18n";
 import { confetti, fmt, toast } from "../utils";
+
+export const CATEGORIES = [
+  { id: "", major: "", en: "All Categories", bn: "সকল ক্যাটাগরি" },
+  { id: "it", major: "Computer Science & Engineering", en: "IT & Software", bn: "আইটি ও সফটওয়্যার" },
+  { id: "business", major: "Business Administration (BBA)", en: "Business & Growth", bn: "বিজনেস ও মার্কেটিং" },
+  { id: "agriculture", major: "Agriculture & Agribusiness", en: "Agriculture & Biotech", bn: "কৃষি ও এগ্রি-টেক" },
+  { id: "textile", major: "Textile & Apparel", en: "Textile & Apparel", bn: "টেক্সটাইল ও গার্মেন্টস" },
+  { id: "engineering", major: "Electrical / Mechanical", en: "Engineering & Tech", bn: "ইঞ্জিনিয়ারিং ও টেক" },
+];
 
 export const getCH = (L) => ({
   partner: {
@@ -329,28 +338,70 @@ function JobsBoard() {
               </button>
             )}
           </div>
+          {/* Category Dropdown (Replaces All Majors) */}
           <select
             className="inp"
-            value={f.major}
+            value={activeJobCat || ""}
             onChange={(e) => {
-              const val = e.target.value;
-              setF((o) => ({ ...o, major: val }));
-              const found = [
-                { id: "it", major: "Computer Science & Engineering" },
-                { id: "business", major: "Business Administration (BBA)" },
-                { id: "agriculture", major: "Agriculture & Agribusiness" },
-                { id: "textile", major: "Textile & Apparel" },
-                { id: "engineering", major: "Electrical / Mechanical" },
-              ].find((c) => c.major === val);
-              setActiveJobCat(found ? found.id : null);
+              const catId = e.target.value;
+              setActiveJobCat(catId || null);
               setActiveSubCat("any");
+              const found = CATEGORIES.find((c) => c.id === catId);
+              setF((o) => ({
+                ...o,
+                major: found ? found.major : "",
+                q: "",
+              }));
             }}
           >
-            <option value="">{L ? "সকল বিষয় / বিভাগ" : "All majors"}</option>
-            {MAJORS.map((m) => (
-              <option key={m}>{m}</option>
+            {CATEGORIES.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {L ? cat.bn : cat.en}
+              </option>
             ))}
           </select>
+
+          {/* Dynamic Role / Sub-category Dropdown */}
+          <select
+            className="inp"
+            value={activeSubCat || "any"}
+            onChange={(e) => {
+              const subId = e.target.value;
+              setActiveSubCat(subId);
+              const list = (activeJobCat && SUB_CATEGORIES[activeJobCat]) || [];
+              const found = list.find((s) => s.id === subId);
+              if (!found || found.id === "any") {
+                setF((o) => ({ ...o, q: "" }));
+              } else {
+                setF((o) => ({ ...o, q: found.query || found.name[0] }));
+              }
+            }}
+          >
+            {activeJobCat && SUB_CATEGORIES[activeJobCat] ? (
+              SUB_CATEGORIES[activeJobCat].map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.id === "any"
+                    ? L
+                      ? `সকল ${CATEGORIES.find((c) => c.id === activeJobCat)?.bn || "রোল"} (Any type)`
+                      : `All ${CATEGORIES.find((c) => c.id === activeJobCat)?.en || "roles"} (Any type)`
+                    : s.name[L]}
+                </option>
+              ))
+            ) : (
+              <>
+                <option value="any">{L ? "সকল রোল ও পদবী (Any role)" : "All Roles & Positions (Any role)"}</option>
+                <option value="swe">{L ? "Software Engineer (SWE)" : "Software Engineer (SWE)"}</option>
+                <option value="web_dev">{L ? "Web Developer" : "Web Developer"}</option>
+                <option value="data_eng">{L ? "Data Engineer" : "Data Engineer"}</option>
+                <option value="ai_eng">{L ? "AI Engineer" : "AI Engineer"}</option>
+                <option value="it_sol">{L ? "IT Solution & Network" : "IT Solution & Network"}</option>
+                <option value="mto">{L ? "Management Trainee (MTO)" : "Management Trainee (MTO)"}</option>
+                <option value="marketing">{L ? "Digital Marketing" : "Digital Marketing"}</option>
+              </>
+            )}
+          </select>
+
+          {/* Employment Type Dropdown (Full-time, Internship, Trainee) */}
           <select
             className="inp"
             value={f.type}

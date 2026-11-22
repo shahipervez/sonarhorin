@@ -107,32 +107,31 @@
   width: 100%;
 }
 
-/* Individual Box Card — Compact size */
+/* Individual Box Card — Ultra-compact sleek size */
 .cat-box-card {
   position: relative;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
   background: #FFFFFF;
   border: 1.5px solid #E2E8F0;
-  border-radius: 16px;
-  padding: 10px 12px;
+  border-radius: 12px;
+  padding: 8px 10px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.2s ease,
               background-color 0.2s ease;
   user-select: none;
-  animation: catBoxIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: catBoxIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: var(--anim-delay, 0ms);
-  min-height: 116px;
+  min-height: 52px;
 }
 
 @keyframes catBoxIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -141,31 +140,29 @@
 }
 
 .cat-box-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   border-color: var(--cat-color);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.07), 0 0 0 1px var(--cat-border-soft);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
 }
 
 /* Selected Active State */
 .cat-box-card.selected {
   border-color: var(--cat-color);
-  background: #FFFFFF;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07), 0 0 0 2px var(--cat-color);
+  background: var(--cat-bg-soft);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05), 0 0 0 1.5px var(--cat-color);
 }
 
-/* Card Top: Icon & Salary Chip */
-.cat-box-top {
+.cat-box-compact-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 9px;
+  width: 100%;
 }
 
 .cat-box-icon-wrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,87 +173,40 @@
 }
 
 .cat-box-card:hover .cat-box-icon-wrap {
-  transform: scale(1.06);
+  transform: scale(1.08);
+}
+
+.cat-box-card.selected .cat-box-icon-wrap {
+  background: #FFFFFF;
 }
 
 .cat-box-icon {
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1;
 }
 
-/* Salary / Stipend Chip */
-.cat-box-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  transition: all 0.2s ease;
-}
-
-.cat-box-card.selected .cat-box-chip,
-.cat-box-card:hover .cat-box-chip {
-  background: var(--cat-bg-soft);
-  border-color: var(--cat-border-soft);
-}
-
-.cat-box-chip-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--cat-color);
-}
-
-.cat-box-chip-text {
-  font-family: var(--sans, monospace);
-  font-size: 10px;
-  font-weight: 700;
-  color: #334155;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
-/* Card Body */
-.cat-box-body {
+.cat-box-info {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-bottom: 6px;
 }
 
-.cat-box-meta-line {
+.cat-box-title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  margin-bottom: 1px;
-}
-
-.cat-box-badge {
-  font-size: 9.5px;
-  font-weight: 800;
-  color: var(--cat-color);
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.cat-box-vacancies {
-  font-size: 10px;
-  font-weight: 600;
-  color: #94A3B8;
+  gap: 6px;
 }
 
 .cat-box-title {
   margin: 0;
   font-family: var(--sans, sans-serif);
-  font-size: 13.5px;
-  font-weight: 800;
+  font-size: 12.5px;
+  font-weight: 700;
   color: #0F172A;
   line-height: 1.2;
-  letter-spacing: -0.015em;
-  transition: color 0.2s ease;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -264,82 +214,50 @@
 
 .cat-box-title.bn {
   font-family: 'Hind Siliguri', var(--sans, sans-serif);
-  font-size: 14.5px;
+  font-size: 13px;
   font-weight: 700;
 }
 
-.cat-box-card:hover .cat-box-title {
+.cat-box-card:hover .cat-box-title,
+.cat-box-card.selected .cat-box-title {
   color: var(--cat-color);
+  font-weight: 800;
+}
+
+.cat-box-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--cat-color);
+  background: var(--cat-bg-soft);
+  padding: 1px 5px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.cat-box-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
 }
 
 .cat-box-desc {
   margin: 0;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
   color: #64748B;
-  line-height: 1.3;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Card Footer */
-.cat-box-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 6px;
-  border-top: 1px solid #F1F5F9;
-  transition: border-color 0.2s ease;
-}
-
-.cat-box-card:hover .cat-box-foot,
-.cat-box-card.selected .cat-box-foot {
-  border-top-color: var(--cat-border-soft);
-}
-
-.cat-box-action-text {
-  font-size: 11px;
-  font-weight: 700;
-  color: #475569;
-  transition: color 0.2s ease;
-}
-
-.cat-box-card:hover .cat-box-action-text {
-  color: var(--cat-color);
-}
-
-.cat-box-card.selected .cat-box-action-text {
-  color: var(--cat-color);
+.cat-box-sel-dot {
+  font-size: 10px;
   font-weight: 800;
-}
-
-.cat-box-arrow {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10.5px;
-  font-weight: 800;
-  background: #F8FAFC;
-  color: #64748B;
-  border: 1px solid #E2E8F0;
-  transition: all 0.2s ease;
-}
-
-.cat-box-card:hover .cat-box-arrow {
-  background: var(--cat-color);
-  color: #FFFFFF;
-  border-color: var(--cat-color);
-  transform: translateX(2px);
-}
-
-.cat-box-card.selected .cat-box-arrow {
-  background: var(--cat-color);
-  color: #FFFFFF;
-  border-color: var(--cat-color);
+  color: var(--cat-color);
+  line-height: 1;
 }
 
 /* ================================================================
