@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 /**
- * Internship Planetary System — 5 realistic celestial bodies representing the 5 internship categories.
- * - Horizontal orbital revolution around a central golden deer sun
- * - 3D depth: planets in front are bigger, planets behind are smaller and pass behind the sun
- * - No box/card wrappers — just floating planets in space
- * - Category names ONLY (no planet names)
+ * Concentric Keplerian Solar System Configuration
+ * Each internship category orbits on its OWN concentric horizontal elliptical orbit,
+ * exactly like the authentic solar system chart:
+ * - Inner orbits move faster, outer orbits move slower.
+ * - Central radiant Sun with Sonarhorin Golden Deer logo in the core (no text name).
+ * - Floating larger planets with horizontal axial spin and Saturn horizontal Cassini rings.
+ * - Pure celestial space: NO boxes or cards around planets.
  */
 export const CATEGORY_PLANETS = {
   unpaid: {
@@ -48,7 +50,7 @@ export const CATEGORY_PLANETS = {
   },
   corporate: {
     id: "corporate",
-    cls: "corporate",
+    cls: "corporate", // Saturn with realistic horizontal Cassini rings
     icon: "🏢",
     themeColor: "#3B82F6",
     subTitle: ["Top MNC + Job Offer (PPO)", "শীর্ষ MNC ও PPO অফার"],
@@ -105,12 +107,28 @@ export const CATEGORY_PLANETS = {
   },
 };
 
+/**
+ * 5 Concentric Nested Orbits:
+ * - rxPercent: horizontal radius (% from center)
+ * - ryPx: vertical radius (px from center)
+ * - speed: angular speed in radians/sec (Keplerian: inner faster, outer slower)
+ * - phase: starting angle around ellipse
+ * - size: larger planet sizes as requested
+ */
+export const CONCENTRIC_ORBITS = [
+  { id: "unpaid",    rxPercent: 15.0, ryPx: 48,  speed: 0.34, phase: 0.85, size: 96 },
+  { id: "paid",      rxPercent: 23.5, ryPx: 80,  speed: 0.25, phase: 3.40, size: 106 },
+  { id: "corporate", rxPercent: 32.0, ryPx: 114, speed: 0.18, phase: 1.75, size: 122 },
+  { id: "remote",    rxPercent: 40.5, ryPx: 148, speed: 0.13, phase: 4.90, size: 100 },
+  { id: "versity",   rxPercent: 49.0, ryPx: 182, speed: 0.09, phase: 2.95, size: 106 },
+];
+
 export const PLANET_ORDER = ["unpaid", "paid", "corporate", "remote", "versity"];
 
 /**
  * Realistic 3D Planet component.
- * All planets spin horizontally across their equator.
- * Corporate (Saturn) has horizontal rings with Cassini division and 3D depth.
+ * Horizontal axial spin across equator + 3D spherical shade.
+ * Saturn (corporate) has horizontal Cassini rings.
  */
 export function Planet({ id, size = 90, spin = true }) {
   const p = CATEGORY_PLANETS[id] || CATEGORY_PLANETS.unpaid;
@@ -123,14 +141,14 @@ export function Planet({ id, size = 90, spin = true }) {
       style={{ "--s": `${size}px` }}
       aria-hidden="true"
     >
-      {/* 3D Ring Back Layer (passes behind the upper half of the planet) */}
+      {/* 3D Ring Back Layer */}
       {(isSaturn || isUranus) && (
         <span className="pl-ring-wrap back">
           <i className="pl-ring back" />
         </span>
       )}
 
-      {/* Spherical Body with 3D horizontal surface rotation */}
+      {/* Spherical Body */}
       <span className="pl-body">
         <span className="pl-surface" />
         <span className="pl-atmosphere" />
@@ -138,7 +156,7 @@ export function Planet({ id, size = 90, spin = true }) {
         {isSaturn && <span className="pl-ring-shadow" />}
       </span>
 
-      {/* 3D Ring Front Layer (passes in front of the lower half of the planet) */}
+      {/* 3D Ring Front Layer */}
       {(isSaturn || isUranus) && (
         <span className="pl-ring-wrap front">
           <i className="pl-ring front" />
@@ -151,7 +169,7 @@ export function Planet({ id, size = 90, spin = true }) {
 function Stars() {
   const stars = useMemo(
     () =>
-      Array.from({ length: 75 }, (_, i) => ({
+      Array.from({ length: 85 }, (_, i) => ({
         x: (i * 137.5) % 100,
         y: (i * 53.3 + (i % 7) * 11) % 100,
         s: i % 9 === 0 ? 3 : i % 3 === 0 ? 2 : 1,
@@ -194,39 +212,78 @@ export default function InternPlanets({
 }) {
   const [hover, setHover] = useState("");
   const [isHovered, setIsHovered] = useState(false);
-  const [orbitAngle, setOrbitAngle] = useState(0);
-
-  const animRef = useRef(null);
+  const slowRef = useRef(1);
+  const timeRef = useRef(0);
   const lastTimeRef = useRef(null);
+  const planetElsRef = useRef([]);
 
   const byId = Object.fromEntries(cats.map((c) => [c.id, c]));
   const cur = sel ? byId[sel] : null;
   const P = sel ? CATEGORY_PLANETS[sel] : null;
   const list = sel ? top(sel) : [];
 
-  // Continuous smooth horizontal orbital revolution
+  // Update speed slowdown on hover
   useEffect(() => {
-    if (sel || isHovered) {
-      lastTimeRef.current = null;
-      return;
-    }
+    slowRef.current = isHovered ? 0.25 : 1;
+  }, [isHovered]);
 
-    const speed = 0.18; // radians per second — slow, majestic orbit
-    const loop = (t) => {
-      if (lastTimeRef.current != null) {
-        const dt = Math.min((t - lastTimeRef.current) / 1000, 0.1);
-        setOrbitAngle((prev) => (prev + dt * speed) % (Math.PI * 2));
+  // Smooth 60FPS continuous horizontal revolution around concentric orbits
+  useEffect(() => {
+    let animId;
+
+    const loop = (now) => {
+      animId = requestAnimationFrame(loop);
+
+      if (lastTimeRef.current == null) {
+        lastTimeRef.current = now;
+        return;
       }
-      lastTimeRef.current = t;
-      animRef.current = requestAnimationFrame(loop);
+
+      const dt = Math.min((now - lastTimeRef.current) / 1000, 0.1);
+      lastTimeRef.current = now;
+
+      // When a category is selected (zoomed in focus card), pause the background orbit
+      if (!sel) {
+        timeRef.current += dt * slowRef.current;
+      }
+
+      const t = timeRef.current;
+
+      CONCENTRIC_ORBITS.forEach((orbit, idx) => {
+        const el = planetElsRef.current[idx];
+        if (!el) return;
+
+        // Current orbital angle along its concentric ellipse
+        const theta = (t * orbit.speed + orbit.phase) % (Math.PI * 2);
+        const cosVal = Math.cos(theta);
+        const sinVal = Math.sin(theta);
+
+        const xPercent = cosVal * orbit.rxPercent;
+        const yOffsetPx = sinVal * orbit.ryPx;
+
+        // 3D Depth: sinVal > 0 means lower half (in front of Sun)
+        // sinVal < 0 means upper half (behind Sun)
+        const inFront = sinVal > 0;
+        const depthScale = inFront
+          ? 1.0 + sinVal * 0.14
+          : 0.88 + sinVal * 0.08;
+
+        const isSelected = sel === orbit.id;
+        const scale = isSelected ? 1.25 : depthScale;
+        const zIndex = isSelected ? 40 : inFront ? (15 + idx) : (2 + idx);
+        const opacity = sel && !isSelected ? 0.25 : inFront ? 1 : 0.84;
+
+        el.style.left = `calc(50% + ${xPercent}%)`;
+        el.style.top = `calc(50% + ${yOffsetPx}px)`;
+        el.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        el.style.zIndex = zIndex;
+        el.style.opacity = opacity;
+      });
     };
 
-    animRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      lastTimeRef.current = null;
-    };
-  }, [sel, isHovered]);
+    animId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animId);
+  }, [sel]);
 
   useEffect(() => {
     if (!sel) return;
@@ -239,86 +296,122 @@ export default function InternPlanets({
     <div className={`ipl ${sel ? "has-sel" : ""}`}>
       <Stars />
 
-      {/* HORIZONTAL ORBITAL ARENA */}
+      {/* CONCENTRIC SOLAR SYSTEM ARENA */}
       <div
         className="ipl-orbit-arena"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Horizontal Elliptical Orbit Track */}
-        <svg className="ipl-orbit-svg" viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true">
-          <ellipse cx="500" cy="120" rx="440" ry="54" />
+        {/* 5 Concentric Elliptical Orbit Tracks + Directional Arrows */}
+        <svg
+          className="ipl-orbit-svg"
+          viewBox="0 0 1000 500"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            {/* Arrow marker for orbit direction */}
+            <marker
+              id="orbit-arrow"
+              viewBox="0 0 10 10"
+              refX="5"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="rgba(147, 197, 253, 0.7)" />
+            </marker>
+          </defs>
+
+          {/* 5 Concentric Elliptical Orbits */}
+          <ellipse cx="500" cy="250" rx="150" ry="48" className="ipl-orbit-line o-0" />
+          <ellipse cx="500" cy="250" rx="235" ry="80" className="ipl-orbit-line o-1" />
+          <ellipse cx="500" cy="250" rx="320" ry="114" className="ipl-orbit-line o-2" />
+          <ellipse cx="500" cy="250" rx="405" ry="148" className="ipl-orbit-line o-3" />
+          <ellipse cx="500" cy="250" rx="490" ry="182" className="ipl-orbit-line o-4" />
+
+          {/* Directional motion arrows along orbits (exactly matching the diagram) */}
+          <g className="ipl-orbit-arrows" fill="rgba(147, 197, 253, 0.75)">
+            {/* Orbit 0 arrows */}
+            <polygon points="503,202 493,198 493,206" />
+            <polygon points="497,298 507,294 507,302" />
+
+            {/* Orbit 1 arrows */}
+            <polygon points="503,170 493,166 493,174" />
+            <polygon points="497,330 507,326 507,334" />
+
+            {/* Orbit 2 arrows */}
+            <polygon points="503,136 493,132 493,140" />
+            <polygon points="497,364 507,360 507,368" />
+
+            {/* Orbit 3 arrows */}
+            <polygon points="503,102 493,98 493,106" />
+            <polygon points="497,398 507,394 507,402" />
+
+            {/* Orbit 4 arrows */}
+            <polygon points="503,68 493,64 493,72" />
+            <polygon points="497,432 507,428 507,436" />
+          </g>
         </svg>
 
-        {/* Central Sun with Golden Deer */}
+        {/* Central Sun: Radiant Star with Sonarhorin Logo in Core (NO NAME TEXT) */}
         <div className="ipl-sun-center" aria-hidden="true">
+          <span className="ipl-sun-flare flare-1" />
+          <span className="ipl-sun-flare flare-2" />
           <span className="ipl-sun-aura" />
-          <span className="ipl-sun-deer">🦌</span>
           <span className="ipl-sun-corona" />
+          <div className="ipl-sun-core">
+            <img
+              src="/logo-gold.png"
+              alt="Sonarhorin"
+              className="ipl-sun-logo"
+            />
+          </div>
         </div>
 
-        {/* 5 CATEGORY PLANETS REVOLVING HORIZONTALLY */}
-        <div className="ipl-planetary-field" role="tablist" aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}>
-          {PLANET_ORDER.map((id, i) => {
+        {/* 5 CATEGORY PLANETS REVOLVING ON CONCENTRIC ORBITS (NO BOX) */}
+        <div
+          className="ipl-planetary-field"
+          role="tablist"
+          aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}
+        >
+          {CONCENTRIC_ORBITS.map((orbit, i) => {
+            const id = orbit.id;
             const c = byId[id];
             if (!c) return null;
             const on = sel === id;
             const p = CATEGORY_PLANETS[id];
 
-            // Evenly spaced angular positions around the ellipse
-            const step = (Math.PI * 2) / PLANET_ORDER.length;
-            const theta = orbitAngle + i * step;
-
-            // Horizontal elliptical coordinates
-            const cosVal = Math.cos(theta);
-            const sinVal = Math.sin(theta);
-            const xPercent = cosVal * 38;       // horizontal spread: ±38%
-            const yOffsetPx = sinVal * 50;      // vertical depth: ±50px (flatter ellipse)
-
-            // 3D depth: sin > 0 = front (closer), sin < 0 = back (farther)
-            const inFront = sinVal > 0;
-            const depthScale = inFront
-              ? 1.0 + sinVal * 0.15   // front: scale up to 1.15
-              : 0.85 + sinVal * 0.05; // back: scale down to 0.80
-            const scale = on ? 1.2 : depthScale;
-            const zIndex = on ? 30 : inFront ? 12 : 2;
-            const opacity = sel && !on ? 0.3 : inFront ? 1 : 0.75;
-
             return (
               <button
                 key={id}
+                ref={(el) => (planetElsRef.current[i] = el)}
                 type="button"
                 role="tab"
                 aria-selected={on}
                 className={`ipl-planet-node ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
-                style={{
-                  "--c": c.c,
-                  left: `calc(50% + ${xPercent}%)`,
-                  top: `calc(50% + ${yOffsetPx}px)`,
-                  transform: `translate(-50%, -50%) scale(${scale})`,
-                  zIndex,
-                  opacity,
-                }}
+                style={{ "--c": c.c }}
                 onClick={() => onSelect(on ? "" : id)}
                 onMouseEnter={() => setHover(id)}
                 onMouseLeave={() => setHover("")}
               >
-                {/* 3D Planet Sphere — spinning on its axis */}
+                {/* 3D Planet Sphere (Larger size + horizontal equatorial spin) */}
                 <span className="ipl-planet-wrap">
-                  <Planet id={id} size={on ? 110 : 86} spin={true} />
+                  <Planet id={id} size={orbit.size} spin={true} />
                 </span>
 
-                {/* Category Name */}
+                {/* Bold Category Name Label (like the reference chart) */}
                 <b className={`ipl-cat-title ${L ? "bn" : ""}`}>
                   {c.name[L]}
                 </b>
 
-                {/* Category Sub-tag */}
+                {/* Category Subtitle tag */}
                 <small className={`ipl-cat-sub ${L ? "bn" : ""}`}>
                   {c.icon} {p.subTitle[L]}
                 </small>
 
-                {/* Openings pill */}
+                {/* Openings count pill */}
                 <em className="ipl-count-pill">
                   {n2(counts[id] || 0, L)} {L ? "টি সুযোগ" : "openings"}
                 </em>
@@ -335,7 +428,7 @@ export default function InternPlanets({
 
       {!sel && (
         <p className="ipl-hint">
-          👆 {L ? "যেকোনো ক্যাটাগরিতে ক্লিক করো — বিস্তারিত তথ্য ও ইন্টার্নশিপের সুযোগসমূহ দেখো" : "Tap any category to explore requirements, details and active openings"}
+          👆 {L ? "যেকোনো ক্যাটাগরির গ্রহে চাপ দাও — বিস্তারিত তথ্য ও ইন্টার্নশিপের সুযোগসমূহ দেখো" : "Tap any category planet to explore requirements, details and active openings"}
         </p>
       )}
 
@@ -343,7 +436,7 @@ export default function InternPlanets({
       {sel && cur && P && (
         <div className="ipl-focus" style={{ "--c": cur.c }} key={sel}>
           <div className="ipl-focus-planet">
-            <Planet id={sel} size={200} spin={true} />
+            <Planet id={sel} size={220} spin={true} />
             <span className="ipl-focus-cat-badge">{cur.icon} {cur.name[L]}</span>
           </div>
 
