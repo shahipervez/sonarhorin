@@ -1,6 +1,49 @@
 import { useLang } from "../i18n";
 import "../styles/category-boxes.css";
 
+export const SUB_CATEGORIES = {
+  it: [
+    { id: "any", name: ["Any type", "সব ধরনের"], query: "" },
+    { id: "frontend", name: ["Frontend", "ফ্রন্টএন্ড"], query: "frontend react" },
+    { id: "backend", name: ["Backend", "ব্যাকএন্ড"], query: "backend python node django" },
+    { id: "fullstack", name: ["Full Stack", "ফুল স্ট্যাক"], query: "full stack" },
+    { id: "mobile", name: ["Mobile App", "মোবাইল অ্যাপ"], query: "mobile android flutter ios" },
+    { id: "qa", name: ["SQA / Testing", "SQA ও টেস্টিং"], query: "qa sqa testing" },
+    { id: "uiux", name: ["UI/UX Design", "ইউআই/ইউএক্স"], query: "ui ux designer figma" },
+    { id: "ai_data", name: ["AI & Data", "এআই ও ডাটা"], query: "ai python data machine learning" },
+    { id: "devops", name: ["DevOps & Cloud", "ডেভঅপস ও ক্লাউড"], query: "devops cloud aws docker" },
+  ],
+  business: [
+    { id: "any", name: ["Any type", "সব ধরনের"], query: "" },
+    { id: "mto", name: ["Management Trainee (MTO)", "ম্যানেজমেন্ট ট্রেইনি"], query: "management trainee mto" },
+    { id: "marketing", name: ["Digital Marketing", "ডিজিটাল মার্কেটিং"], query: "marketing seo social media" },
+    { id: "sales", name: ["Sales & BD", "সেলস ও বিডি"], query: "sales business development" },
+    { id: "finance", name: ["Finance & Accounts", "ফাইন্যান্স ও একাউন্টস"], query: "finance accounts audit" },
+    { id: "hr", name: ["HR & Admin", "এইচআর ও এডমিন"], query: "hr admin human resources" },
+  ],
+  agriculture: [
+    { id: "any", name: ["Any type", "সব ধরনের"], query: "" },
+    { id: "agritech", name: ["Agri-Tech & Smart Farming", "এগ্রি-টেক ও স্মার্ট ফার্মিং"], query: "agritech smart farming" },
+    { id: "food", name: ["Food Tech & QA", "ফুড টেক ও কোয়ালিটি"], query: "food processing quality" },
+    { id: "research", name: ["Agronomist & R&D", "এগ্রোনোমিস্ট ও গবেষণা"], query: "agronomist research seeds" },
+    { id: "supply", name: ["Agri Supply Chain", "এগ্রি সাপ্লাই চেইন"], query: "supply chain logistics agro" },
+  ],
+  textile: [
+    { id: "any", name: ["Any type", "সব ধরনের"], query: "" },
+    { id: "merchandising", name: ["Merchandising", "মার্চেন্ডাইজিং"], query: "merchandiser woven knit" },
+    { id: "qa", name: ["Quality Assurance", "কোয়ালিটি কন্ট্রোল"], query: "qa quality audit inspection" },
+    { id: "fabric", name: ["Fabric & Dyeing", "ফেব্রিক ও ডাইং"], query: "fabric dyeing textile" },
+    { id: "ie", name: ["Industrial Eng (IE)", "আইই ও প্ল্যানিং"], query: "industrial engineering planning" },
+  ],
+  engineering: [
+    { id: "any", name: ["Any type", "সব ধরনের"], query: "" },
+    { id: "eee", name: ["Electrical (EEE)", "ইলেকট্রিক্যাল (EEE)"], query: "electrical eee power" },
+    { id: "mechanical", name: ["Mechanical", "মেকানিক্যাল"], query: "mechanical maintenance" },
+    { id: "civil", name: ["Civil & Site", "সিভিল ও সাইট"], query: "civil site engineer" },
+    { id: "automation", name: ["Automation & Robotics", "অটোমেশন ও রোবোটিক্স"], query: "automation robotics plc" },
+  ],
+};
+
 export const CATEGORY_BOXES = {
   job: [
     {
@@ -143,10 +186,21 @@ export const CATEGORY_BOXES = {
   ],
 };
 
-export default function CategoryBoxes({ kind = "job", active, onSelect, onSwitch, title }) {
+export default function CategoryBoxes({
+  kind = "job",
+  active,
+  activeSubCat = "any",
+  onSelect,
+  onSelectSubCat,
+  onSwitch,
+  title,
+}) {
   const [lang] = useLang();
   const L = lang === "bn" ? 1 : 0;
   const items = CATEGORY_BOXES[kind] || CATEGORY_BOXES.job;
+
+  const currentCat = items.find((c) => c.id === active);
+  const subList = active ? SUB_CATEGORIES[active] : null;
 
   return (
     <section className="cat-boxes-section" aria-label="Job Categories">
@@ -156,11 +210,11 @@ export default function CategoryBoxes({ kind = "job", active, onSelect, onSwitch
           <p className="cat-boxes-sub">
             {kind === "job"
               ? L
-                ? "যেকোনো বক্সে ক্লিক করে সরাসরি নির্দিষ্ট বিষয়ের ০-অভিজ্ঞতার ফ্রেশার চাকরি ফিল্টার করুন।"
-                : "Click any box to instantly filter verified 0-experience fresher jobs."
+                ? "যেকোনো ফিল্ডে ক্লিক করে নির্দিষ্ট ০-অভিজ্ঞতার ফ্রেশার সার্কুলার ফিল্টার করুন।"
+                : "Select any category to filter verified 0-experience fresher jobs."
               : L
-                ? "যেকোনো বক্সে ক্লিক করে সরাসরি ইন্টার্নশিপ সুযোগগুলো ফিল্টার করুন।"
-                : "Click any box to filter tailored student & graduate internships."}
+                ? "যেকোনো ক্যাটাগরিতে ক্লিক করে ইন্টার্নশিপ সুযোগ ফিল্টার করুন।"
+                : "Filter tailored student & graduate internships."}
           </p>
         </div>
 
@@ -198,6 +252,7 @@ export default function CategoryBoxes({ kind = "job", active, onSelect, onSwitch
         </div>
       </div>
 
+      {/* COMPACT CATEGORY BOXES GRID */}
       <div className="cat-boxes-grid">
         {items.map((cat, idx) => {
           const isSelected = active === cat.id;
@@ -209,7 +264,7 @@ export default function CategoryBoxes({ kind = "job", active, onSelect, onSwitch
                 "--cat-color": cat.c,
                 "--cat-bg-soft": cat.bgSoft,
                 "--cat-border-soft": cat.borderSoft,
-                "--anim-delay": `${idx * 45}ms`,
+                "--anim-delay": `${idx * 35}ms`,
               }}
               onClick={() => onSelect(cat)}
               role="button"
@@ -221,7 +276,7 @@ export default function CategoryBoxes({ kind = "job", active, onSelect, onSwitch
                 }
               }}
             >
-              {/* Top Row: Icon + Salary Pill */}
+              {/* Top Row: Icon + Salary Chip */}
               <div className="cat-box-top">
                 <div className="cat-box-icon-wrap">
                   <span className="cat-box-icon">{cat.icon}</span>
@@ -252,12 +307,8 @@ export default function CategoryBoxes({ kind = "job", active, onSelect, onSwitch
               <div className="cat-box-foot">
                 <span className="cat-box-action-text">
                   {isSelected
-                    ? L
-                      ? "ফিল্টার অন ✓"
-                      : "Active Filter ✓"
-                    : L
-                      ? "জব দেখুন"
-                      : "Explore"}
+                    ? (L ? "নির্বাচিত ✓" : "Selected ✓")
+                    : (L ? "এক্সপ্লোর" : "Explore")}
                 </span>
                 <span className="cat-box-arrow" aria-hidden="true">
                   {isSelected ? "✓" : "→"}
@@ -267,6 +318,42 @@ export default function CategoryBoxes({ kind = "job", active, onSelect, onSwitch
           );
         })}
       </div>
+
+      {/* SUB-CATEGORIES ROW (Appears when IT or any category is selected) */}
+      {active && subList && subList.length > 0 && (
+        <div className="cat-sub-wrapper" aria-label="Specialization Filter">
+          <div className="cat-sub-header">
+            <span className="cat-sub-label">
+              {L ? "স্পেশালাইজেশন / সাব-ক্যাটাগরি:" : "Specialization / Sub-category:"}
+            </span>
+            <span className="cat-sub-cat-name" style={{ color: currentCat?.c }}>
+              {currentCat?.name[L]}
+            </span>
+          </div>
+
+          <div className="cat-sub-row" role="tablist">
+            {subList.map((sub) => {
+              const isSubActive = (activeSubCat || "any") === sub.id;
+              return (
+                <button
+                  key={sub.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSubActive}
+                  className={`cat-sub-pill ${isSubActive ? "active" : ""}`}
+                  style={{
+                    "--cat-color": currentCat?.c || "#2563EB",
+                  }}
+                  onClick={() => onSelectSubCat && onSelectSubCat(sub)}
+                >
+                  {sub.id === "any" && <span className="cat-sub-star">✦</span>}
+                  <span>{sub.name[L]}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

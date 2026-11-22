@@ -86,6 +86,8 @@ function JobsBoard() {
   const [trackMode, setTrackMode] = useState(initialType === "internship" ? "internship" : "job");
   const [activeJobCat, setActiveJobCat] = useState(initialType === "internship" ? null : sp.get("cat"));
   const [activeInternCat, setActiveInternCat] = useState(initialType === "internship" ? sp.get("cat") : null);
+  const [activeSubCat, setActiveSubCat] = useState("any");
+  const [showAutoModal, setShowAutoModal] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
   useEffect(() => {
@@ -155,10 +157,12 @@ function JobsBoard() {
   const handleSelectJobCat = (cat) => {
     if (!cat) {
       setActiveJobCat(null);
+      setActiveSubCat("any");
       setF((o) => ({ ...o, major: "", q: "" }));
       return;
     }
     setActiveJobCat(cat.id);
+    setActiveSubCat("any");
     setF((o) => ({
       ...o,
       major: cat.major,
@@ -170,15 +174,27 @@ function JobsBoard() {
   const handleSelectInternCat = (cat) => {
     if (!cat) {
       setActiveInternCat(null);
+      setActiveSubCat("any");
       setF((o) => ({ ...o, q: "", type: "internship" }));
       return;
     }
     setActiveInternCat(cat.id);
+    setActiveSubCat("any");
     setF((o) => ({
       ...o,
       type: "internship",
       q: cat.query,
     }));
+  };
+
+  // Handle Sub-category Selection (e.g. Frontend, Backend, or Any type)
+  const handleSelectSubCat = (sub) => {
+    setActiveSubCat(sub.id);
+    if (sub.id === "any") {
+      setF((o) => ({ ...o, q: "" }));
+    } else {
+      setF((o) => ({ ...o, q: sub.query || sub.name?.[0] || sub.id }));
+    }
   };
 
   // Switch between Jobs and Internship Mode
@@ -197,10 +213,12 @@ function JobsBoard() {
   return (
     <div className="page jobs-page">
       <div className="wrap">
-        {/* Category Boxes — tap any box to filter verified fresher roles */}
+        {/* Category Boxes — small compact cards + sub-categories */}
         <CategoryBoxes
           kind={trackMode}
           active={trackMode === "job" ? activeJobCat : activeInternCat}
+          activeSubCat={activeSubCat}
+          onSelectSubCat={handleSelectSubCat}
           onSwitch={switchMode}
           onSelect={(s) => {
             if (!s) {
@@ -209,13 +227,12 @@ function JobsBoard() {
               return;
             }
             const cat = { ...s, major: s.major };
-            const scroll = () => setTimeout(() => document.querySelector(".job-filters")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
             if (trackMode === "job") {
               if (activeJobCat === s.id) handleSelectJobCat(null);
-              else { handleSelectJobCat(cat); scroll(); }
+              else handleSelectJobCat(cat);
             } else {
               if (activeInternCat === s.id) handleSelectInternCat(null);
-              else { handleSelectInternCat(cat); scroll(); }
+              else handleSelectInternCat(cat);
             }
           }}
           title={
@@ -225,72 +242,60 @@ function JobsBoard() {
           }
         />
 
-        <div style={{ height: 34 }} />
-
-        <div className="ch-strip">
-          {Object.entries(CH).map(([k, c]) => (
-            <button
-              key={k}
-              className={`ch-card ${c.cls} ${f.channel === k ? "on" : ""}`}
-              onClick={() => setF({ ...f, channel: f.channel === k ? "" : k })}
-            >
-              <span className="ic">{c.ic}</span>
-              <div>
-                <b>
-                  {c.t} <em>{data?.by_channel?.[k] ?? "…"}</em>
-                </b>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {user ? (
-          <AutoApplyPanel matches={matches} onRun={load} L={L} CH={CH} />
-        ) : (
-          <div id="auto" className="card auto-cta">
-            <div>
-              <b>{L ? "🤖 ঘুমের মধ্যেও অটো-অ্যাপ্লাই" : "🤖 Auto-apply while you sleep"}</b>
-
-            </div>
-            <Link to="/register?next=/jobs" className="btn btn-ink sm">
-              {L ? "ফ্রি অ্যাকাউন্ট তৈরি করো →" : "Create free account →"}
-            </Link>
-          </div>
-        )}
-
-        {/* Live BD Career Auto-Scraper Banner & Sync Trigger */}
-        <div className="scraper-sync-bar">
-          <div className="sc-sync-status">
-            <span className="sc-live-dot" />
-            <div className="sc-text-meta">
-              <b>{L ? "বাংলাদেশ ক্যারিয়ার অটো-স্ক্র্যাপার সক্রিয়" : "Live Bangladesh Job Scraper: Active"}</b>
-              <small>{L ? "ক্যারিয়ার সাইট থেকে প্রতি ঘণ্টায় নতুন জব ও ইন্টার্নশিপ স্বয়ংক্রিয়ভাবে স্ক্র্যাপ হয়ে যুক্ত হচ্ছে" : "Auto-scraping new fresher jobs & internships from career portals hourly"}</small>
-            </div>
-          </div>
-          <button
-            className={`sc-sync-btn ${scraping ? "busy" : ""}`}
-            onClick={triggerScraperSync}
-            disabled={scraping}
-          >
-            {scraping ? (
-              <span className="sc-spinner">{L ? "স্ক্র্যাপ হচ্ছে…" : "Syncing live feeds…"}</span>
-            ) : (
-              <>⚡ {L ? "এখনই স্ক্র্যাপ করো (Sync Now)" : "Sync Live Jobs Now"}</>
+        {/* Search bar immediately below Category Boxes */}
+        <div className="job-filters" style={{ marginTop: 14 }}>
+          <div style={{ flex: "1 1 260px", position: "relative" }}>
+            <input
+              className="inp"
+              style={{ width: "100%", paddingRight: f.q ? 32 : 12 }}
+              placeholder={L ? "পদবী, কোম্পানি, স্কিল দিয়ে সরাসরি সার্চ করো…" : "Search title, company, skill…"}
+              value={f.q}
+              onChange={(e) => {
+                setF((o) => ({ ...o, q: e.target.value }));
+                if (activeSubCat !== "any") setActiveSubCat("any");
+              }}
+            />
+            {f.q && (
+              <button
+                type="button"
+                onClick={() => {
+                  setF((o) => ({ ...o, q: "" }));
+                  setActiveSubCat("any");
+                }}
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "#94A3B8",
+                  fontSize: 13,
+                  padding: 2,
+                }}
+                title={L ? "মুছে ফেলো" : "Clear search"}
+              >
+                ✕
+              </button>
             )}
-          </button>
-        </div>
-
-        <div className="job-filters">
-          <input
-            className="inp"
-            placeholder={L ? "পদবী, কোম্পানি, স্কিল দিয়ে খোঁজো…" : "Search title, company, skill…"}
-            value={f.q}
-            onChange={(e) => setF({ ...f, q: e.target.value })}
-          />
+          </div>
           <select
             className="inp"
             value={f.major}
-            onChange={(e) => setF({ ...f, major: e.target.value })}
+            onChange={(e) => {
+              const val = e.target.value;
+              setF((o) => ({ ...o, major: val }));
+              const found = [
+                { id: "it", major: "Computer Science & Engineering" },
+                { id: "business", major: "Business Administration (BBA)" },
+                { id: "agriculture", major: "Agriculture & Agribusiness" },
+                { id: "textile", major: "Textile & Apparel" },
+                { id: "engineering", major: "Electrical / Mechanical" },
+              ].find((c) => c.major === val);
+              setActiveJobCat(found ? found.id : null);
+              setActiveSubCat("any");
+            }}
           >
             <option value="">{L ? "সকল বিষয় / বিভাগ" : "All majors"}</option>
             {MAJORS.map((m) => (
@@ -333,6 +338,7 @@ function JobsBoard() {
             </>
           )}
         </p>
+
         <div className="job-grid">
           {data?.jobs.map((j) => (
             <JobCard
@@ -348,6 +354,55 @@ function JobsBoard() {
               {L ? "এই ফিল্টারের সাথে কোনো সার্কুলার পাওয়া যায়নি।" : "No jobs match these filters yet."}
             </p>
           )}
+        </div>
+
+        {/* Compact Bottom Toolbar for Live Scraper Sync & Auto-Apply (Moved from top to bottom) */}
+        <div className="jobs-bottom-bar">
+          <div className="jbb-left">
+            <button
+              type="button"
+              className={`jbb-btn scraper-btn ${scraping ? "busy" : ""}`}
+              onClick={triggerScraperSync}
+              disabled={scraping}
+              title={L ? "বিডি ক্যারিয়ার পোর্টাল থেকে লাইভ নতুন জব স্ক্র্যাপ করো" : "Sync latest jobs from Bangladesh portals"}
+            >
+              <span>{scraping ? "⏳" : "⚡"}</span>
+              <span>
+                {scraping
+                  ? (L ? "স্ক্র্যাপ হচ্ছে…" : "Syncing live jobs…")
+                  : (L ? "লাইভ জব স্ক্র্যাপার সিঙ্ক" : "Sync Live BD Jobs")}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="jbb-btn auto-btn"
+              onClick={() => setShowAutoModal(true)}
+              title={L ? "অটো-অ্যাপ্লাই সেটিংস ও রুলস" : "Auto-apply settings"}
+            >
+              <span>🤖</span>
+              <span>{L ? "অটো-অ্যাপ্লাই" : "Auto-Apply"}</span>
+              {eligible > 0 && <span className="jbb-badge">{eligible}</span>}
+            </button>
+          </div>
+
+          <div className="jbb-right">
+            <div className="jbb-channels">
+              <span className="jbb-ch-label">{L ? "চ্যানেল:" : "Channel:"}</span>
+              {Object.entries(CH).map(([k, c]) => (
+                <button
+                  key={k}
+                  type="button"
+                  className={`jbb-ch-pill ${f.channel === k ? "active" : ""}`}
+                  onClick={() => setF({ ...f, channel: f.channel === k ? "" : k })}
+                >
+                  <span>{c.ic}</span>
+                  <span>{c.t}</span>
+                  <small>{data?.by_channel?.[k] ?? 0}</small>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -417,6 +472,34 @@ function JobsBoard() {
             >
               {L ? "বুঝেছি! সরাসরি জব ব্রাউজ শুরু করো →" : "Got it! Start Browsing Jobs →"}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Auto-Apply Settings Modal (Triggered by compact bottom button) */}
+      {showAutoModal && (
+        <div className="modal-bg" onClick={() => setShowAutoModal(false)}>
+          <div className="modal auto-apply-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-x" onClick={() => setShowAutoModal(false)}>✕</button>
+            {user ? (
+              <AutoApplyPanel matches={matches} onRun={load} L={L} CH={CH} />
+            ) : (
+              <div className="card auto-cta" style={{ border: "none", boxShadow: "none", margin: 0, padding: "8px 0" }}>
+                <div>
+                  <h3 style={{ margin: "0 0 8px 0", fontSize: 18, color: "#0F172A" }}>
+                    {L ? "🤖 ঘুমের মধ্যেও অটো-অ্যাপ্লাই" : "🤖 Auto-apply while you sleep"}
+                  </h3>
+                  <p className="muted small" style={{ margin: 0, lineHeight: 1.5 }}>
+                    {L
+                      ? "তোমার প্রোফাইল ও সিভির ভিত্তিতে প্রতিদিন স্বয়ংক্রিয়ভাবে নতুন ফ্রেশার সার্কুলারে আবেদন পাঠানো হবে।"
+                      : "Automatically apply to matching fresher jobs & internships as soon as they are posted."}
+                  </p>
+                </div>
+                <Link to="/register?next=/jobs" className="btn btn-ink sm" style={{ marginTop: 14 }}>
+                  {L ? "ফ্রি অ্যাকাউন্ট তৈরি করো →" : "Create free account →"}
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
