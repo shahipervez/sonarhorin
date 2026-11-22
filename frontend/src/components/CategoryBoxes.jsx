@@ -303,42 +303,6 @@ export default function CategoryBoxes({
           );
         })}
       </div>
-
-      {/* SUB-CATEGORIES ROW (Appears when IT or any category is selected) */}
-      {active && subList && subList.length > 0 && (
-        <div className="cat-sub-wrapper" aria-label="Specialization Filter">
-          <div className="cat-sub-header">
-            <span className="cat-sub-label">
-              {L ? "স্পেশালাইজেশন / সাব-ক্যাটাগরি:" : "Specialization / Sub-category:"}
-            </span>
-            <span className="cat-sub-cat-name" style={{ color: currentCat?.c }}>
-              {currentCat?.name[L]}
-            </span>
-          </div>
-
-          <div className="cat-sub-row" role="tablist">
-            {subList.map((sub) => {
-              const isSubActive = (activeSubCat || "any") === sub.id;
-              return (
-                <button
-                  key={sub.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isSubActive}
-                  className={`cat-sub-pill ${isSubActive ? "active" : ""}`}
-                  style={{
-                    "--cat-color": currentCat?.c || "#2563EB",
-                  }}
-                  onClick={() => onSelectSubCat && onSelectSubCat(sub)}
-                >
-                  {sub.id === "any" && <span className="cat-sub-star">✦</span>}
-                  <span>{sub.name[L]}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </section>
   );
 }

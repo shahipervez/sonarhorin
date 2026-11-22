@@ -99,12 +99,14 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-/* 5 Boxes Grid — COMPACT & SLEEK */
+/* 5 Boxes Grid — Fits container width without overflow */
 .cat-boxes-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Individual Box Card — Ultra-compact sleek size */
@@ -114,18 +116,23 @@
   align-items: center;
   background: #FFFFFF;
   border: 1.5px solid #E2E8F0;
-  border-radius: 12px;
-  padding: 8px 10px;
+  border-radius: 10px;
+  padding: 6px 8px;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease,
-              background-color 0.2s ease;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.18s ease,
+              background-color 0.18s ease;
   user-select: none;
   animation: catBoxIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: var(--anim-delay, 0ms);
-  min-height: 52px;
+  min-height: 48px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 @keyframes catBoxIn {
@@ -142,27 +149,29 @@
 .cat-box-card:hover {
   transform: translateY(-2px);
   border-color: var(--cat-color);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
 /* Selected Active State */
 .cat-box-card.selected {
   border-color: var(--cat-color);
   background: var(--cat-bg-soft);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05), 0 0 0 1.5px var(--cat-color);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05), 0 0 0 1.5px var(--cat-color);
 }
 
 .cat-box-compact-inner {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 7px;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .cat-box-icon-wrap {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -181,7 +190,7 @@
 }
 
 .cat-box-icon {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1;
 }
 
@@ -190,31 +199,34 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
+  overflow: hidden;
 }
 
 .cat-box-title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 4px;
+  min-width: 0;
 }
 
 .cat-box-title {
   margin: 0;
   font-family: var(--sans, sans-serif);
-  font-size: 12.5px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #0F172A;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .cat-box-title.bn {
   font-family: 'Hind Siliguri', var(--sans, sans-serif);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -225,14 +237,16 @@
 }
 
 .cat-box-badge {
-  font-size: 9.5px;
+  font-size: 9px;
   font-weight: 700;
   color: var(--cat-color);
   background: var(--cat-bg-soft);
-  padding: 1px 5px;
+  padding: 1px 4px;
   border-radius: 999px;
   white-space: nowrap;
   letter-spacing: -0.01em;
+  flex-shrink: 0;
+  line-height: 1.1;
 }
 
 .cat-box-meta-row {
@@ -240,144 +254,56 @@
   align-items: center;
   justify-content: space-between;
   gap: 4px;
+  min-width: 0;
 }
 
 .cat-box-desc {
   margin: 0;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 500;
   color: #64748B;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .cat-box-sel-dot {
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 800;
   color: var(--cat-color);
   line-height: 1;
-}
-
-/* ================================================================
-   SUB-CATEGORIES ROW (Appears when IT or other category is selected)
-   ================================================================ */
-.cat-sub-wrapper {
-  margin-top: 10px;
-  padding: 10px 14px;
-  background: #F8FAFC;
-  border: 1.5px solid #E2E8F0;
-  border-radius: 14px;
-  animation: catSubFadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes catSubFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.cat-sub-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.cat-sub-label {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #64748B;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.cat-sub-cat-name {
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.cat-sub-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-wrap: wrap;
-}
-
-.cat-sub-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 13px;
-  border-radius: 999px;
-  background: #FFFFFF;
-  border: 1.5px solid #E2E8F0;
-  color: #334155;
-  font-family: var(--sans, sans-serif);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-  white-space: nowrap;
-}
-
-.cat-sub-pill:hover {
-  background: #F1F5F9;
-  border-color: #CBD5E1;
-  color: #0F172A;
-  transform: translateY(-1px);
-}
-
-.cat-sub-pill.active {
-  background: var(--cat-color, #2563EB);
-  border-color: var(--cat-color, #2563EB);
-  color: #FFFFFF;
-  font-weight: 800;
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--cat-color, #2563EB) 35%, transparent);
-}
-
-.cat-sub-star {
-  color: #F59E0B;
-  font-size: 11px;
-}
-
-.cat-sub-pill.active .cat-sub-star {
-  color: #FEF08A;
+  flex-shrink: 0;
 }
 
 /* Responsive adjustments */
-@media (max-width: 1180px) {
+@media (max-width: 1080px) {
   .cat-boxes-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 720px) {
   .cat-boxes-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
   .cat-boxes-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
   }
   .cat-box-card {
-    min-height: 104px;
-    padding: 8px 10px;
+    min-height: 46px;
+    padding: 6px 8px;
   }
 }
 
 @media (max-width: 480px) {
   .cat-boxes-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
