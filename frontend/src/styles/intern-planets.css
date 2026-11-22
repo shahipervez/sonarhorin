@@ -1,16 +1,14 @@
 /* ==========================================================================
-   INTERNSHIP PLANETARY SYSTEM — AUTHENTIC SOLAR SYSTEM CHART
-   - 5 Concentric Nested Horizontal Elliptical Orbits with Keplerian Physics
-   - Central Glowing Sun with Sonarhorin Golden Deer Logo in Core (NO NAME TEXT)
-   - Larger Realistic 3D Planets (Saturn Cassini rings, Earth continents, etc.)
-   - Pure Space Aesthetics: ZERO boxes/cards around planets
-   - Bold floating Category Names & Openings pills
+   INTERNSHIP PLANETARY SYSTEM — HORIZONTAL ORBIT & HORIZONTAL SPIN
+   - Real horizontal revolution along the elliptical plane
+   - Horizontal surface rotation for all planets (Saturn ring lies horizontally)
+   - Category names ONLY (No planet names)
    ========================================================================== */
 
 .ipl {
   position: relative;
   margin-top: 10px;
-  padding: 16px 0 24px;
+  padding: 16px 0;
   overflow-x: clip;
 }
 
@@ -24,197 +22,104 @@
   position: absolute;
   border-radius: 50%;
   background: #ffffff;
-  opacity: 0.75;
+  opacity: 0.7;
   animation: iplTwinkle 3.2s ease-in-out infinite;
 }
 
-/* ==========================================================================
-   CONCENTRIC SOLAR SYSTEM ARENA
-   ========================================================================== */
-.ipl-orbit-arena {
+/* ---------------- STATIC HORIZONTAL PLANETARY STAGE ---------------- */
+.ipl-stage {
   position: relative;
-  width: 100%;
-  max-width: 1200px;
-  height: 520px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-width: 1180px;
+  margin: 12px auto 24px;
+  padding: 0 16px;
 }
 
-/* 5 Concentric Elliptical Orbit Tracks */
-.ipl-orbit-svg {
+.ipl-orbit-bg {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 48px;
   width: 100%;
-  height: 100%;
+  height: 180px;
   pointer-events: none;
   z-index: 1;
 }
 
-.ipl-orbit-line {
+.ipl-orbit-bg ellipse {
   fill: none;
-  stroke: rgba(147, 197, 253, 0.22);
-  stroke-width: 1.3px;
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 1.5;
   stroke-dasharray: 4 10;
   vector-effect: non-scaling-stroke;
-  transition: stroke 0.3s ease;
 }
 
-.ipl-orbit-line.o-2 {
-  /* Saturn orbit subtle golden warmth */
-  stroke: rgba(254, 215, 170, 0.26);
-}
-
-.ipl-orbit-arrows polygon {
-  fill: rgba(147, 197, 253, 0.7);
-  filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.7));
-}
-
-/* ==========================================================================
-   CENTRAL SUN — RADIANT STAR WITH SONARHORIN GOLDEN DEER LOGO (NO TEXT)
-   ========================================================================== */
-.ipl-sun-center {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 130px;
-  height: 130px;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-  z-index: 8; /* Sits between back planets (z: 2-6) and front planets (z: 15-20) */
-}
-
-/* Outer Pulsating Golden Aura */
-.ipl-sun-aura {
-  position: absolute;
-  inset: -28px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff7b3 0%, #ffc23d 35%, rgba(249, 115, 22, 0.4) 60%, rgba(217, 119, 6, 0.15) 75%, transparent 85%);
-  filter: blur(14px);
-  animation: iplSunPulse 5s ease-in-out infinite;
-}
-
-/* Solar Flares */
-.ipl-sun-flare {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.ipl-sun-flare.flare-1 {
-  inset: -14px;
-  background: radial-gradient(circle, rgba(255, 235, 150, 0.5) 20%, rgba(255, 150, 30, 0.25) 55%, transparent 75%);
-  filter: blur(8px);
-  animation: iplSunPulse 3.8s ease-in-out infinite reverse;
-}
-
-.ipl-sun-flare.flare-2 {
-  width: 180px;
-  height: 180px;
-  background: radial-gradient(circle, rgba(255, 240, 180, 0.25) 0%, transparent 68%);
-  filter: blur(18px);
-}
-
-/* Rotating Corona Ring */
-.ipl-sun-corona {
-  position: absolute;
-  width: 190px;
-  height: 190px;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(255, 210, 60, 0.3);
-  animation: iplSpinClockwise 34s linear infinite;
-}
-
-/* Glowing Star Core */
-.ipl-sun-core {
+/* 5 Category Planets — Static Horizontal Row */
+.ipl-row {
   position: relative;
-  width: 86px;
-  height: 86px;
-  border-radius: 50%;
+  z-index: 3;
   display: grid;
-  place-items: center;
-  background: radial-gradient(circle at 38% 38%, #ffffff 0%, #fff2a3 22%, #ffbf2b 55%, #ea580c 85%, #9a3412 100%);
-  box-shadow:
-    0 0 25px rgba(255, 255, 255, 0.9),
-    0 0 50px rgba(255, 194, 61, 0.85),
-    0 0 95px rgba(249, 115, 22, 0.55),
-    inset 0 0 15px rgba(255, 255, 255, 0.6);
-  z-index: 2;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  align-items: stretch;
 }
 
-/* Sonarhorin Golden Deer Logo Image (NO TEXT NAME) */
-.ipl-sun-logo {
-  width: 54px;
-  height: 54px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 10px #ffffff);
-  animation: iplLogoFloat 4.2s ease-in-out infinite;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* Planetary Field (container for free floating planets) */
-.ipl-planetary-field {
-  position: absolute;
-  inset: 0;
-  pointer-events: auto;
-}
-
-/* ==========================================================================
-   PLANET NODES — ZERO BOX, PURE FLOATING CELESTIAL BODIES
-   ========================================================================== */
-.ipl-planet-node {
+.ipl-p {
   --c: #10b981;
-  position: absolute;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 0;
-  margin: 0;
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 18px 10px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
   color: #ffffff;
   cursor: pointer;
-  transition: opacity 0.3s ease;
-  will-change: left, top, transform;
-  user-select: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.ipl-planet-node:focus-visible {
-  outline: 2px dashed #ffd23f;
-  outline-offset: 8px;
-  border-radius: 50%;
+.ipl-p:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
-.ipl-planet-node:hover .ipl-planet-wrap {
-  filter: brightness(1.18) drop-shadow(0 0 28px rgba(255, 255, 255, 0.55));
-  transform: scale(1.06);
+.ipl-p.on {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--c);
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 35%, transparent), 0 16px 36px rgba(0, 0, 0, 0.5);
 }
 
-.ipl-planet-node.on .ipl-planet-wrap {
-  filter: brightness(1.22) drop-shadow(0 0 34px color-mix(in srgb, var(--c) 80%, transparent));
-  transform: scale(1.1);
+.ipl-p.dim {
+  opacity: 0.55;
 }
 
-.ipl-planet-node.dim {
-  opacity: 0.22 !important;
-  pointer-events: none;
+.ipl-p.dim:hover {
+  opacity: 1;
+}
+
+.ipl-p.on .ipl-count-pill {
+  background: var(--c);
+  color: #0b1026;
+  font-weight: 900;
 }
 
 .ipl-planet-wrap {
   display: grid;
   place-items: center;
   position: relative;
-  transition: transform 0.25s ease, filter 0.25s ease;
+  width: 104px;
+  height: 104px;
+  margin-bottom: 6px;
 }
 
-/* Bold Prominent Category Name Label (exactly like SATURN, EARTH in diagram) */
+/* Category Title (Crisp, Bold, Centered) */
 .ipl-cat-title {
   margin-top: 4px;
   font-size: 15px;
@@ -223,48 +128,31 @@
   color: #ffffff;
   text-align: center;
   white-space: nowrap;
-  text-shadow:
-    0 2px 10px rgba(0, 0, 0, 1),
-    0 0 20px rgba(0, 0, 0, 0.9),
-    0 0 35px rgba(0, 0, 0, 0.7);
-  transition: color 0.2s ease, text-shadow 0.2s ease;
-}
-
-.ipl-planet-node:hover .ipl-cat-title {
-  color: #ffd23f;
-  text-shadow:
-    0 2px 12px rgba(0, 0, 0, 1),
-    0 0 20px rgba(255, 210, 63, 0.6);
-}
-
-.ipl-cat-title.bn {
-  font-family: inherit;
-  font-size: 16px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 /* Sub-feature Tag */
 .ipl-cat-sub {
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   white-space: nowrap;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 1);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 }
 
-/* Openings Count Pill (sleek floating capsule) */
+/* Openings Count Pill */
 .ipl-count-pill {
   font-style: normal;
   margin-top: 2px;
   padding: 2px 10px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 800;
-  background: color-mix(in srgb, var(--c) 40%, rgba(10, 15, 30, 0.75));
-  border: 1px solid color-mix(in srgb, var(--c) 75%, transparent);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  background: color-mix(in srgb, var(--c) 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
   color: #ffffff;
 }
 
@@ -277,7 +165,7 @@
 /* Tooltip on Hover */
 .ipl-tip {
   position: absolute;
-  bottom: calc(100% + 6px);
+  bottom: calc(100% + 4px);
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
@@ -287,16 +175,14 @@
   color: #0b1026;
   font-size: 12px;
   font-weight: 700;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
-  z-index: 50;
-  animation: iplPop 0.2s both;
-  pointer-events: none;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+  z-index: 40;
 }
 
 .ipl-hint {
   position: relative;
   text-align: center;
-  margin-top: 6px;
+  margin-top: 8px;
   font-size: 14px;
   font-weight: 700;
   color: #ffd23f;
@@ -307,13 +193,13 @@
    3D PLANET RENDERING — ALL HORIZONTAL SPINNING
    ========================================================================== */
 .pl {
-  --s: 96px;
+  --s: 90px;
   position: relative;
   display: inline-grid;
   place-items: center;
   width: var(--s);
   height: var(--s);
-  transition: width 0.3s ease, height 0.3s ease;
+  transition: width 0.4s ease, height 0.4s ease;
 }
 
 .pl-body {
@@ -348,7 +234,7 @@
   inset: 0;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.38) 0%, transparent 35%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35) 0%, transparent 35%),
     radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.72) 0%, transparent 65%);
   box-shadow:
     inset calc(var(--s) * -0.12) calc(var(--s) * -0.08) calc(var(--s) * 0.2) rgba(0, 0, 0, 0.65),
@@ -357,11 +243,12 @@
 }
 
 /* ==========================================================================
-   1. CORPORATE (SATURN) — HORIZONTAL CASSINI RINGS (LARGER & MAJESTIC)
+   1. CORPORATE (SATURN) — HORIZONTAL ROTATION + HORIZONTAL CASSINI RINGS
    ========================================================================== */
 .pl-corporate {
-  --glow: rgba(245, 210, 130, 0.55);
+  --glow: rgba(245, 210, 130, 0.5);
   --spin: 26s;
+  /* Strictly Horizontal Orientation */
   transform: rotate(0deg);
 }
 
@@ -404,9 +291,9 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 250%;
-  height: 76%;
-  transform: translate(-50%, -50%) rotateX(76deg);
+  width: 240%;
+  height: 75%;
+  transform: translate(-50%, -50%) rotateX(76deg); /* Horizontal perspective! */
   pointer-events: none;
 }
 
@@ -416,7 +303,7 @@
 
 .pl-ring-wrap.front {
   z-index: 3;
-  clip-path: inset(50% 0 0 0);
+  clip-path: inset(50% 0 0 0); /* Passes cleanly in front of lower sphere */
 }
 
 .pl-ring {
@@ -431,23 +318,23 @@
     ellipse at center,
     transparent 47%,
     rgba(180, 150, 100, 0.28) 48%,
-    rgba(255, 235, 185, 0.98) 51%,
+    rgba(255, 235, 185, 0.98) 51%,  /* B-Ring */
     rgba(235, 205, 145, 0.92) 57%,
-    rgba(11, 15, 30, 0.98) 58.2%,
+    rgba(11, 15, 30, 0.98) 58.2%,   /* CASSINI GAP */
     rgba(11, 15, 30, 0.98) 60%,
-    rgba(240, 215, 160, 0.9) 60.5%,
+    rgba(240, 215, 160, 0.9) 60.5%, /* A-Ring */
     rgba(215, 185, 130, 0.75) 67%,
     rgba(180, 150, 100, 0.3) 68.5%,
     transparent 69.5%
   );
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.75));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7));
 }
 
 /* ==========================================================================
    2. PAID (EARTH) — HORIZONTAL ROTATION
    ========================================================================== */
 .pl-paid {
-  --glow: rgba(90, 180, 255, 0.6);
+  --glow: rgba(90, 180, 255, 0.55);
   --spin: 22s;
   transform: rotate(0deg);
 }
@@ -470,7 +357,7 @@
   position: absolute;
   inset: -2px;
   border-radius: 50%;
-  box-shadow: inset 0 0 16px rgba(160, 220, 255, 0.5);
+  box-shadow: inset 0 0 14px rgba(160, 220, 255, 0.45);
   pointer-events: none;
 }
 
@@ -478,7 +365,7 @@
    3. LEARNING (VENUS) — HORIZONTAL ROTATION
    ========================================================================== */
 .pl-learning {
-  --glow: rgba(255, 215, 140, 0.55);
+  --glow: rgba(255, 215, 140, 0.5);
   --spin: 36s;
   transform: rotate(0deg);
 }
@@ -492,10 +379,10 @@
 }
 
 /* ==========================================================================
-   4. REMOTE (URANUS) — HORIZONTAL ROTATION + THIN RING
+   4. REMOTE (URANUS) — HORIZONTAL ROTATION
    ========================================================================== */
 .pl-remote {
-  --glow: rgba(130, 240, 250, 0.55);
+  --glow: rgba(130, 240, 250, 0.5);
   --spin: 32s;
   transform: rotate(0deg);
 }
@@ -520,7 +407,7 @@
    5. VERSITY (NEPTUNE) — HORIZONTAL ROTATION
    ========================================================================== */
 .pl-versity {
-  --glow: rgba(75, 120, 255, 0.65);
+  --glow: rgba(75, 120, 255, 0.6);
   --spin: 22s;
   transform: rotate(0deg);
 }
@@ -837,17 +724,15 @@
   margin-top: 14px;
 }
 
-/* ==========================================================================
-   KEYFRAMES
-   ========================================================================== */
+/* ---------------- Global Keyframes ---------------- */
 @keyframes iplTwinkle {
   0%, 100% { opacity: 0.25; }
   50% { opacity: 0.95; }
 }
 
 @keyframes iplSunPulse {
-  0%, 100% { transform: scale(1); filter: blur(14px); opacity: 0.9; }
-  50% { transform: scale(1.1); filter: blur(18px); opacity: 1; }
+  0%, 100% { transform: scale(1); filter: blur(10px); }
+  50% { transform: scale(1.1); filter: blur(14px); }
 }
 
 @keyframes iplSpinClockwise {
@@ -855,19 +740,14 @@
   to { transform: rotate(360deg); }
 }
 
-@keyframes iplLogoFloat {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-4px) scale(1.05); }
+@keyframes iplFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 @keyframes iplPulse {
   0%, 100% { opacity: 0.7; }
   50% { opacity: 1; }
-}
-
-@keyframes iplPop {
-  from { opacity: 0; transform: translateX(-50%) scale(0.85) translateY(6px); }
-  to { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
 }
 
 @keyframes iplIn {
@@ -885,27 +765,10 @@
   to { opacity: 1; transform: none; }
 }
 
-/* ==========================================================================
-   RESPONSIVE DESIGN
-   ========================================================================== */
+/* ---------------- Responsive Styles ---------------- */
 @media (max-width: 960px) {
-  .ipl-orbit-arena {
-    height: 450px;
-  }
-  .ipl-sun-center {
-    width: 110px;
-    height: 110px;
-  }
-  .ipl-sun-core {
-    width: 74px;
-    height: 74px;
-  }
-  .ipl-sun-logo {
-    width: 44px;
-    height: 44px;
-  }
-  .ipl-cat-title {
-    font-size: 13px;
+  .ipl-row {
+    grid-template-columns: repeat(3, 1fr);
   }
   .ipl-focus {
     grid-template-columns: 1fr;
@@ -916,18 +779,30 @@
 }
 
 @media (max-width: 640px) {
-  .ipl-orbit-arena {
-    height: 380px;
+  .ipl-stage {
+    padding: 0 8px;
+  }
+  .ipl-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 10px;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ipl-p {
+    flex: 0 0 72%;
+    scroll-snap-align: center;
   }
   .ipl-cat-title {
-    font-size: 11.5px;
+    font-size: 13px;
   }
   .ipl-cat-sub {
-    font-size: 9.5px;
+    font-size: 11px;
   }
   .ipl-count-pill {
-    font-size: 9.5px;
-    padding: 1px 7px;
+    font-size: 10px;
+    padding: 1px 8px;
   }
   .ipl-jobs, .ipl-facts {
     grid-template-columns: 1fr;

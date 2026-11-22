@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /**
- * Concentric Keplerian Solar System Configuration
- * Each internship category orbits on its OWN concentric horizontal elliptical orbit,
- * exactly like the authentic solar system chart:
- * - Inner orbits move faster, outer orbits move slower.
- * - Central radiant Sun with Sonarhorin Golden Deer logo in the core (no text name).
- * - Floating larger planets with horizontal axial spin and Saturn horizontal Cassini rings.
- * - Pure celestial space: NO boxes or cards around planets.
+ * Internship Planetary System — 5 realistic celestial bodies representing the 5 internship categories.
+ * Features:
+ * 1. Horizontal Orbital Revolution: Planets revolve horizontally along the elliptical orbit around the central sun.
+ *    - Closer in front: larger scale, higher z-index, passes in front of the sun.
+ *    - Farther in back: smaller scale, lower z-index, passes behind the sun.
+ *    - Smooth hover-pause and play/pause toggle.
+ * 2. Horizontal Surface Rotation: All planets (including Saturn and its rings) spin horizontally along their equator.
+ * 3. Category Names ONLY (no planet names like Venus or Saturn).
  */
 export const CATEGORY_PLANETS = {
   unpaid: {
@@ -18,15 +19,15 @@ export const CATEGORY_PLANETS = {
     subTitle: ["Mentor & Certificate", "মেন্টর ও সার্টিফিকেট"],
     headline: [
       "Learning Internship — Foundation & Mentorship",
-      "লার্নিং ইন্টার্নশিপ — ভেরিফায়েড কাজ ও মেন্টরশিপ",
+      "লার্নিং ইন্টার্নশিপ — ভেরিফায়েড কাজ ও মেন্টরশিপ",
     ],
     why: [
       "The starting light of your career: no salary, but real-world tasks, industry mentorship and a certified portfolio.",
-      "ক্যারিয়ারের প্রথম আলো: বেতন না থাকলেও রিয়েল প্রজেক্ট, ডেডিকেটেড মেন্টর ও ভেরিফায়েড সার্টিফিকেট।",
+      "ক্যারিয়ারের প্রথম আলো: বেতন না থাকলেও রিয়েল প্রজেক্ট, ডেডিকেটেড মেন্টর ও ভেরিফায়েড সার্টিফিকেট।",
     ],
     so: [
       "Best for freshers with no prior experience to build credibility before applying to paid roles.",
-      "যাদের একদম অভিজ্ঞতা নেই, তাদের জন্য নিজের কাজ প্রমাণ করে পেইড রোলে যাওয়ার সেরা শুরু।",
+      "যাদের একদম অভিজ্ঞতা নেই, তাদের জন্য নিজের কাজ প্রমাণ করে পেইড রোলে যাওয়ার সেরা শুরু।",
     ],
   },
   paid: {
@@ -41,22 +42,22 @@ export const CATEGORY_PLANETS = {
     ],
     why: [
       "Guaranteed monthly stipend (৳10,000–৳25,000) while gaining real industry experience.",
-      "পড়াশোনার পাশাপাশি প্রতি মাসে সম্মানজনক স্টাইপেন্ড এবং আসল কাজের প্রফেশনাল এক্সপেরিয়েন্স।",
+      "পড়াশোনার পাশাপাশি প্রতি মাসে সম্মানজনক স্টাইপেন্ড এবং আসল কাজের প্রফেশনাল এক্সপেরিয়েন্স।",
     ],
     so: [
       "Perfect for 3rd/4th year students looking to cover their expenses while launching their career.",
-      "তৃতীয় ও চতুর্থ বর্ষের শিক্ষার্থীদের জন্য স্বাবলম্বী হওয়ার পাশাপাশি ক্যারিয়ার গড়ার সেরা সুযোগ।",
+      "তৃতীয় ও চতুর্থ বর্ষের শিক্ষার্থীদের জন্য স্বাবলম্বী হওয়ার পাশাপাশি ক্যারিয়ার গড়ার সেরা সুযোগ।",
     ],
   },
   corporate: {
     id: "corporate",
-    cls: "corporate", // Saturn with realistic horizontal Cassini rings
+    cls: "corporate", // Saturn with realistic horizontal 3D rings
     icon: "🏢",
     themeColor: "#3B82F6",
     subTitle: ["Top MNC + Job Offer (PPO)", "শীর্ষ MNC ও PPO অফার"],
     headline: [
       "Corporate (PPO) — Big League & Direct Job Offer",
-      "কর্পোরেট (PPO) — মাল্টিন্যাশনাল ক্যারিয়ার ও চাকরির অফার",
+      "কর্পোরেট (PPO) — মাল্টিন্যাশনাল ক্যারিয়ার ও চাকরির অফার",
     ],
     why: [
       "Join top corporate & multinational giants with structured training and executive mentorship.",
@@ -64,7 +65,7 @@ export const CATEGORY_PLANETS = {
     ],
     so: [
       "High-performing interns often receive a direct PPO (Pre-Placement Job Offer) before graduating.",
-      "ভালো পারফর্মেন্সে গ্র্যাজুয়েশনের আগেই সরাসরি ফুল-টাইম চাকরির অফার (PPO) পাওয়া যায়।",
+      "ভালো পারফর্মেন্সে গ্র্যাজুয়েশনের আগেই সরাসরি ফুল-টাইম চাকরির অফার (PPO) পাওয়া যায়।",
     ],
   },
   remote: {
@@ -79,11 +80,11 @@ export const CATEGORY_PLANETS = {
     ],
     why: [
       "No daily traffic or relocation: ship real features for Dhaka companies right from your room.",
-      "ঢাকার যানজট বা মেস লাইফের ঝামেলা ছাড়াই যেকোনো জেলা থেকে সরাসরি শীর্ষ কোম্পানিতে কাজ।",
+      "ঢাকার যানজট বা মেস লাইফের ঝামেলা ছাড়াই যেকোনো জেলা থেকে সরাসরি শীর্ষ কোম্পানিতে কাজ।",
     ],
     so: [
       "All you need is a laptop and good internet to work flexible hours with high-growth teams.",
-      "ল্যাপটপ আর ওয়াই-ফাই থাকলেই যেকোনো প্রান্ত থেকে ফ্লেক্সিবল টাইমে প্রফেশনাল কাজ।",
+      "ল্যাপটপ আর ওয়াই-ফাই থাকলেই যেকোনো প্রান্ত থেকে ফ্লেক্সিবল টাইমে প্রফেশনাল কাজ।",
     ],
   },
   versity: {
@@ -94,41 +95,25 @@ export const CATEGORY_PLANETS = {
     subTitle: ["Academic Credit & Thesis", "একাডেমিক ক্রেডিট ও গ্র্যাজুয়েশন"],
     headline: [
       "Versity Credit — Graduate On Schedule",
-      "ভার্সিটি ক্রেডিট — সময়মতো গ্র্যাজুয়েশন নিশ্চিত",
+      "ভার্সিটি ক্রেডিট — সময়মতো গ্র্যাজুয়েশন নিশ্চিত",
     ],
     why: [
       "Fulfills your university's final-semester 3/6 credit internship & supervisor evaluation requirement.",
-      "বিশ্ববিদ্যালয়ের শেষ সেমিস্টারের বাধ্যতামূলক ইন্টার্নশিপ ক্রেডিট ও সুপারভাইজার সাইন নিশ্চিত করে।",
+      "বিশ্ববিদ্যালয়ের শেষ সেমিস্টারের বাধ্যতামূলক ইন্টার্নশিপ ক্রেডিট ও সুপারভাইজার সাইন নিশ্চিত করে।",
     ],
     so: [
       "Get your formal completion certificate and report signed to graduate on time with an A grade.",
-      "কোম্পানি রিপোর্টে সুপারভাইজার সাইন ও মূল্যায়ন পেয়ে সময়মতো গ্র্যাজুয়েশন সম্পন্ন করার সুযোগ।",
+      "কোম্পানি রিপোর্টে সুপারভাইজার সাইন ও মূল্যায়ন পেয়ে সময়মতো গ্র্যাজুয়েশন সম্পন্ন করার সুযোগ।",
     ],
   },
 };
-
-/**
- * 5 Concentric Nested Orbits:
- * - rxPercent: horizontal radius (% from center)
- * - ryPx: vertical radius (px from center)
- * - speed: angular speed in radians/sec (Keplerian: inner faster, outer slower)
- * - phase: starting angle around ellipse
- * - size: larger planet sizes as requested
- */
-export const CONCENTRIC_ORBITS = [
-  { id: "unpaid",    rxPercent: 15.0, ryPx: 48,  speed: 0.34, phase: 0.85, size: 96 },
-  { id: "paid",      rxPercent: 23.5, ryPx: 80,  speed: 0.25, phase: 3.40, size: 106 },
-  { id: "corporate", rxPercent: 32.0, ryPx: 114, speed: 0.18, phase: 1.75, size: 122 },
-  { id: "remote",    rxPercent: 40.5, ryPx: 148, speed: 0.13, phase: 4.90, size: 100 },
-  { id: "versity",   rxPercent: 49.0, ryPx: 182, speed: 0.09, phase: 2.95, size: 106 },
-];
 
 export const PLANET_ORDER = ["unpaid", "paid", "corporate", "remote", "versity"];
 
 /**
  * Realistic 3D Planet component.
- * Horizontal axial spin across equator + 3D spherical shade.
- * Saturn (corporate) has horizontal Cassini rings.
+ * All planets spin horizontally across their equator.
+ * Corporate (Saturn) has horizontal rings with Cassini division and 3D depth.
  */
 export function Planet({ id, size = 90, spin = true }) {
   const p = CATEGORY_PLANETS[id] || CATEGORY_PLANETS.unpaid;
@@ -141,14 +126,14 @@ export function Planet({ id, size = 90, spin = true }) {
       style={{ "--s": `${size}px` }}
       aria-hidden="true"
     >
-      {/* 3D Ring Back Layer */}
+      {/* 3D Ring Back Layer (passes behind the upper half of the planet) */}
       {(isSaturn || isUranus) && (
         <span className="pl-ring-wrap back">
           <i className="pl-ring back" />
         </span>
       )}
 
-      {/* Spherical Body */}
+      {/* Spherical Body with 3D horizontal surface rotation */}
       <span className="pl-body">
         <span className="pl-surface" />
         <span className="pl-atmosphere" />
@@ -156,7 +141,7 @@ export function Planet({ id, size = 90, spin = true }) {
         {isSaturn && <span className="pl-ring-shadow" />}
       </span>
 
-      {/* 3D Ring Front Layer */}
+      {/* 3D Ring Front Layer (passes in front of the lower half of the planet) */}
       {(isSaturn || isUranus) && (
         <span className="pl-ring-wrap front">
           <i className="pl-ring front" />
@@ -169,7 +154,7 @@ export function Planet({ id, size = 90, spin = true }) {
 function Stars() {
   const stars = useMemo(
     () =>
-      Array.from({ length: 85 }, (_, i) => ({
+      Array.from({ length: 75 }, (_, i) => ({
         x: (i * 137.5) % 100,
         y: (i * 53.3 + (i % 7) * 11) % 100,
         s: i % 9 === 0 ? 3 : i % 3 === 0 ? 2 : 1,
@@ -211,79 +196,10 @@ export default function InternPlanets({
   n2,
 }) {
   const [hover, setHover] = useState("");
-  const [isHovered, setIsHovered] = useState(false);
-  const slowRef = useRef(1);
-  const timeRef = useRef(0);
-  const lastTimeRef = useRef(null);
-  const planetElsRef = useRef([]);
-
   const byId = Object.fromEntries(cats.map((c) => [c.id, c]));
   const cur = sel ? byId[sel] : null;
   const P = sel ? CATEGORY_PLANETS[sel] : null;
   const list = sel ? top(sel) : [];
-
-  // Update speed slowdown on hover
-  useEffect(() => {
-    slowRef.current = isHovered ? 0.25 : 1;
-  }, [isHovered]);
-
-  // Smooth 60FPS continuous horizontal revolution around concentric orbits
-  useEffect(() => {
-    let animId;
-
-    const loop = (now) => {
-      animId = requestAnimationFrame(loop);
-
-      if (lastTimeRef.current == null) {
-        lastTimeRef.current = now;
-        return;
-      }
-
-      const dt = Math.min((now - lastTimeRef.current) / 1000, 0.1);
-      lastTimeRef.current = now;
-
-      // When a category is selected (zoomed in focus card), pause the background orbit
-      if (!sel) {
-        timeRef.current += dt * slowRef.current;
-      }
-
-      const t = timeRef.current;
-
-      CONCENTRIC_ORBITS.forEach((orbit, idx) => {
-        const el = planetElsRef.current[idx];
-        if (!el) return;
-
-        // Current orbital angle along its concentric ellipse
-        const theta = (t * orbit.speed + orbit.phase) % (Math.PI * 2);
-        const cosVal = Math.cos(theta);
-        const sinVal = Math.sin(theta);
-
-        const xPercent = cosVal * orbit.rxPercent;
-        const yOffsetPx = sinVal * orbit.ryPx;
-
-        // 3D Depth: sinVal > 0 means lower half (in front of Sun)
-        // sinVal < 0 means upper half (behind Sun)
-        const inFront = sinVal > 0;
-        const depthScale = inFront
-          ? 1.0 + sinVal * 0.14
-          : 0.88 + sinVal * 0.08;
-
-        const isSelected = sel === orbit.id;
-        const scale = isSelected ? 1.25 : depthScale;
-        const zIndex = isSelected ? 40 : inFront ? (15 + idx) : (2 + idx);
-        const opacity = sel && !isSelected ? 0.25 : inFront ? 1 : 0.84;
-
-        el.style.left = `calc(50% + ${xPercent}%)`;
-        el.style.top = `calc(50% + ${yOffsetPx}px)`;
-        el.style.transform = `translate(-50%, -50%) scale(${scale})`;
-        el.style.zIndex = zIndex;
-        el.style.opacity = opacity;
-      });
-    };
-
-    animId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animId);
-  }, [sel]);
 
   useEffect(() => {
     if (!sel) return;
@@ -296,88 +212,16 @@ export default function InternPlanets({
     <div className={`ipl ${sel ? "has-sel" : ""}`}>
       <Stars />
 
-      {/* CONCENTRIC SOLAR SYSTEM ARENA */}
-      <div
-        className="ipl-orbit-arena"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* 5 Concentric Elliptical Orbit Tracks + Directional Arrows */}
-        <svg
-          className="ipl-orbit-svg"
-          viewBox="0 0 1000 500"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <defs>
-            {/* Arrow marker for orbit direction */}
-            <marker
-              id="orbit-arrow"
-              viewBox="0 0 10 10"
-              refX="5"
-              refY="5"
-              markerWidth="6"
-              markerHeight="6"
-              orient="auto-start-reverse"
-            >
-              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="rgba(147, 197, 253, 0.7)" />
-            </marker>
-          </defs>
-
-          {/* 5 Concentric Elliptical Orbits */}
-          <ellipse cx="500" cy="250" rx="150" ry="48" className="ipl-orbit-line o-0" />
-          <ellipse cx="500" cy="250" rx="235" ry="80" className="ipl-orbit-line o-1" />
-          <ellipse cx="500" cy="250" rx="320" ry="114" className="ipl-orbit-line o-2" />
-          <ellipse cx="500" cy="250" rx="405" ry="148" className="ipl-orbit-line o-3" />
-          <ellipse cx="500" cy="250" rx="490" ry="182" className="ipl-orbit-line o-4" />
-
-          {/* Directional motion arrows along orbits (exactly matching the diagram) */}
-          <g className="ipl-orbit-arrows" fill="rgba(147, 197, 253, 0.75)">
-            {/* Orbit 0 arrows */}
-            <polygon points="503,202 493,198 493,206" />
-            <polygon points="497,298 507,294 507,302" />
-
-            {/* Orbit 1 arrows */}
-            <polygon points="503,170 493,166 493,174" />
-            <polygon points="497,330 507,326 507,334" />
-
-            {/* Orbit 2 arrows */}
-            <polygon points="503,136 493,132 493,140" />
-            <polygon points="497,364 507,360 507,368" />
-
-            {/* Orbit 3 arrows */}
-            <polygon points="503,102 493,98 493,106" />
-            <polygon points="497,398 507,394 507,402" />
-
-            {/* Orbit 4 arrows */}
-            <polygon points="503,68 493,64 493,72" />
-            <polygon points="497,432 507,428 507,436" />
-          </g>
+      {/* STATIC HORIZONTAL PLANETARY STAGE */}
+      <div className="ipl-stage">
+        {/* Subtle horizontal orbit curve in the background */}
+        <svg className="ipl-orbit-bg" viewBox="0 0 1000 180" preserveAspectRatio="none" aria-hidden="true">
+          <ellipse cx="500" cy="90" rx="480" ry="56" />
         </svg>
 
-        {/* Central Sun: Radiant Star with Sonarhorin Logo in Core (NO NAME TEXT) */}
-        <div className="ipl-sun-center" aria-hidden="true">
-          <span className="ipl-sun-flare flare-1" />
-          <span className="ipl-sun-flare flare-2" />
-          <span className="ipl-sun-aura" />
-          <span className="ipl-sun-corona" />
-          <div className="ipl-sun-core">
-            <img
-              src="/logo-gold.png"
-              alt="Sonarhorin"
-              className="ipl-sun-logo"
-            />
-          </div>
-        </div>
-
-        {/* 5 CATEGORY PLANETS REVOLVING ON CONCENTRIC ORBITS (NO BOX) */}
-        <div
-          className="ipl-planetary-field"
-          role="tablist"
-          aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}
-        >
-          {CONCENTRIC_ORBITS.map((orbit, i) => {
-            const id = orbit.id;
+        {/* 5 CATEGORY PLANETS — STATIC HORIZONTAL ROW */}
+        <div className="ipl-row" role="tablist" aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}>
+          {PLANET_ORDER.map((id, i) => {
             const c = byId[id];
             if (!c) return null;
             const on = sel === id;
@@ -386,39 +230,38 @@ export default function InternPlanets({
             return (
               <button
                 key={id}
-                ref={(el) => (planetElsRef.current[i] = el)}
                 type="button"
                 role="tab"
                 aria-selected={on}
-                className={`ipl-planet-node ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
-                style={{ "--c": c.c }}
+                className={`ipl-p ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
+                style={{ "--c": c.c, "--i": i }}
                 onClick={() => onSelect(on ? "" : id)}
                 onMouseEnter={() => setHover(id)}
                 onMouseLeave={() => setHover("")}
               >
-                {/* 3D Planet Sphere (Larger size + horizontal equatorial spin) */}
+                {/* 3D Static Planet (No continuous spin/revolve) */}
                 <span className="ipl-planet-wrap">
-                  <Planet id={id} size={orbit.size} spin={true} />
+                  <Planet id={id} size={on ? 104 : 84} spin={false} />
                 </span>
 
-                {/* Bold Category Name Label (like the reference chart) */}
+                {/* ONLY Category Name (NO PLANET NAMES) */}
                 <b className={`ipl-cat-title ${L ? "bn" : ""}`}>
-                  {c.name[L]}
+                  {c.name[L]} {c.id === "paid" || c.id === "remote" ? (L ? "ইন্টার্ন" : "") : ""}
                 </b>
 
-                {/* Category Subtitle tag */}
+                {/* Category Feature Subtitle */}
                 <small className={`ipl-cat-sub ${L ? "bn" : ""}`}>
                   {c.icon} {p.subTitle[L]}
                 </small>
 
-                {/* Openings count pill */}
+                {/* Opening count pill */}
                 <em className="ipl-count-pill">
                   {n2(counts[id] || 0, L)} {L ? "টি সুযোগ" : "openings"}
                 </em>
 
                 {/* Hover Tooltip */}
                 {hover === id && !on && facts[id]?.need && (
-                  <span className="ipl-tip">"{facts[id].need[L]}"</span>
+                  <span className="ipl-tip">“{facts[id].need[L]}”</span>
                 )}
               </button>
             );
@@ -428,7 +271,7 @@ export default function InternPlanets({
 
       {!sel && (
         <p className="ipl-hint">
-          👆 {L ? "যেকোনো ক্যাটাগরির গ্রহে চাপ দাও — বিস্তারিত তথ্য ও ইন্টার্নশিপের সুযোগসমূহ দেখো" : "Tap any category planet to explore requirements, details and active openings"}
+          👆 {L ? "যেকোনো ক্যাটাগরিতে ক্লিক করো — বিস্তারিত তথ্য ও ইন্টার্নশিপের সুযোগসমূহ দেখো" : "Tap any category to explore requirements, details and active openings"}
         </p>
       )}
 
@@ -436,7 +279,7 @@ export default function InternPlanets({
       {sel && cur && P && (
         <div className="ipl-focus" style={{ "--c": cur.c }} key={sel}>
           <div className="ipl-focus-planet">
-            <Planet id={sel} size={220} spin={true} />
+            <Planet id={sel} size={200} spin={false} />
             <span className="ipl-focus-cat-badge">{cur.icon} {cur.name[L]}</span>
           </div>
 
@@ -549,7 +392,7 @@ export default function InternPlanets({
               {!list.length && (
                 <p className="ipl-empty">
                   {L
-                    ? "এই ক্যাটাগরিতে এই মুহূর্তে নতুন সার্কুলার প্রসেসিংয়ে রয়েছে — প্রতি সপ্তাহে নতুন ইন্টার্নশিপ আসে।"
+                    ? "এই ক্যাটাগরিতে এই মুহূর্তে নতুন সার্কুলার প্রসেসিংয়ে রয়েছে — প্রতি সপ্তাহে নতুন ইন্টার্নশিপ আসে।"
                     : "New internships for this category are landing soon. Check back weekly."}
                 </p>
               )}
