@@ -1,14 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * Internship Planetary System — 5 realistic celestial bodies representing the 5 internship categories.
- * Features:
- * 1. Horizontal Orbital Revolution: Planets revolve horizontally along the elliptical orbit around the central sun.
- *    - Closer in front: larger scale, higher z-index, passes in front of the sun.
- *    - Farther in back: smaller scale, lower z-index, passes behind the sun.
- *    - Smooth hover-pause and play/pause toggle.
- * 2. Horizontal Surface Rotation: All planets (including Saturn and its rings) spin horizontally along their equator.
- * 3. Category Names ONLY (no planet names like Venus or Saturn).
+ * - Horizontal orbital revolution around a central golden deer sun
+ * - 3D depth: planets in front are bigger, planets behind are smaller and pass behind the sun
+ * - No box/card wrappers — just floating planets in space
+ * - Category names ONLY (no planet names)
  */
 export const CATEGORY_PLANETS = {
   unpaid: {
@@ -19,15 +16,15 @@ export const CATEGORY_PLANETS = {
     subTitle: ["Mentor & Certificate", "মেন্টর ও সার্টিফিকেট"],
     headline: [
       "Learning Internship — Foundation & Mentorship",
-      "লার্নিং ইন্টার্নশিপ — ভেরিফায়েড কাজ ও মেন্টরশিপ",
+      "লার্নিং ইন্টার্নশিপ — ভেরিফায়েড কাজ ও মেন্টরশিপ",
     ],
     why: [
       "The starting light of your career: no salary, but real-world tasks, industry mentorship and a certified portfolio.",
-      "ক্যারিয়ারের প্রথম আলো: বেতন না থাকলেও রিয়েল প্রজেক্ট, ডেডিকেটেড মেন্টর ও ভেরিফায়েড সার্টিফিকেট।",
+      "ক্যারিয়ারের প্রথম আলো: বেতন না থাকলেও রিয়েল প্রজেক্ট, ডেডিকেটেড মেন্টর ও ভেরিফায়েড সার্টিফিকেট।",
     ],
     so: [
       "Best for freshers with no prior experience to build credibility before applying to paid roles.",
-      "যাদের একদম অভিজ্ঞতা নেই, তাদের জন্য নিজের কাজ প্রমাণ করে পেইড রোলে যাওয়ার সেরা শুরু।",
+      "যাদের একদম অভিজ্ঞতা নেই, তাদের জন্য নিজের কাজ প্রমাণ করে পেইড রোলে যাওয়ার সেরা শুরু।",
     ],
   },
   paid: {
@@ -42,22 +39,22 @@ export const CATEGORY_PLANETS = {
     ],
     why: [
       "Guaranteed monthly stipend (৳10,000–৳25,000) while gaining real industry experience.",
-      "পড়াশোনার পাশাপাশি প্রতি মাসে সম্মানজনক স্টাইপেন্ড এবং আসল কাজের প্রফেশনাল এক্সপেরিয়েন্স।",
+      "পড়াশোনার পাশাপাশি প্রতি মাসে সম্মানজনক স্টাইপেন্ড এবং আসল কাজের প্রফেশনাল এক্সপেরিয়েন্স।",
     ],
     so: [
       "Perfect for 3rd/4th year students looking to cover their expenses while launching their career.",
-      "তৃতীয় ও চতুর্থ বর্ষের শিক্ষার্থীদের জন্য স্বাবলম্বী হওয়ার পাশাপাশি ক্যারিয়ার গড়ার সেরা সুযোগ।",
+      "তৃতীয় ও চতুর্থ বর্ষের শিক্ষার্থীদের জন্য স্বাবলম্বী হওয়ার পাশাপাশি ক্যারিয়ার গড়ার সেরা সুযোগ।",
     ],
   },
   corporate: {
     id: "corporate",
-    cls: "corporate", // Saturn with realistic horizontal 3D rings
+    cls: "corporate",
     icon: "🏢",
     themeColor: "#3B82F6",
     subTitle: ["Top MNC + Job Offer (PPO)", "শীর্ষ MNC ও PPO অফার"],
     headline: [
       "Corporate (PPO) — Big League & Direct Job Offer",
-      "কর্পোরেট (PPO) — মাল্টিন্যাশনাল ক্যারিয়ার ও চাকরির অফার",
+      "কর্পোরেট (PPO) — মাল্টিন্যাশনাল ক্যারিয়ার ও চাকরির অফার",
     ],
     why: [
       "Join top corporate & multinational giants with structured training and executive mentorship.",
@@ -65,7 +62,7 @@ export const CATEGORY_PLANETS = {
     ],
     so: [
       "High-performing interns often receive a direct PPO (Pre-Placement Job Offer) before graduating.",
-      "ভালো পারফর্মেন্সে গ্র্যাজুয়েশনের আগেই সরাসরি ফুল-টাইম চাকরির অফার (PPO) পাওয়া যায়।",
+      "ভালো পারফর্মেন্সে গ্র্যাজুয়েশনের আগেই সরাসরি ফুল-টাইম চাকরির অফার (PPO) পাওয়া যায়।",
     ],
   },
   remote: {
@@ -80,11 +77,11 @@ export const CATEGORY_PLANETS = {
     ],
     why: [
       "No daily traffic or relocation: ship real features for Dhaka companies right from your room.",
-      "ঢাকার যানজট বা মেস লাইফের ঝামেলা ছাড়াই যেকোনো জেলা থেকে সরাসরি শীর্ষ কোম্পানিতে কাজ।",
+      "ঢাকার যানজট বা মেস লাইফের ঝামেলা ছাড়াই যেকোনো জেলা থেকে সরাসরি শীর্ষ কোম্পানিতে কাজ।",
     ],
     so: [
       "All you need is a laptop and good internet to work flexible hours with high-growth teams.",
-      "ল্যাপটপ আর ওয়াই-ফাই থাকলেই যেকোনো প্রান্ত থেকে ফ্লেক্সিবল টাইমে প্রফেশনাল কাজ।",
+      "ল্যাপটপ আর ওয়াই-ফাই থাকলেই যেকোনো প্রান্ত থেকে ফ্লেক্সিবল টাইমে প্রফেশনাল কাজ।",
     ],
   },
   versity: {
@@ -95,15 +92,15 @@ export const CATEGORY_PLANETS = {
     subTitle: ["Academic Credit & Thesis", "একাডেমিক ক্রেডিট ও গ্র্যাজুয়েশন"],
     headline: [
       "Versity Credit — Graduate On Schedule",
-      "ভার্সিটি ক্রেডিট — সময়মতো গ্র্যাজুয়েশন নিশ্চিত",
+      "ভার্সিটি ক্রেডিট — সময়মতো গ্র্যাজুয়েশন নিশ্চিত",
     ],
     why: [
       "Fulfills your university's final-semester 3/6 credit internship & supervisor evaluation requirement.",
-      "বিশ্ববিদ্যালয়ের শেষ সেমিস্টারের বাধ্যতামূলক ইন্টার্নশিপ ক্রেডিট ও সুপারভাইজার সাইন নিশ্চিত করে।",
+      "বিশ্ববিদ্যালয়ের শেষ সেমিস্টারের বাধ্যতামূলক ইন্টার্নশিপ ক্রেডিট ও সুপারভাইজার সাইন নিশ্চিত করে।",
     ],
     so: [
       "Get your formal completion certificate and report signed to graduate on time with an A grade.",
-      "কোম্পানি রিপোর্টে সুপারভাইজার সাইন ও মূল্যায়ন পেয়ে সময়মতো গ্র্যাজুয়েশন সম্পন্ন করার সুযোগ।",
+      "কোম্পানি রিপোর্টে সুপারভাইজার সাইন ও মূল্যায়ন পেয়ে সময়মতো গ্র্যাজুয়েশন সম্পন্ন করার সুযোগ।",
     ],
   },
 };
@@ -196,10 +193,40 @@ export default function InternPlanets({
   n2,
 }) {
   const [hover, setHover] = useState("");
+  const [isHovered, setIsHovered] = useState(false);
+  const [orbitAngle, setOrbitAngle] = useState(0);
+
+  const animRef = useRef(null);
+  const lastTimeRef = useRef(null);
+
   const byId = Object.fromEntries(cats.map((c) => [c.id, c]));
   const cur = sel ? byId[sel] : null;
   const P = sel ? CATEGORY_PLANETS[sel] : null;
   const list = sel ? top(sel) : [];
+
+  // Continuous smooth horizontal orbital revolution
+  useEffect(() => {
+    if (sel || isHovered) {
+      lastTimeRef.current = null;
+      return;
+    }
+
+    const speed = 0.18; // radians per second — slow, majestic orbit
+    const loop = (t) => {
+      if (lastTimeRef.current != null) {
+        const dt = Math.min((t - lastTimeRef.current) / 1000, 0.1);
+        setOrbitAngle((prev) => (prev + dt * speed) % (Math.PI * 2));
+      }
+      lastTimeRef.current = t;
+      animRef.current = requestAnimationFrame(loop);
+    };
+
+    animRef.current = requestAnimationFrame(loop);
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      lastTimeRef.current = null;
+    };
+  }, [sel, isHovered]);
 
   useEffect(() => {
     if (!sel) return;
@@ -212,20 +239,50 @@ export default function InternPlanets({
     <div className={`ipl ${sel ? "has-sel" : ""}`}>
       <Stars />
 
-      {/* STATIC HORIZONTAL PLANETARY STAGE */}
-      <div className="ipl-stage">
-        {/* Subtle horizontal orbit curve in the background */}
-        <svg className="ipl-orbit-bg" viewBox="0 0 1000 180" preserveAspectRatio="none" aria-hidden="true">
-          <ellipse cx="500" cy="90" rx="480" ry="56" />
+      {/* HORIZONTAL ORBITAL ARENA */}
+      <div
+        className="ipl-orbit-arena"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Horizontal Elliptical Orbit Track */}
+        <svg className="ipl-orbit-svg" viewBox="0 0 1000 240" preserveAspectRatio="none" aria-hidden="true">
+          <ellipse cx="500" cy="120" rx="440" ry="54" />
         </svg>
 
-        {/* 5 CATEGORY PLANETS — STATIC HORIZONTAL ROW */}
-        <div className="ipl-row" role="tablist" aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}>
+        {/* Central Sun with Golden Deer */}
+        <div className="ipl-sun-center" aria-hidden="true">
+          <span className="ipl-sun-aura" />
+          <span className="ipl-sun-deer">🦌</span>
+          <span className="ipl-sun-corona" />
+        </div>
+
+        {/* 5 CATEGORY PLANETS REVOLVING HORIZONTALLY */}
+        <div className="ipl-planetary-field" role="tablist" aria-label={L ? "ইন্টার্নশিপ ক্যাটাগরি" : "Internship Categories"}>
           {PLANET_ORDER.map((id, i) => {
             const c = byId[id];
             if (!c) return null;
             const on = sel === id;
             const p = CATEGORY_PLANETS[id];
+
+            // Evenly spaced angular positions around the ellipse
+            const step = (Math.PI * 2) / PLANET_ORDER.length;
+            const theta = orbitAngle + i * step;
+
+            // Horizontal elliptical coordinates
+            const cosVal = Math.cos(theta);
+            const sinVal = Math.sin(theta);
+            const xPercent = cosVal * 38;       // horizontal spread: ±38%
+            const yOffsetPx = sinVal * 50;      // vertical depth: ±50px (flatter ellipse)
+
+            // 3D depth: sin > 0 = front (closer), sin < 0 = back (farther)
+            const inFront = sinVal > 0;
+            const depthScale = inFront
+              ? 1.0 + sinVal * 0.15   // front: scale up to 1.15
+              : 0.85 + sinVal * 0.05; // back: scale down to 0.80
+            const scale = on ? 1.2 : depthScale;
+            const zIndex = on ? 30 : inFront ? 12 : 2;
+            const opacity = sel && !on ? 0.3 : inFront ? 1 : 0.75;
 
             return (
               <button
@@ -233,35 +290,42 @@ export default function InternPlanets({
                 type="button"
                 role="tab"
                 aria-selected={on}
-                className={`ipl-p ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
-                style={{ "--c": c.c, "--i": i }}
+                className={`ipl-planet-node ${on ? "on" : ""} ${sel && !on ? "dim" : ""}`}
+                style={{
+                  "--c": c.c,
+                  left: `calc(50% + ${xPercent}%)`,
+                  top: `calc(50% + ${yOffsetPx}px)`,
+                  transform: `translate(-50%, -50%) scale(${scale})`,
+                  zIndex,
+                  opacity,
+                }}
                 onClick={() => onSelect(on ? "" : id)}
                 onMouseEnter={() => setHover(id)}
                 onMouseLeave={() => setHover("")}
               >
-                {/* 3D Static Planet (No continuous spin/revolve) */}
+                {/* 3D Planet Sphere — spinning on its axis */}
                 <span className="ipl-planet-wrap">
-                  <Planet id={id} size={on ? 104 : 84} spin={false} />
+                  <Planet id={id} size={on ? 110 : 86} spin={true} />
                 </span>
 
-                {/* ONLY Category Name (NO PLANET NAMES) */}
+                {/* Category Name */}
                 <b className={`ipl-cat-title ${L ? "bn" : ""}`}>
-                  {c.name[L]} {c.id === "paid" || c.id === "remote" ? (L ? "ইন্টার্ন" : "") : ""}
+                  {c.name[L]}
                 </b>
 
-                {/* Category Feature Subtitle */}
+                {/* Category Sub-tag */}
                 <small className={`ipl-cat-sub ${L ? "bn" : ""}`}>
                   {c.icon} {p.subTitle[L]}
                 </small>
 
-                {/* Opening count pill */}
+                {/* Openings pill */}
                 <em className="ipl-count-pill">
                   {n2(counts[id] || 0, L)} {L ? "টি সুযোগ" : "openings"}
                 </em>
 
                 {/* Hover Tooltip */}
                 {hover === id && !on && facts[id]?.need && (
-                  <span className="ipl-tip">“{facts[id].need[L]}”</span>
+                  <span className="ipl-tip">"{facts[id].need[L]}"</span>
                 )}
               </button>
             );
@@ -279,7 +343,7 @@ export default function InternPlanets({
       {sel && cur && P && (
         <div className="ipl-focus" style={{ "--c": cur.c }} key={sel}>
           <div className="ipl-focus-planet">
-            <Planet id={sel} size={200} spin={false} />
+            <Planet id={sel} size={200} spin={true} />
             <span className="ipl-focus-cat-badge">{cur.icon} {cur.name[L]}</span>
           </div>
 
@@ -392,7 +456,7 @@ export default function InternPlanets({
               {!list.length && (
                 <p className="ipl-empty">
                   {L
-                    ? "এই ক্যাটাগরিতে এই মুহূর্তে নতুন সার্কুলার প্রসেসিংয়ে রয়েছে — প্রতি সপ্তাহে নতুন ইন্টার্নশিপ আসে।"
+                    ? "এই ক্যাটাগরিতে এই মুহূর্তে নতুন সার্কুলার প্রসেসিংয়ে রয়েছে — প্রতি সপ্তাহে নতুন ইন্টার্নশিপ আসে।"
                     : "New internships for this category are landing soon. Check back weekly."}
                 </p>
               )}
