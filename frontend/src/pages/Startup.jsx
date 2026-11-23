@@ -281,9 +281,8 @@ function Hero({ L, user, onLaunch }) {
       <div className="sc-scene-wrap"><ClayScene name={name} bn={!!L} launch={launch} /></div>
       <div className="sc-hero-fade" />
       <div className="sc-hero-copy">
-        <span className="sc-live"><i />{L ? "দেশ-বিদেশের ফান্ডারদের কাছে পৌঁছাও" : "Reach funders in Bangladesh & worldwide"}</span>
         <h1 className={L ? "bn" : ""}>
-          {L ? <>আমরা টাকা দিই না।<br /><em>টাকা পাইয়ে দিই।</em></> : <>We don't fund you.<br />We get you <em>funded.</em></>}
+          {L ? <em>টাকা পাইয়ে দিই।</em> : <>We get you <em>funded.</em></>}
         </h1>
         <p>{L ? "আইডিয়া লেখো → পিচ বানাও → সঠিক ফান্ডারের কাছে যাও।" : "Write the idea → build the pitch → reach the right funders."}</p>
         <form className="sc-namebar" onSubmit={submit}>
@@ -299,8 +298,6 @@ function Hero({ L, user, onLaunch }) {
         </form>
         <small className="sc-hint">{L ? "নাম লেখো → Enter → লঞ্চ 🚀" : "Type a name → Enter → launch 🚀"}</small>
       </div>
-      <div className="sc-chip c1"><b>{FUNDERS.length}</b>{L ? "ফান্ডার · 🇧🇩 + 🌍" : "funders · 🇧🇩 + 🌍"}</div>
-      <div className="sc-chip c2"><i className="ok">✓</i>{L ? "শুরুতে মাত্র ৩টা ঘর" : "Only 3 boxes to start"}</div>
     </section>
   );
 }
