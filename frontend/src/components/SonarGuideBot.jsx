@@ -38,8 +38,8 @@ const PAGES = [
     k: ["portfolio", "পোর্টফোলিও", "website", "ওয়েবসাইট", "personal site", "github"] },
   { path: "/network", icon: "🤝", t: ["Network", "নেটওয়ার্ক"], d: ["Connect and chat with students; find a co-founder.", "শিক্ষার্থীদের সাথে কানেক্ট ও চ্যাট; কো-ফাউন্ডার খোঁজো।"],
     k: ["network", "নেটওয়ার্ক", "connect", "friend", "বন্ধু", "chat", "চ্যাট", "message", "co-founder", "cofounder", "কো-ফাউন্ডার", "community", "discord"] },
-  { path: "/startup", icon: "🚀", t: ["Startup fund", "স্টার্টআপ ফান্ড"], d: ["Build a pitch, score 45+, get up to ৳10L pre-seed.", "পিচ বানাও, ৪৫+ স্কোর করো, ৳১০ লাখ পর্যন্ত প্রি-সিড।"],
-    k: ["startup", "স্টার্টআপ", "idea", "আইডিয়া", "fund", "funding", "ফান্ড", "invest", "investor", "ইনভেস্টর", "pitch", "পিচ", "business", "ব্যবসা", "taka", "টাকা", "seed"] },
+  { path: "/startup", icon: "🚀", t: ["Startup", "স্টার্টআপ"], d: ["Write idea · problem · solution, build your pitch, and find funders in Bangladesh & worldwide.", "আইডিয়া · সমস্যা · সমাধান লেখো, পিচ বানাও, দেশ-বিদেশের ফান্ডার খোঁজো।"],
+    k: ["startup", "স্টার্টআপ", "idea", "আইডিয়া", "fund", "funding", "ফান্ড", "invest", "investor", "ইনভেস্টর", "pitch", "পিচ", "business", "ব্যবসা", "taka", "টাকা", "seed", "investor", "grant", "অনুদান", "yc", "funder"] },
   { path: "/stories", icon: "🎬", t: ["Success stories", "সাকসেস স্টোরি"], d: ["Real stories and videos of freshers who made it.", "যারা পেরেছে, সেই ফ্রেশারদের গল্প ও ভিডিও।"],
     k: ["story", "stories", "গল্প", "video", "ভিডিও", "success", "সাফল্য", "inspiration", "অনুপ্রেরণা"] },
   { path: "/applications", icon: "📬", t: ["My applications", "আমার আবেদন"], d: ["Track every job and internship you applied to.", "যেসব জায়গায় আবেদন করেছো তার স্ট্যাটাস দেখো।"],
@@ -56,7 +56,7 @@ const FAQ = [
   { k: ["log in", "login", "sign in", "signin", "লগইন", "password", "পাসওয়ার্ড"],
     a: ["Use “Sign in” at the top right. Forgot the password? Use the reset link on the login page.", "উপরে ডানে “Sign in” চাপো। পাসওয়ার্ড ভুলে গেলে লগইন পেজে রিসেট লিংক আছে।"], go: ["/login"] },
   { k: ["free", "cost", "price", "fee", "ফ্রি", "খরচ", "টাকা লাগে", "taka lage", "paisa", "charge"],
-    a: ["Yes — searching and applying to jobs, internships and the startup fund is free for freshers.", "হ্যাঁ — চাকরি, ইন্টার্নশিপ খোঁজা ও আবেদন আর স্টার্টআপ ফান্ডে আবেদন ফ্রেশারদের জন্য ফ্রি।"], go: ["/jobs", "/register"] },
+    a: ["Yes — searching and applying to jobs and internships, and building your startup pitch, is free for freshers.", "হ্যাঁ — চাকরি, ইন্টার্নশিপ খোঁজা ও আবেদন, আর স্টার্টআপ পিচ বানানো ফ্রেশারদের জন্য ফ্রি।"], go: ["/jobs", "/register"] },
   { k: ["how to apply", "how do i apply", "kivabe apply", "কিভাবে আবেদন", "কীভাবে আবেদন", "apply korbo", "আবেদন করব"],
     a: ["Open a job or internship and tap “Apply” (or “Board” on an internship pass). You need to be signed in; track it later in My applications.", "চাকরি বা ইন্টার্নশিপ খুলে “Apply” (ইন্টার্নশিপে “বোর্ড করো”) চাপো। লগইন লাগবে; পরে “আমার আবেদন”-এ স্ট্যাটাস দেখবে।"], go: ["/jobs", "/internships", "/applications"] },
   { k: ["no experience", "experience nai", "অভিজ্ঞতা নেই", "অভিজ্ঞতা নাই", "first job", "প্রথম চাকরি", "where to start", "kothay shuru", "কোথা থেকে শুরু", "beginner"],
@@ -71,7 +71,7 @@ const THANKS = ["thanks", "thank you", "thx", "ধন্যবাদ", "dhonnoba
 const PAGE_TIPS = {
   "/jobs": ["You're on Jobs — use the search and major filter, then tap Apply.", "তুমি জবস পেজে — সার্চ আর মেজর ফিল্টার দিয়ে খুঁজে Apply চাপো।"],
   "/internships": ["You're on Internships — tap a planet (each one is a type of internship) to see what it means and who's hiring.", "তুমি ইন্টার্নশিপ পেজে — একটা গ্রহে চাপ দাও (প্রতিটা গ্রহ এক ধরনের ইন্টার্নশিপ), দেখো মানে কী আর কারা নিচ্ছে।"],
-  "/startup": ["You're on Startup — type your startup name in the hero to start a pitch.", "তুমি স্টার্টআপ পেজে — উপরে স্টার্টআপের নাম লিখে পিচ শুরু করো।"],
+  "/startup": ["You're on Startup — start with just 3 boxes, then check the funding wall for funders that fit you.", "তুমি স্টার্টআপ পেজে — ৩টা ঘর দিয়ে শুরু করো, তারপর ফান্ডিং ওয়ালে দেখো কারা তোমার সাথে মেলে।"],
   "/cv": ["Upload your CV here and you'll get a rejection % plus a fix list.", "এখানে সিভি আপলোড করলে রিজেকশন % আর ঠিক করার লিস্ট পাবে।"],
 };
 

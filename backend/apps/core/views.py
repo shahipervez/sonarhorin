@@ -92,7 +92,7 @@ GUIDE_PAGES = {
     "/efficiency": "Efficiency Test (pre-joining test companies use)",
     "/portfolio": "Portfolio website builder",
     "/network": "Network: connect and chat with students, find co-founders",
-    "/startup": "Startup fund: pitch builder, readiness score 45+, ৳10L pre-seed, monthly pitch day",
+    "/startup": "Startup: we do NOT fund startups — we help founders get funded. Start with idea/problem/solution, build the full pitch, then a funding wall of grants, accelerators and investors in Bangladesh and worldwide",
     "/stories": "Success stories and videos",
     "/applications": "My applications and their status (login needed)",
     "/me": "Dashboard (login needed)",

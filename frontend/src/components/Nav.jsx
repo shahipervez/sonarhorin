@@ -96,7 +96,7 @@ export default function Nav() {
           <Link className="mi" to="/programs"><Icon n="prog" />{t("Graduate · Internship · Training", "প্রোগ্রাম ও ট্রেনিং")}</Link>
           <Link className="mi" to="/portfolio"><Icon n="web" />{t("Portfolio website builder", "পোর্টফোলিও ওয়েবসাইট")}</Link>
           <Link className="mi" to="/network"><Icon n="chat" />{t("Network · chat with your people", "নেটওয়ার্ক")}</Link>
-          <Link className="mi" to="/startup"><Icon n="rocket" />{t("Startup fund · pitch builder", "স্টার্টআপ ফান্ড")}</Link>
+          <Link className="mi" to="/startup"><Icon n="rocket" />{t("Startup · find funders", "স্টার্টআপ · ফান্ডার খোঁজো")}</Link>
           <Link className="mi" to="/certificates"><Icon n="cert" />{t("Certifications", "সার্টিফিকেট")}</Link>
           <Link className="mi" to="/stories"><Icon n="star" />{t("Success stories", "সাফল্যের গল্প")}</Link>
           <Link className="mi" to="/efficiency"><Icon n="shield" />{t("Efficiency Test · for employers", "এফিশিয়েন্সি টেস্ট")}</Link>
