@@ -109,3 +109,19 @@
 /* encyclopedia-style tilt: rings seen at an angle, not edge-on */
 .isx .pl-corporate .pl-ring-wrap { width: 205%; height: 80%; transform: translate(-50%, -50%) rotate(-16deg) rotateX(66deg); }
 .isx .pl-remote .pl-ring-wrap { width: 175%; height: 70%; transform: translate(-50%, -50%) rotate(-78deg) rotateX(64deg); }
+
+/* planet switching inside the focus view */
+.isx-switch { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, .07); }
+.isx-mini-p { width: auto; height: auto; display: flex; align-items: center; gap: 6px; padding: 4px 12px 4px 6px; border-radius: 999px; color: rgba(255, 255, 255, .8); cursor: pointer; }
+.isx-mini-p small { font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.isx-mini-p.on { color: #fff; background: color-mix(in srgb, var(--c) 35%, rgba(255, 255, 255, .1)); }
+.isx-mini-p:not(.on):hover { transform: translateY(-2px); }
+.isx-stage { display: flex; align-items: center; gap: 10px; }
+.isx-arrow { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; line-height: 1; color: #fff; background: rgba(255, 255, 255, .12); transition: background .2s, transform .2s; }
+.isx-arrow:hover { background: rgba(255, 255, 255, .25); transform: scale(1.08); }
+@media (max-width: 900px) {
+  .isx-mini { flex-wrap: wrap; }
+  .isx-switch { overflow-x: auto; max-width: 100%; }
+  .isx-mini-p small { display: none; }
+  .isx-mini-p { padding: 4px; }
+}
