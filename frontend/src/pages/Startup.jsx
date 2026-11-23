@@ -498,7 +498,6 @@ export default function Startup() {
       {/* 3. The funding wall */}
       <section className="sc-sec" id="funders">
         <Reveal className="sc-head">
-          <span className="sc-eyebrow">{L ? "কারা ফান্ড দেয়" : "Who funds startups"}</span>
           <h2 className={L ? "bn" : ""}>{L ? <>ফান্ডিং <em>ওয়াল</em></> : <>The funding <em>wall</em></>}</h2>
           <p>{L ? "বাংলাদেশ ও আন্তর্জাতিক সরকারি অনুদান, অ্যাঞ্জেল ইনভেস্টর ও শীর্ষ অ্যাক্সেলারেটরদের সম্পূর্ণ তালিকা।" : "Verified grants, VCs, angel networks and accelerators in Bangladesh & globally."}</p>
         </Reveal>
