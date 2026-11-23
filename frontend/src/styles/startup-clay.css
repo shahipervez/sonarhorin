@@ -180,20 +180,70 @@
 .sc-page .rubric li.ok i { background: var(--sc-pink); color: #fff; }
 
 /* funded street */
-.sc-shops { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
-.sc-shop { --hue: 320; position: relative; display: flex; flex-direction: column; gap: 6px; padding: 54px 22px 20px; border-radius: 28px; background: var(--sc-card); box-shadow: var(--sc-clay); overflow: hidden; transition: transform .3s; }
-.sc-shop:hover { transform: translateY(-6px); }
-.sc-awn { position: absolute; inset: 0 0 auto 0; height: 34px; background: repeating-linear-gradient(90deg, hsl(var(--hue) 78% 60%) 0 24px, #fff 24px 48px); -webkit-mask: radial-gradient(12px at 12px 100%, #0000 98%, #000) 0 0 / 24px 100%; mask: radial-gradient(12px at 12px 100%, #0000 98%, #000) -0 0 / 24px 100%; }
-.sc-awn::after { content: ""; position: absolute; inset: 0; background: linear-gradient(#0000 40%, rgba(0, 0, 0, .08)); }
-.sc-shop b { font-size: 19px; }
+.sc-eyebrow.sc-eyebrow-raised {
+  background: linear-gradient(135deg, #FFE4F2 0%, #EDE9FE 100%);
+  color: #C026D3;
+  box-shadow: 0 4px 14px -4px rgba(192, 38, 211, 0.28);
+  border: 1px solid rgba(226, 63, 184, 0.25);
+}
+.sc-shops { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+.sc-shop { --hue: 320; position: relative; display: flex; flex-direction: column; gap: 8px; padding: 56px 24px 22px; border-radius: 28px; background: var(--sc-card); box-shadow: var(--sc-clay); overflow: hidden; transition: transform .3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow .3s ease; }
+.sc-shop:hover { transform: translateY(-7px); }
+.sc-awn { position: absolute; inset: 0 0 auto 0; height: 38px; background: repeating-linear-gradient(90deg, hsl(var(--hue) 84% 56%) 0 24px, #fff 24px 48px); -webkit-mask: radial-gradient(12px at 12px 100%, #0000 98%, #000) 0 0 / 24px 100%; mask: radial-gradient(12px at 12px 100%, #0000 98%, #000) 0 0 / 24px 100%; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .06)); }
+.sc-awn::after { content: ""; position: absolute; inset: 0; background: linear-gradient(#0000 40%, rgba(0, 0, 0, .06)); }
+.sc-shop b { font-size: 20px; color: var(--sc-navy); font-weight: 800; letter-spacing: -0.02em; }
 .sc-shop p { font-size: 14px; color: var(--sc-ink); line-height: 1.5; }
 .sc-shop small { font-size: 12.5px; color: var(--sc-muted); }
 .sc-shop-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--sc-line); font-size: 12.5px; font-weight: 600; color: var(--sc-muted); }
 .sc-shop-foot em { font-style: normal; color: var(--sc-navy); font-weight: 800; background: none; -webkit-background-clip: initial; background-clip: initial; }
-.sc-shop.ghost { --hue: 250; background: rgba(255, 255, 255, .5); box-shadow: none; border: 2px dashed #D3D0E3; align-items: flex-start; }
-.sc-shop.ghost .sc-awn { filter: grayscale(1) opacity(.45); }
-.sc-shop.ghost b { color: #9A9CB8; }
-.sc-shop.ghost .sc-btn { margin-top: 12px; }
+
+.sc-shop.ghost {
+  background: var(--card-bg, #fff);
+  border: 2px dashed var(--card-border, #E2E0EC);
+  box-shadow: 0 10px 28px -12px var(--glow, rgba(18, 22, 77, .12));
+  align-items: flex-start;
+}
+.sc-shop.ghost:hover {
+  box-shadow: 0 20px 38px -12px var(--glow, rgba(18, 22, 77, .24));
+}
+.sc-shop.ghost b { color: var(--sc-navy); }
+.sc-shop.ghost .sc-spot-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 11px;
+  border-radius: 999px;
+  margin-bottom: 2px;
+}
+.sc-shop.ghost .sc-spot-desc {
+  font-size: 13.5px;
+  color: var(--sc-ink);
+  line-height: 1.45;
+  margin: 2px 0 4px;
+}
+.sc-shop.ghost .sc-btn-claim {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 8px 20px -6px var(--glow, rgba(0, 0, 0, .25));
+}
+.sc-shop.ghost .sc-btn-claim:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 26px -6px var(--glow, rgba(0, 0, 0, .35));
+}
 
 /* faq */
 .sc-faq-list { display: grid; gap: 12px; max-width: 820px; }

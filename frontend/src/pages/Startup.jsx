@@ -363,32 +363,105 @@ function Journey({ L, onStart }) {
   );
 }
 
+const GHOST_SPOTS = [
+  {
+    hue: 338,
+    badge: ["স্পট ০১ · প্রি-সিড গ্রান্ট", "Spot 01 · Pre-Seed Grant"],
+    title: ["তোমার স্টার্টআপ", "Your startup"],
+    desc: ["আইডিয়া জমা দিয়ে প্রথম চেকের জন্য আবেদন করো", "Submit your idea and unlock first-cheque funding"],
+    sub: ["এই জায়গাটি তোমার জন্য উন্মুক্ত", "This spot is open for you"],
+    cta: ["দাবি করো", "Claim it"],
+    bg: "linear-gradient(180deg, #FFF5F9 0%, #FFFFFF 100%)",
+    border: "#FBCFE8",
+    chipBg: "#FDF2F8",
+    chipColor: "#DB2777",
+    btnGrad: "linear-gradient(120deg, #E23FB8, #B532C4)",
+    glow: "rgba(226, 63, 184, 0.4)",
+    icon: "🚀",
+  },
+  {
+    hue: 198,
+    badge: ["স্পট ০২ · সিড রাউন্ড", "Spot 02 · Seed Round"],
+    title: ["তোমার স্টার্টআপ", "Your startup"],
+    desc: ["প্রোটোটাইপ রেডি করে ইনভেস্টমেন্ট নিশ্চিত করো", "Build your prototype and raise angel investment"],
+    sub: ["এই জায়গাটি তোমার জন্য উন্মুক্ত", "This spot is open for you"],
+    cta: ["দাবি করো", "Claim it"],
+    bg: "linear-gradient(180deg, #F0F9FF 0%, #FFFFFF 100%)",
+    border: "#BAE6FD",
+    chipBg: "#E0F2FE",
+    chipColor: "#0284C7",
+    btnGrad: "linear-gradient(120deg, #0284C7, #06B6D4)",
+    glow: "rgba(2, 132, 199, 0.4)",
+    icon: "💡",
+  },
+  {
+    hue: 272,
+    badge: ["স্পট ০৩ · গ্রোথ স্টেজ", "Spot 03 · Growth Stage"],
+    title: ["তোমার স্টার্টআপ", "Your startup"],
+    desc: ["আন্তর্জাতিক অ্যাক্সেলারেটরে যোগ দাও", "Join global accelerators and scale worldwide"],
+    sub: ["এই জায়গাটি তোমার জন্য উন্মুক্ত", "This spot is open for you"],
+    cta: ["দাবি করো", "Claim it"],
+    bg: "linear-gradient(180deg, #FAF5FF 0%, #FFFFFF 100%)",
+    border: "#DDD6FE",
+    chipBg: "#F3E8FF",
+    chipColor: "#7C3AED",
+    btnGrad: "linear-gradient(120deg, #7C3AED, #A855F7)",
+    glow: "rgba(124, 58, 237, 0.4)",
+    icon: "🌟",
+  },
+];
+
 function FundedWall({ L, funded, onStart }) {
   const ghosts = funded.length === 0;
-  const list = ghosts ? [0, 1, 2] : funded;
   return (
     <section className="sc-sec" id="funded">
       <Reveal className="sc-head">
-        <span className="sc-eyebrow">{L ? "ফান্ড পেয়েছে" : "Raised"}</span>
+        <span className="sc-eyebrow sc-eyebrow-raised">{L ? "ফান্ড পেয়েছে" : "Raised"}</span>
         <h2 className={L ? "bn" : ""}>{L ? <>যারা <em>ফান্ড তুলেছে</em></> : <>Founders who <em>raised</em></>}</h2>
+        <p>{L ? "স্টার্টআপ আইডিয়া জমা দিয়ে তোমার স্পট দাবি করো — সরাসরি ফান্ডিং পাওয়ার সুযোগ!" : "Submit your startup idea to claim an open spot and get funded!"}</p>
       </Reveal>
       <div className="sc-shops">
-        {list.map((f, i) => ghosts ? (
-          <Reveal key={i} delay={i * 90} className="sc-shop ghost">
-            <div className="sc-awn" />
-            <b>{L ? "তোমার স্টার্টআপ" : "Your startup"}</b>
-            <small>{L ? "এই জায়গাটা খালি" : "This spot is open"}</small>
-            <button type="button" className="sc-btn soft" onClick={onStart}>{L ? "দাবি করো" : "Claim it"} →</button>
-          </Reveal>
+        {ghosts ? (
+          GHOST_SPOTS.map((s, i) => (
+            <Reveal
+              key={i}
+              delay={i * 90}
+              className="sc-shop ghost"
+              style={{
+                "--hue": s.hue,
+                "--card-bg": s.bg,
+                "--card-border": s.border,
+                "--glow": s.glow,
+              }}
+            >
+              <div className="sc-awn" />
+              <span className="sc-spot-chip" style={{ background: s.chipBg, color: s.chipColor }}>
+                {s.icon} {s.badge[L]}
+              </span>
+              <b>{s.title[L]}</b>
+              <p className="sc-spot-desc">{s.desc[L]}</p>
+              <small>{s.sub[L]}</small>
+              <button
+                type="button"
+                className="sc-btn-claim"
+                style={{ background: s.btnGrad }}
+                onClick={onStart}
+              >
+                {s.cta[L]} →
+              </button>
+            </Reveal>
+          ))
         ) : (
-          <Reveal key={f.name + i} delay={(i % 6) * 70} className="sc-shop" style={{ "--hue": (i * 47) % 360 }}>
-            <div className="sc-awn" />
-            <b>{f.name}</b>
-            {f.one_liner && <p>{f.one_liner}</p>}
-            <small>{f.founder}{f.university ? ` · ${f.university}` : ""}</small>
-            <div className="sc-shop-foot"><span>{f.sector}</span>{f.amount ? <em>৳{Number(f.amount).toLocaleString("en-IN")}</em> : null}</div>
-          </Reveal>
-        ))}
+          funded.map((f, i) => (
+            <Reveal key={f.name + i} delay={(i % 6) * 70} className="sc-shop" style={{ "--hue": (i * 47) % 360 }}>
+              <div className="sc-awn" />
+              <b>{f.name}</b>
+              {f.one_liner && <p>{f.one_liner}</p>}
+              <small>{f.founder}{f.university ? ` · ${f.university}` : ""}</small>
+              <div className="sc-shop-foot"><span>{f.sector}</span>{f.amount ? <em>৳{Number(f.amount).toLocaleString("en-IN")}</em> : null}</div>
+            </Reveal>
+          ))
+        )}
       </div>
     </section>
   );
