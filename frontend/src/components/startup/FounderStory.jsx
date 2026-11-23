@@ -62,7 +62,7 @@ export default function FounderStory({ L, onStart }) {
       </div>
 
       <div className="fs-real">
-        <h3 className={L ? "bn" : ""}>{L ? "আসল গল্প দেখো" : "Real stories"}</h3>
+        <h3 className={L ? "bn" : ""}>{L ? "স্টোরিজ" : "Stories"}</h3>
         <div className="fs-videos">
           {VIDEOS.map((v) => <Video key={v.id} v={v} L={L} />)}
           <a className="fs-link" href={BD_STORY.url} target="_blank" rel="noopener noreferrer">

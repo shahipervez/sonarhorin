@@ -281,10 +281,6 @@ function Hero({ L, user, onLaunch }) {
       <div className="sc-scene-wrap"><ClayScene name={name} bn={!!L} launch={launch} /></div>
       <div className="sc-hero-fade" />
       <div className="sc-hero-copy">
-        <div className="sc-hero-kicker">
-          <span className="sc-hk-dot" />
-          <span>{L ? "স্টার্টআপ লঞ্চপ্যাড" : "Startup Launchpad"}</span>
-        </div>
         <h1 className={`sc-hero-creative ${L ? "bn" : ""}`}>
           <span className="sh-c-item sh-c-guide">{L ? "গাইড করি" : "Guide you"}</span>
           <span className="sh-c-sep">·</span>
@@ -472,8 +468,7 @@ export default function Startup() {
       {/* 5. Real Stories from YouTube (Founder Stories + Anime Experience) */}
       <section className="sc-sec" id="story">
         <Reveal className="sc-head">
-          <span className="sc-eyebrow">{L ? "ইউটিউব আসল গল্প" : "YouTube Real Stories"}</span>
-          <h2 className={L ? "bn" : ""}>{L ? <>ফাউন্ডারদের <em>সাকসেস স্টোরিজ</em></> : <>Real Founder <em>Stories from YouTube</em></>}</h2>
+          <h2 className={L ? "bn" : ""}>{L ? "স্টোরিজ" : "Stories"}</h2>
           <p>{L ? "বাস্তব অভিজ্ঞতার গল্প ও ফান্ডিং পাওয়ার দিকনির্দেশনা দেখুন সরাসরি ভিডিওতে।" : "Watch real startup founders share how they went from idea to raising millions."}</p>
         </Reveal>
         <FounderStory L={L} onStart={() => launch("")} />

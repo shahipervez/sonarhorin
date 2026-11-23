@@ -100,8 +100,8 @@ export const stageOf = (pitchStage) => ({ idea: "idea", prototype: "mvp", users:
 
 // real startup stories on YouTube (IDs checked)
 export const VIDEOS = [
-  { id: "B8yVqBw5fF4", t: ["How Pathao Built Bangladesh's Largest Tech Startup", "পাঠাও কিভাবে বাংলাদেশের সবচেয়ে বড় স্টার্টআপ হয়ে উঠলো"], by: "Hussain M Elius · Co-Founder, Pathao" },
-  { id: "yWbXn_L6L8E", t: ["10 Minute School: Journey from Idea to $2M Funding", "১০ মিনিট স্কুলের আইডিয়া থেকে ২০ কোটি টাকার ফান্ডিং জার্নি"], by: "Ayman Sadiq · Founder & CEO, 10 Minute School" },
+  { id: "CZ6B3jPETYw", t: ["Pathao: Taking a Startup from Zero to One", "পাঠাও: শূন্য থেকে শুরু করে সফল স্টার্টআপ তৈরির গল্প"], by: "Hussain M Elius · Co-Founder, Pathao" },
+  { id: "AzOI8K3fmT4", t: ["My Journey of Building 10 Minute School", "১০ মিনিট স্কুল তৈরির পেছনের আসল লড়াই ও ফান্ডিং"], by: "Ayman Sadiq · Founder & CEO, 10 Minute School" },
   { id: "CBYhVcO4WgI", t: ["How to Start a Startup — Lecture 1", "কিভাবে স্টার্টআপ শুরু করবে — লেকচার ১"], by: "Sam Altman & Dustin Moskovitz · Y Combinator" },
   { id: "lw2X3PxKlAY", t: ["How to pitch your seed-stage startup", "সিড-স্টেজ স্টার্টআপ কিভাবে পিচ করবে"], by: "Michael Seibel (Y Combinator) · SaaStr" },
 ];
