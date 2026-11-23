@@ -51,7 +51,18 @@
 .sc-hero { position: relative; width: 100%; height: clamp(600px, calc(100vh - 110px), 820px); margin: -64px 0 0; border-radius: 0 0 44px 44px; overflow: hidden; --mx: 0; --my: 0; }
 .sc-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .sc-hero-fade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(238, 237, 244, .82) 0%, rgba(238, 237, 244, .35) 38%, transparent 58%), linear-gradient(0deg, var(--sc-bg) 0%, transparent 14%); }
-.sc-hero-copy { position: absolute; left: clamp(20px, 5vw, 64px); bottom: clamp(36px, 9vh, 90px); width: min(520px, 90%); z-index: 2; }
+.sc-hero-copy { position: absolute; left: clamp(20px, 5vw, 64px); bottom: clamp(70px, 16vh, 150px); width: min(560px, 90%); z-index: 2; }
+.sc-hero-kicker { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 999px; background: rgba(255, 255, 255, .92); backdrop-filter: blur(8px); box-shadow: 0 2px 8px rgba(30, 27, 75, .08); font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--sc-navy); margin-bottom: 10px; }
+.sc-hk-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sc-pink); box-shadow: 0 0 8px var(--sc-pink); animation: scPulse 2s infinite; }
+.sc-hero-creative { font-size: clamp(34px, 5vw, 62px); font-weight: 900; line-height: 1.1; letter-spacing: -.025em; margin: 0 0 14px; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
+.sc-hero-creative.bn { font-family: 'Hind Siliguri', sans-serif; font-size: clamp(30px, 4.4vw, 54px); font-weight: 800; }
+.sh-c-item { display: inline-block; transition: transform .2s ease; }
+.sh-c-item:hover { transform: translateY(-2px); }
+.sh-c-guide { color: #2563EB; background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.sh-c-connect { color: #7C3AED; background: linear-gradient(135deg, #6D28D9 0%, #A855F7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.sh-c-fund { color: #E64BD2; background: linear-gradient(135deg, #DB2777 0%, #E64BD2 50%, #FF8A00 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; }
+.sh-c-sep { color: #CBD5E1; font-weight: 400; font-size: .8em; opacity: .7; }
+.sc-hero-sub { font-size: clamp(14px, 1.2vw, 17px); line-height: 1.55; color: #475569; max-width: 440px; margin: 0 0 4px; font-weight: 500; }
 .sc-hero-copy h1 { font-size: clamp(44px, 6.2vw, 84px); margin: 16px 0 18px; }
 .sc-hero-copy h1.bn { font-size: clamp(38px, 5vw, 66px); }
 .sc-hero-copy > p { font-size: clamp(15px, 1.25vw, 18px); line-height: 1.55; color: var(--sc-ink); max-width: 440px; }

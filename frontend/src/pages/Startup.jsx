@@ -16,13 +16,13 @@ const PENDING_KEY = "sh_pitch_name";
 
 const SECTORS = [["edtech", "EdTech"], ["fintech", "FinTech"], ["agritech", "AgriTech"], ["health", "Health"], ["ecommerce", "E-commerce"], ["ai", "AI / SaaS"], ["logistics", "Logistics"], ["social", "Social impact"], ["other", "Other"]];
 const STAGES = [["idea", "Just an idea"], ["prototype", "Prototype / MVP"], ["users", "Early users"], ["revenue", "Making revenue"]];
-// Step 1 — the idea card: only these three to start
+// Step 1 — the idea card: Idea (Submit your Business Idea), Problem, Concept Note (Solution, budget, etc.)
 const IDEA = [
-  ["one_liner", ["💡 Idea", "💡 আইডিয়া"], ["One line: who it's for and what changes.", "এক লাইনে: কার জন্য, কী বদলাবে।"], 1],
-  ["problem", ["❗ Problem", "❗ সমস্যা"], ["Who suffers, how often, what it costs them.", "কে ভুগছে, কত ঘনঘন, কত ক্ষতি।"], 4],
-  ["solution", ["✅ Solution", "✅ সমাধান"], ["What your product does on day one.", "প্রথম দিনে তোমার প্রোডাক্ট কী করবে।"], 4],
+  ["one_liner", ["💡 Idea (Submit your Business Idea)", "💡 বিজনেস আইডিয়া (Submit your Business Idea)"], ["Detail your business idea: what is your product or service, who is it for, and what makes it special.", "তোমার বিজনেস আইডিয়া বিস্তারিত লেখো: কী প্রোডাক্ট বা সার্ভিস, কার জন্য এবং বিশেষত্ব কী।"], 3],
+  ["problem", ["❗ Problem", "❗ সমস্যা"], ["What exact problem does your customer face, how severe is it, and why do current options fail?", "কাস্টমারের কোন বড় সমস্যার সমাধান করছো এবং বর্তমান উপায়ে কেন সমাধান হচ্ছে না?"], 4],
+  ["solution", ["📋 Concept Note (Solution, budget, etc.)", "📋 কনসেপ্ট নোট (সমাধান, বাজেট ইত্যাদি)"], ["Explain your solution, execution plan, required seed budget/ask amount, and key milestones.", "তোমার সমাধান, বাস্তবায়নের উপায়, প্রয়োজনীয় বাজেট/ফান্ড এবং পরবর্তী মাইলস্টোনসমূহ।"], 4],
 ];
-const ideaDone = (p) => (p.one_liner || "").trim().length >= 15 && (p.problem || "").trim().length >= 40 && (p.solution || "").trim().length >= 40;
+const ideaDone = (p) => (p.one_liner || "").trim().length >= 15 && (p.problem || "").trim().length >= 25 && (p.solution || "").trim().length >= 25;
 // Step 2 — everything an investor asks before a pitch
 const FIELDS = [
   ["one_liner", "One-line pitch", "", 1],
@@ -281,10 +281,18 @@ function Hero({ L, user, onLaunch }) {
       <div className="sc-scene-wrap"><ClayScene name={name} bn={!!L} launch={launch} /></div>
       <div className="sc-hero-fade" />
       <div className="sc-hero-copy">
-        <h1 className={L ? "bn" : ""}>
-          {L ? <em>টাকা পাইয়ে দিই।</em> : <>We get you <em>funded.</em></>}
+        <div className="sc-hero-kicker">
+          <span className="sc-hk-dot" />
+          <span>{L ? "স্টার্টআপ লঞ্চপ্যাড" : "Startup Launchpad"}</span>
+        </div>
+        <h1 className={`sc-hero-creative ${L ? "bn" : ""}`}>
+          <span className="sh-c-item sh-c-guide">{L ? "গাইড করি" : "Guide you"}</span>
+          <span className="sh-c-sep">·</span>
+          <span className="sh-c-item sh-c-connect">{L ? "কানেক্ট করি" : "Connect you"}</span>
+          <span className="sh-c-sep">·</span>
+          <span className="sh-c-item sh-c-fund">{L ? "ফান্ড পাইয়ে দিই" : "Fund you"}</span>
         </h1>
-        <p>{L ? "আইডিয়া লেখো → পিচ বানাও → সঠিক ফান্ডারের কাছে যাও।" : "Write the idea → build the pitch → reach the right funders."}</p>
+        <p className="sc-hero-sub">{L ? "আইডিয়া লেখো → পিচ বানাও → সঠিক ফান্ডারের কাছে যাও।" : "Write the idea → build the pitch → reach the right funders."}</p>
         <form className="sc-namebar" onSubmit={submit}>
           <span className="sc-namebar-tag">
             <svg viewBox="0 0 24 24"><path d="M4 10l1.5-5h13L20 10M4 10h16M4 10v9h16v-9M9 19v-5h6v5" /></svg>
@@ -412,14 +420,61 @@ export default function Startup() {
 
   return (
     <div className="sc-page" id="top">
+      {/* 1. Hero: Guide you · Connect you · Fund you (higher up) */}
       <Hero L={L} user={user} onLaunch={launch} />
-      <Stats L={L} fundedCount={funded.length} />
+
+      {/* 2. First image part: Idea to funded (5-step Journey pipeline) */}
       <Journey L={L} onStart={() => launch("")} />
 
+      {/* 3. The funding wall */}
+      <section className="sc-sec" id="funders">
+        <Reveal className="sc-head">
+          <span className="sc-eyebrow">{L ? "কারা ফান্ড দেয়" : "Who funds startups"}</span>
+          <h2 className={L ? "bn" : ""}>{L ? <>ফান্ডিং <em>ওয়াল</em></> : <>The funding <em>wall</em></>}</h2>
+          <p>{L ? "বাংলাদেশ ও আন্তর্জাতিক সরকারি অনুদান, অ্যাঞ্জেল ইনভেস্টর ও শীর্ষ অ্যাক্সেলারেটরদের সম্পূর্ণ তালিকা।" : "Verified grants, VCs, angel networks and accelerators in Bangladesh & globally."}</p>
+        </Reveal>
+        <FunderBoard L={L} />
+      </section>
+
+      {/* 4. Pitch builder: Idea (Submit your Business Idea), Problem, Concept Note (Solution, budget, etc.) */}
+      <section className="sc-sec" id="builder">
+        <div className="sc-builder">
+          <div className="sc-builder-head">
+            <div>
+              <span className="sc-eyebrow">{L ? "পিচ বিল্ডার" : "Pitch builder"}</span>
+              <h2 className={L ? "bn" : ""}>
+                {L ? (
+                  <>আইডিয়া <em>(Submit your Business Idea)</em>, সমস্যা ও কনসেপ্ট নোট</>
+                ) : (
+                  <>Idea <em>(Submit your Business Idea)</em>, Problem & Concept Note</>
+                )}
+              </h2>
+            </div>
+            <span className="sc-badge">{L ? "আইডিয়া · সমস্যা · কনসেপ্ট নোট (বাজেট)" : "IDEA · PROBLEM · CONCEPT NOTE (BUDGET)"}</span>
+          </div>
+          {user ? <Builder launchTick={launchTick} L={L} /> : (
+            <div className="sc-gate">
+              <div className="sc-gate-ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" /><circle className="f" cx="60" cy="60" r="50" /></svg><b>45+</b></div>
+              <div>
+                <b>{L ? "বিজনেস আইডিয়া জমা দিতে লগইন করো" : "Log in to submit your business idea & pitch"}</b>
+                <p className="muted small" style={{ marginTop: 4 }}>
+                  {L ? "আইডিয়া, সমস্যা ও কনসেপ্ট নোট লিখে সরাসরি ফান্ডারদের কাছে পৌঁছে যাও।" : "Write your idea, problem and concept note to reach 20+ active funding sources."}</p>
+                <div className="sc-gate-actions" style={{ marginTop: 12 }}>
+                  <Link className="sc-btn navy" to="/login?next=/startup">{L ? "লগইন" : "Log in"}</Link>
+                  <Link className="sc-btn soft" to="/register?next=/startup">{L ? "ফ্রি অ্যাকাউন্ট" : "Create free account"}</Link>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 5. Real Stories from YouTube (Founder Stories + Anime Experience) */}
       <section className="sc-sec" id="story">
         <Reveal className="sc-head">
-          <span className="sc-eyebrow">{L ? "একটা গল্প" : "A story"}</span>
-          <h2 className={L ? "bn" : ""}>{L ? <>চাকরি নেই? <em>কোম্পানি বানাও।</em></> : <>No job? <em>Build one.</em></>}</h2>
+          <span className="sc-eyebrow">{L ? "ইউটিউব আসল গল্প" : "YouTube Real Stories"}</span>
+          <h2 className={L ? "bn" : ""}>{L ? <>ফাউন্ডারদের <em>সাকসেস স্টোরিজ</em></> : <>Real Founder <em>Stories from YouTube</em></>}</h2>
+          <p>{L ? "বাস্তব অভিজ্ঞতার গল্প ও ফান্ডিং পাওয়ার দিকনির্দেশনা দেখুন সরাসরি ভিডিওতে।" : "Watch real startup founders share how they went from idea to raising millions."}</p>
         </Reveal>
         <FounderStory L={L} onStart={() => launch("")} />
         <div className="sc-anime">
@@ -430,40 +485,10 @@ export default function Startup() {
         {showStory && <div className="sc-story-frame"><StartupStoryExperience /></div>}
       </section>
 
-      <section className="sc-sec" id="funders">
-        <Reveal className="sc-head">
-          <span className="sc-eyebrow">{L ? "কারা ফান্ড দেয়" : "Who funds startups"}</span>
-          <h2 className={L ? "bn" : ""}>{L ? <>ফান্ডিং <em>ওয়াল</em></> : <>The funding <em>wall</em></>}</h2>
-        </Reveal>
-        <FunderBoard L={L} />
-      </section>
-
-      <section className="sc-sec" id="builder">
-        <div className="sc-builder">
-          <div className="sc-builder-head">
-            <div>
-              <span className="sc-eyebrow">{L ? "পিচ বিল্ডার" : "Pitch builder"}</span>
-              <h2 className={L ? "bn" : ""}>{L ? <>শুরু করো <em>৩টা ঘর</em> দিয়ে</> : <>Start with <em>3 boxes</em></>}</h2>
-            </div>
-            <span className="sc-badge">{L ? "আইডিয়া · সমস্যা · সমাধান" : "IDEA · PROBLEM · SOLUTION"}</span>
-          </div>
-          {user ? <Builder launchTick={launchTick} L={L} /> : (
-            <div className="sc-gate">
-              <div className="sc-gate-ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" /><circle className="f" cx="60" cy="60" r="50" /></svg><b>45+</b></div>
-              <div>
-                <b>{L ? "পিচ লিখতে লগইন করো" : "Log in to start your pitch"}</b>
-                <div className="sc-gate-actions">
-                  <Link className="sc-btn navy" to="/login?next=/startup">{L ? "লগইন" : "Log in"}</Link>
-                  <Link className="sc-btn soft" to="/register?next=/startup">{L ? "ফ্রি অ্যাকাউন্ট" : "Create free account"}</Link>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
+      {/* Raised Founders */}
       <FundedWall L={L} funded={funded} onStart={() => launch("")} />
 
+      {/* Call to Action */}
       <section className="sc-sec">
         <Reveal className="sc-cta">
           <div className="sc-cta-boxes" aria-hidden="true"><i /><i /><i /></div>
