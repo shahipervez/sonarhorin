@@ -5,6 +5,9 @@ import { useAuth } from "../auth";
 import Scribble from "../components/Scribble";
 import StartupStoryExperience from "../components/StartupStoryExperience";
 import ClayScene from "../components/startup/ClayScene";
+import FounderStory from "../components/startup/FounderStory";
+import FunderBoard from "../components/startup/FunderBoard";
+import { FUNDERS, stageOf } from "./startupFunders";
 import { useLang } from "../i18n";
 import { confetti, toast } from "../utils";
 import "../styles/startup-clay.css";
@@ -13,18 +16,25 @@ const PENDING_KEY = "sh_pitch_name";
 
 const SECTORS = [["edtech", "EdTech"], ["fintech", "FinTech"], ["agritech", "AgriTech"], ["health", "Health"], ["ecommerce", "E-commerce"], ["ai", "AI / SaaS"], ["logistics", "Logistics"], ["social", "Social impact"], ["other", "Other"]];
 const STAGES = [["idea", "Just an idea"], ["prototype", "Prototype / MVP"], ["users", "Early users"], ["revenue", "Making revenue"]];
+// Step 1 — the idea card: only these three to start
+const IDEA = [
+  ["one_liner", ["💡 Idea", "💡 আইডিয়া"], ["One line: who it's for and what changes.", "এক লাইনে: কার জন্য, কী বদলাবে।"], 1],
+  ["problem", ["❗ Problem", "❗ সমস্যা"], ["Who suffers, how often, what it costs them.", "কে ভুগছে, কত ঘনঘন, কত ক্ষতি।"], 4],
+  ["solution", ["✅ Solution", "✅ সমাধান"], ["What your product does on day one.", "প্রথম দিনে তোমার প্রোডাক্ট কী করবে।"], 4],
+];
+const ideaDone = (p) => (p.one_liner || "").trim().length >= 15 && (p.problem || "").trim().length >= 40 && (p.solution || "").trim().length >= 40;
+// Step 2 — everything an investor asks before a pitch
 const FIELDS = [
-  ["one_liner", "One-line pitch", "KrishiBondhu helps smallholder farmers sell straight to Dhaka restaurants.", 1],
-  ["problem", "The problem", "Who suffers, how often, what it costs them. Add one number.", 4],
-  ["solution", "Your solution", "What the product does on day one.", 4],
+  ["one_liner", "One-line pitch", "", 1],
+  ["problem", "The problem", "", 4],
+  ["solution", "Your solution", "", 4],
   ["market", "Market size", "Customers in Bangladesh × what they'd pay.", 3],
   ["business_model", "How you make money", "Who pays, how much, how often.", 3],
   ["traction", "Traction / proof", "Surveys, waitlist, pilot, orders — with numbers.", 3],
   ["team", "Why this team", "Skills, story, unfair advantage.", 3],
   ["use_of_funds", "Use of funds", "What the money buys in the next 6–12 months.", 3],
 ];
-const FLOW = [["✍️", "Write", "Build your pitch here — the rubric tells you what's missing."], ["📊", "Score 45+", "A readiness score like an investor's first read."], ["📨", "Submit", "Our panel reviews every pitch within two weeks."],
-  ["🎤", "Pitch day", "The strongest founders pitch live, monthly."], ["🏮", "Funded", "Funding, mentors and the সোনারহরিণ network."]];
+const FLOW = [["💡", "Idea card"], ["📊", "Score 45+"], ["🔍", "Review"], ["🤝", "Investor intros"], ["🏮", "Raised"]];
 const STATUS_STEP = { draft: 0, submitted: 2, review: 2, shortlisted: 3, pitch_day: 3, funded: 4, declined: 2 };
 
 function Ring({ v }) {
@@ -35,7 +45,8 @@ function Ring({ v }) {
   );
 }
 
-function Builder({ launchTick = 0 }) {
+function Builder({ launchTick = 0, L = 0 }) {
+  const [showFull, setShowFull] = useState({});
   const [list, setList] = useState(null);
   const [cur, setCur] = useState(null);
   const [saving, setSaving] = useState("");
@@ -91,6 +102,8 @@ function Builder({ launchTick = 0 }) {
   const rd = cur.readiness || { score: 0, checks: [] };
   const locked = !["draft", "declined"].includes(cur.status);
   const step = STATUS_STEP[cur.status] ?? 0;
+  const ideaOk = ideaDone(cur);
+  const full = locked || showFull[cur.id] || (cur.market || cur.team || cur.traction || cur.business_model || cur.deck_name);
   return (
     <div className="pb">
       <div className="pb-tabs">
@@ -103,11 +116,39 @@ function Builder({ launchTick = 0 }) {
           <b>{cur.status_label}</b>{cur.feedback && <p className="fb"><b>Panel feedback:</b> {cur.feedback}</p>}
         </div>
       )}
+      {!full ? (
+        <div className="pb-idea">
+          <div className="pb-idea-head">
+            <span className="pb-step-chip">1 / 2</span>
+            <input className="pb-idea-name" value={cur.name} onChange={(e) => up("name", e.target.value)} aria-label="Startup name" />
+            <span className="muted small">{saving}</span>
+          </div>
+          <div className="pb-idea-cards">
+            {IDEA.map(([k, t, ph, rows], i) => {
+              const ok = (cur[k] || "").trim().length >= (k === "one_liner" ? 15 : 40);
+              return (
+                <label key={k} className={`pb-idea-card ${ok ? "ok" : ""}`} style={{ "--i": i }}>
+                  <span className="pb-idea-t">{t[L]}{ok && <i>✓</i>}</span>
+                  {rows === 1 ? <input value={cur[k] || ""} onChange={(e) => up(k, e.target.value)} placeholder={ph[L]} maxLength={160} />
+                    : <textarea rows={rows} value={cur[k] || ""} onChange={(e) => up(k, e.target.value)} placeholder={ph[L]} />}
+                </label>
+              );
+            })}
+          </div>
+          <div className="pb-idea-foot">
+            <span>{L ? "বাকিটা (মার্কেট, টিম, ডেক…) পিচের আগে দিলেই হবে।" : "The rest (market, team, deck…) comes later, before you pitch."}</span>
+            <button type="button" className="btn btn-lime" disabled={!ideaOk} onClick={() => setShowFull((m) => ({ ...m, [cur.id]: true }))}>
+              {ideaOk ? (L ? "পরের ধাপ: পুরো পিচ →" : "Next: full pitch →") : (L ? "৩টা ঘর পূরণ করো" : "Fill the 3 boxes")}
+            </button>
+          </div>
+        </div>
+      ) : (
       <div className="pb-grid">
         <div className="pb-form">
+          <p className="pb-step2"><span className="pb-step-chip">2 / 2</span>{L ? "পিচের আগে বাকি তথ্য" : "Before you pitch"}</p>
           <div className="row2">
             <label className="field"><span>Startup name</span><input value={cur.name} disabled={locked} onChange={(e) => up("name", e.target.value)} /></label>
-            <label className="field"><span>Ask (৳)</span><input type="number" min="0" value={cur.ask_amount || ""} disabled={locked} onChange={(e) => up("ask_amount", e.target.value ? +e.target.value : null)} placeholder="1000000" /></label>
+            <label className="field"><span>Raising (৳)</span><input type="number" min="0" value={cur.ask_amount || ""} disabled={locked} onChange={(e) => up("ask_amount", e.target.value ? +e.target.value : null)} placeholder="1000000" /></label>
           </div>
           <div className="row2">
             <label className="field"><span>Sector</span><select value={cur.sector} disabled={locked} onChange={(e) => up("sector", e.target.value)}>{SECTORS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
@@ -123,7 +164,7 @@ function Builder({ launchTick = 0 }) {
             <input ref={fileRef} type="file" accept=".pdf" hidden onChange={(e) => upload(e.target.files[0])} />
             <span>📎</span><div><b>{cur.deck_name || "Upload your pitch deck (PDF, max 10 MB)"}</b><small>10–12 slides</small></div>
           </div>
-          <label className="check"><input type="checkbox" checked={!!cur.public_story} disabled={locked} onChange={(e) => up("public_story", e.target.checked)} /> If we fund it, you may show my story publicly</label>
+          <label className="check"><input type="checkbox" checked={!!cur.public_story} disabled={locked} onChange={(e) => up("public_story", e.target.checked)} /> If I raise money, you may show my story publicly</label>
         </div>
         <aside className="pb-score">
           <div className="sticky">
@@ -137,6 +178,7 @@ function Builder({ launchTick = 0 }) {
           </div>
         </aside>
       </div>
+      )}
     </div>
   );
 }
@@ -146,11 +188,11 @@ function Builder({ launchTick = 0 }) {
 /* Startup track — soft clay / isometric "startup HQ" theme.           */
 /* ------------------------------------------------------------------ */
 const JOURNEY = [
-  ["write", ["Write", "লেখো"], ["Build your pitch here — the rubric tells you what's missing.", "এখানেই পিচ লেখো — রুব্রিক বলে দেবে কী বাকি।"]],
-  ["score", ["Score 45+", "স্কোর ৪৫+"], ["A readiness score like an investor's first read.", "ইনভেস্টরের প্রথম চোখের মতো রেডিনেস স্কোর।"]],
-  ["submit", ["Submit", "জমা দাও"], ["Our panel reviews every pitch within two weeks.", "প্যানেল দুই সপ্তাহে প্রতিটি পিচ রিভিউ করে।"]],
-  ["pitch", ["Pitch Day", "পিচ ডে"], ["The strongest founders pitch live, monthly.", "সেরা ফাউন্ডাররা প্রতি মাসে লাইভ পিচ করে।"]],
-  ["funded", ["Funded", "ফান্ডেড"], ["Funding, mentors and the সোনারহরিণ network.", "ফান্ডিং, মেন্টর আর সোনারহরিণ নেটওয়ার্ক।"]],
+  ["write", ["Idea card", "আইডিয়া কার্ড"]],
+  ["score", ["Score it", "স্কোর"]],
+  ["pitch", ["Pitch kit", "পিচ কিট"]],
+  ["submit", ["Match funders", "ফান্ডার ম্যাচ"]],
+  ["funded", ["Raise", "ফান্ড তোলো"]],
 ];
 const JICON = {
   write: <path d="M5 19l1-5L16 4l4 4-10 10-5 1zM14 6l4 4" />,
@@ -160,10 +202,10 @@ const JICON = {
   funded: <><path d="M8 4h8l-1 3H9zM7 8h10c1 4 2 8 2 10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2c0-2 1-6 2-10z" /><path d="M12 11v6M10 13h3a1 1 0 0 1 0 2h-2" /></>,
 };
 const STATS = [
-  ["৳", 10, "L", ["pre-seed per startup", "প্রতি স্টার্টআপে প্রি-সিড"]],
-  ["", 45, "+", ["readiness to submit", "স্কোর হলে সাবমিট"]],
-  ["", 14, "", ["days to review", "দিনে রিভিউ"]],
-  ["৳", 0, "", ["to apply", "আবেদন ফি"]],
+  ["", FUNDERS.length, "", ["funders · BD + global", "ফান্ডার · দেশ + বিদেশ"]],
+  ["$", 500, "K", ["Y Combinator deal", "Y Combinator ডিল"]],
+  ["৳", 50, "L", ["max BD govt grant", "সর্বোচ্চ সরকারি অনুদান"]],
+  ["", 3, "", ["boxes to start", "ঘর দিয়ে শুরু"]],
 ];
 function useInView(threshold = 0.2) {
   const ref = useRef(null);
@@ -239,11 +281,11 @@ function Hero({ L, user, onLaunch }) {
       <div className="sc-scene-wrap"><ClayScene name={name} bn={!!L} launch={launch} /></div>
       <div className="sc-hero-fade" />
       <div className="sc-hero-copy">
-        <span className="sc-live"><i />{L ? "আবেদন চলছে · প্রি-সিড ৳১০ লাখ" : "Applications open · ৳10L pre-seed"}</span>
+        <span className="sc-live"><i />{L ? "দেশ-বিদেশের ফান্ডারদের কাছে পৌঁছাও" : "Reach funders in Bangladesh & worldwide"}</span>
         <h1 className={L ? "bn" : ""}>
-          {L ? <>তোমার স্টার্টআপ<br />লঞ্চ করো <em>আজই!</em></> : <>Launch your<br />startup <em>now!</em></>}
+          {L ? <>আমরা টাকা দিই না।<br /><em>টাকা পাইয়ে দিই।</em></> : <>We don't fund you.<br />We get you <em>funded.</em></>}
         </h1>
-        <p>{L ? "আইডিয়া থেকে ফান্ডেড স্টার্টআপ — ফ্রি।" : "From idea to funded startup — free."}</p>
+        <p>{L ? "আইডিয়া লেখো → পিচ বানাও → সঠিক ফান্ডারের কাছে যাও।" : "Write the idea → build the pitch → reach the right funders."}</p>
         <form className="sc-namebar" onSubmit={submit}>
           <span className="sc-namebar-tag">
             <svg viewBox="0 0 24 24"><path d="M4 10l1.5-5h13L20 10M4 10h16M4 10v9h16v-9M9 19v-5h6v5" /></svg>
@@ -257,15 +299,15 @@ function Hero({ L, user, onLaunch }) {
         </form>
         <small className="sc-hint">{L ? "নাম লেখো → Enter → লঞ্চ 🚀" : "Type a name → Enter → launch 🚀"}</small>
       </div>
-      <div className="sc-chip c1"><b>45+</b>{L ? "স্কোর → সাবমিট" : "score → submit"}</div>
-      <div className="sc-chip c2"><i className="ok">✓</i>{L ? "১৪ দিনে রিভিউ" : "14-day review"}</div>
+      <div className="sc-chip c1"><b>{FUNDERS.length}</b>{L ? "ফান্ডার · 🇧🇩 + 🌍" : "funders · 🇧🇩 + 🌍"}</div>
+      <div className="sc-chip c2"><i className="ok">✓</i>{L ? "শুরুতে মাত্র ৩টা ঘর" : "Only 3 boxes to start"}</div>
     </section>
   );
 }
 
 function Stats({ L, fundedCount }) {
   const [ref, on] = useInView(0.3);
-  const rows = fundedCount > 0 ? [...STATS, ["", fundedCount, "", ["founders funded", "ফাউন্ডার ফান্ডেড"]]] : STATS;
+  const rows = fundedCount > 0 ? [...STATS, ["", fundedCount, "", ["founders raised", "ফাউন্ডার ফান্ড পেয়েছে"]]] : STATS;
   return (
     <section className="sc-stats" ref={ref}>
       {rows.map(([pre, n, suf, lab], i) => (
@@ -326,8 +368,8 @@ function FundedWall({ L, funded, onStart }) {
   return (
     <section className="sc-sec" id="funded">
       <Reveal className="sc-head">
-        <span className="sc-eyebrow">{L ? "ফান্ডেড ফাউন্ডার" : "Funded founders"}</span>
-        <h2 className={L ? "bn" : ""}>{L ? <>সোনারহরিণ <em>স্ট্রিট</em></> : <>The সোনারহরিণ <em>street</em></>}</h2>
+        <span className="sc-eyebrow">{L ? "ফান্ড পেয়েছে" : "Raised"}</span>
+        <h2 className={L ? "bn" : ""}>{L ? <>যারা <em>ফান্ড তুলেছে</em></> : <>Founders who <em>raised</em></>}</h2>
       </Reveal>
       <div className="sc-shops">
         {list.map((f, i) => ghosts ? (
@@ -378,16 +420,25 @@ export default function Startup() {
       <Journey L={L} onStart={() => launch("")} />
 
       <section className="sc-sec" id="story">
-        <Reveal className="sc-story-bar">
-          <div>
-            <span className="sc-eyebrow">{L ? "৩ বন্ধুর গল্প" : "A founder story"}</span>
-            <b>{L ? "চায়ের দোকান থেকে স্টার্টআপ — অ্যানিমে স্টোরি" : "From a tea stall to a startup — the anime story"}</b>
-          </div>
-          <button type="button" className="sc-btn soft" onClick={() => setShowStory((v) => !v)}>
-            {showStory ? (L ? "বন্ধ করো ▲" : "Close ▲") : (L ? "গল্পটা দেখো ▶" : "Watch the story ▶")}
-          </button>
+        <Reveal className="sc-head">
+          <span className="sc-eyebrow">{L ? "একটা গল্প" : "A story"}</span>
+          <h2 className={L ? "bn" : ""}>{L ? <>চাকরি নেই? <em>কোম্পানি বানাও।</em></> : <>No job? <em>Build one.</em></>}</h2>
         </Reveal>
+        <FounderStory L={L} onStart={() => launch("")} />
+        <div className="sc-anime">
+          <button type="button" className="sc-btn soft" onClick={() => setShowStory((v) => !v)}>
+            {showStory ? (L ? "অ্যানিমে বন্ধ করো ▲" : "Close anime ▲") : (L ? "অ্যানিমে ভার্সন দেখো ▶" : "Watch the anime version ▶")}
+          </button>
+        </div>
         {showStory && <div className="sc-story-frame"><StartupStoryExperience /></div>}
+      </section>
+
+      <section className="sc-sec" id="funders">
+        <Reveal className="sc-head">
+          <span className="sc-eyebrow">{L ? "কারা ফান্ড দেয়" : "Who funds startups"}</span>
+          <h2 className={L ? "bn" : ""}>{L ? <>ফান্ডিং <em>ওয়াল</em></> : <>The funding <em>wall</em></>}</h2>
+        </Reveal>
+        <FunderBoard L={L} />
       </section>
 
       <section className="sc-sec" id="builder">
@@ -395,11 +446,11 @@ export default function Startup() {
           <div className="sc-builder-head">
             <div>
               <span className="sc-eyebrow">{L ? "পিচ বিল্ডার" : "Pitch builder"}</span>
-              <h2 className={L ? "bn" : ""}>{L ? <>তোমার পিচ, <em>লাইভ স্কোর</em> সহ</> : <>Your pitch, <em>scored live</em></>}</h2>
+              <h2 className={L ? "bn" : ""}>{L ? <>শুরু করো <em>৩টা ঘর</em> দিয়ে</> : <>Start with <em>3 boxes</em></>}</h2>
             </div>
-            <span className="sc-badge">PRE-SEED ৳10L</span>
+            <span className="sc-badge">{L ? "আইডিয়া · সমস্যা · সমাধান" : "IDEA · PROBLEM · SOLUTION"}</span>
           </div>
-          {user ? <Builder launchTick={launchTick} /> : (
+          {user ? <Builder launchTick={launchTick} L={L} /> : (
             <div className="sc-gate">
               <div className="sc-gate-ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" /><circle className="f" cx="60" cy="60" r="50" /></svg><b>45+</b></div>
               <div>
@@ -419,7 +470,7 @@ export default function Startup() {
       <section className="sc-sec">
         <Reveal className="sc-cta">
           <div className="sc-cta-boxes" aria-hidden="true"><i /><i /><i /></div>
-          <h2 className={L ? "bn" : ""}>{L ? <>পরের দোকানটা <em>তোমার</em>।</> : <>The next shop on the street is <em>yours</em>.</>}</h2>
+          <h2 className={L ? "bn" : ""}>{L ? <>তোমার আইডিয়া, <em>দুনিয়ার টাকা</em>।</> : <>Your idea. <em>The world's money.</em></>}</h2>
           <button type="button" className="sc-btn pink big" onClick={() => launch("")}>{L ? "পিচ শুরু করো →" : "Start your pitch →"}</button>
         </Reveal>
       </section>

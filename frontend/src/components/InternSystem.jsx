@@ -71,9 +71,21 @@ function Story({ L, cats, active, setActive, onPick, sel, counts, n2 }) {
   );
 }
 
-function Focus({ L, id, cat, from, list, count, daysLeft, n2, onBack, onSwitch, onSeeAll, onOpenJob }) {
+function Focus({ L, id, cat, cats, from, list, count, daysLeft, n2, onBack, onSwitch, onSeeAll, onOpenJob }) {
   const ref = useRef(null);
   const p = BY[id];
+  // switch planets without going back: arrows, keyboard ← →, or the strip on top
+  const go = (d) => {
+    const i = SYS.findIndex((s) => s.id === id);
+    const next = SYS[(i + d + SYS.length) % SYS.length].id;
+    const r = ref.current?.getBoundingClientRect();
+    onSwitch(next, r ? { left: r.left + d * 220, top: r.top, width: r.width * 0.4, height: r.height * 0.4 } : null);
+  };
+  useEffect(() => {
+    const k = (e) => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); };
+    addEventListener("keydown", k);
+    return () => removeEventListener("keydown", k);
+  });
   // fly in from where the planet was in the line-up
   useLayoutEffect(() => {
     const el = ref.current; if (!el || !from) return;
@@ -92,14 +104,22 @@ function Focus({ L, id, cat, from, list, count, daysLeft, n2, onBack, onSwitch, 
     <div className="isx-focus" style={{ "--c": cat.c }}>
       <div className="isx-mini">
         <button type="button" className="isx-back" onClick={onBack}>← {L ? "সব গ্রহ" : "All planets"}</button>
-        {SYS.map((s) => (
-          <button key={s.id} type="button" className={`isx-mini-p ${s.id === id ? "on" : ""}`} onClick={(e) => onSwitch(s.id, e.currentTarget.querySelector(".pl")?.getBoundingClientRect())} aria-label={s.planet[L]}>
-            <Planet id={s.id} size={s.id === "corporate" ? 30 : 22} />
-          </button>
-        ))}
+        <div className="isx-switch" role="tablist" aria-label={L ? "গ্রহ বদলাও" : "Switch planet"}>
+          {SYS.map((s) => (
+            <button key={s.id} type="button" role="tab" aria-selected={s.id === id} className={`isx-mini-p ${s.id === id ? "on" : ""}`}
+              onClick={(e) => s.id !== id && onSwitch(s.id, e.currentTarget.querySelector(".pl")?.getBoundingClientRect())}>
+              <Planet id={s.id} size={s.id === "corporate" ? 34 : 26} />
+              <small>{cats[s.id]?.name[L]}</small>
+            </button>
+          ))}
+        </div>
       </div>
       <div className="isx-focus-main">
-        <div className="isx-big" ref={ref} key={id}><Planet id={id} size={190} spin={false} /><span className="isx-warp" /></div>
+        <div className="isx-stage">
+          <button type="button" className="isx-arrow" onClick={() => go(-1)} aria-label={L ? "আগের গ্রহ" : "Previous planet"}>‹</button>
+          <div className="isx-big" ref={ref} key={id}><Planet id={id} size={190} spin={false} /><span className="isx-warp" /></div>
+          <button type="button" className="isx-arrow" onClick={() => go(1)} aria-label={L ? "পরের গ্রহ" : "Next planet"}>›</button>
+        </div>
         <div className="isx-focus-txt">
           <small>{p.planet[L]}</small>
           <h2 className={L ? "bn" : ""}>{cat.icon} {cat.name[L]}</h2>
@@ -181,7 +201,7 @@ export default function InternSystem({ cats, sel, counts, onSelect, L, top, onSe
             <p className="isx-hint">{L ? "একটা গ্রহে চাপ দাও" : "Tap a planet"}</p>
           </>
         ) : (
-          <Focus L={L} id={sel} cat={byCat[sel]} from={from} list={top(sel)} count={counts[sel] || 0} daysLeft={daysLeft} n2={n2}
+          <Focus L={L} id={sel} cat={byCat[sel]} cats={byCat} from={from} list={top(sel)} count={counts[sel] || 0} daysLeft={daysLeft} n2={n2}
             onBack={() => { setFrom(null); onSelect(""); }} onSwitch={(id, r) => pick(id, r)} onSeeAll={onSeeAll} onOpenJob={onOpenJob} />
         )}
       </div>

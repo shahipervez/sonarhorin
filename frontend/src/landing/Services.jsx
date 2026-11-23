@@ -338,7 +338,7 @@ const EffDemo = ({ L }) => (
 const FundDemo = ({ L }) => (
   <div className="mini-fund-dyn">
     <div className="fund-top-bar">
-      <span>⚡ {L ? "স্টার্টআপ লঞ্চপ্যাড ও সিড ফান্ড" : "Startup Launchpad & Seed Fund"}</span>
+      <span>⚡ {L ? "স্টার্টআপ লঞ্চপ্যাড · ফান্ডার খোঁজো" : "Startup Launchpad · Find Funders"}</span>
       <span className="fund-badge">৳500K Pool</span>
     </div>
     <div className="fund-pipeline">
@@ -380,7 +380,7 @@ const getTiles = (L, jobRows = JOBS, internRows = INTERNS) => ({
   cert: { to: "/certificates", t: ["Certificates", "সার্টিফিকেট"], d: ["Verifiable with one code.", "এক কোডে ভেরিফাই।"], hue: "gold", demo: <CertDemo L={L} /> },
   eff: { to: "/efficiency", t: ["Efficiency test", "এফিশিয়েন্সি টেস্ট"], d: ["Proctored. Trusted.", "প্রক্টরড, বিশ্বস্ত।"], hue: "coral", demo: <EffDemo L={L} /> },
   prog: { to: "/programs", t: ["Programs", "প্রোগ্রাম"], d: ["Graduate programs & training.", "গ্র্যাজুয়েট প্রোগ্রাম ও ট্রেনিং।"], hue: "pink", demo: <ProgDemo L={L} /> },
-  fund: { to: "/startup", t: ["Startup fund", "স্টার্টআপ ফান্ড"], d: ["Pitch. Score. Get funded.", "পিচ করো, স্কোর দেখো, ফান্ড পাও।"], hue: "gold", demo: <FundDemo L={L} /> },
+  fund: { to: "/startup", t: ["Startup", "স্টার্টআপ"], d: ["Pitch. Score. Reach funders.", "পিচ করো, স্কোর দেখো, ফান্ডারের কাছে যাও।"], hue: "gold", demo: <FundDemo L={L} /> },
   pitchnet: { to: "/network", t: ["Founders' room", "ফাউন্ডারস রুম"], d: ["Find a co-founder.", "কো-ফাউন্ডার খোঁজো।"], hue: "violet", demo: <ChatDemo isStartup={true} L={L} /> },
 });
 
