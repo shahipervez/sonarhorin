@@ -482,15 +482,6 @@ export default function Startup() {
 
       {/* Raised Founders */}
       <FundedWall L={L} funded={funded} onStart={() => launch("")} />
-
-      {/* Call to Action */}
-      <section className="sc-sec">
-        <Reveal className="sc-cta">
-          <div className="sc-cta-boxes" aria-hidden="true"><i /><i /><i /></div>
-          <h2 className={L ? "bn" : ""}>{L ? <>তোমার আইডিয়া, <em>দুনিয়ার টাকা</em>।</> : <>Your idea. <em>The world's money.</em></>}</h2>
-          <button type="button" className="sc-btn pink big" onClick={() => launch("")}>{L ? "পিচ শুরু করো →" : "Start your pitch →"}</button>
-        </Reveal>
-      </section>
     </div>
   );
 }
