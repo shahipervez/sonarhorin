@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getTrack, hasChosenTrack, useTrack } from "../track";
 import { useLang } from "../i18n";
 import EntryGate from "../landing/EntryGate";
@@ -19,8 +20,24 @@ import Tutorial from "../landing/Tutorial";
  * hero world (Categories with Living Visual Background) → interactive tutorial walkthrough → services (horizontal) → the film → your road → সোনারহরিণ TV → experience → painter → stories.
  */
 export default function Home() {
+  const nav = useNavigate();
   const [track, setTrack] = useTrack();
   const [gate, setGate] = useState(() => !hasChosenTrack());
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search);
+      const t = p.get("track");
+      if (t === "internship") {
+        nav("/internships", { replace: true });
+        return;
+      }
+      if (t === "startup") {
+        nav("/startup", { replace: true });
+        return;
+      }
+    }
+  }, [nav]);
 
   useEffect(() => {
     // Record initial history state if not yet set

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 import { useLang } from "../i18n";
 import { setTrack } from "../track";
@@ -35,6 +36,7 @@ const ICONS = {
 
 export default function EntryGate({ onDone }) {
   const { user, updateMe } = useAuth();
+  const nav = useNavigate();
   const [picked, setPicked] = useState(null);
   const [hasPeeked, setHasPeeked] = useState(false);
   const [storyActive, setStoryActive] = useState(false);
@@ -110,10 +112,20 @@ export default function EntryGate({ onDone }) {
     setTimeout(() => {
       setTrack(k);
       scrollTo(0, 0);
+      if (user && user.track !== k) updateMe({ track: k }).catch(() => {});
+      if (k === "internship") {
+        onDone?.(k);
+        nav("/internships");
+        return;
+      }
+      if (k === "startup") {
+        onDone?.(k);
+        nav("/startup");
+        return;
+      }
       if (typeof window !== "undefined") {
         window.history.pushState({ gate: false, track: k }, "", `/?track=${k}`);
       }
-      if (user && user.track !== k) updateMe({ track: k }).catch(() => {});
       onDone?.(k);
     }, 380);
   };

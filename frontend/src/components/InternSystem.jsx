@@ -103,21 +103,54 @@ function Focus({ L, id, cat, cats, from, list, count, daysLeft, n2, onBack, onSw
   return (
     <div className="isx-focus" style={{ "--c": cat.c }}>
       <div className="isx-mini">
-        <button type="button" className="isx-back" onClick={onBack}>← {L ? "সব গ্রহ" : "All planets"}</button>
+        <button type="button" className="isx-back" onClick={onBack} title={L ? "সব গ্রহ দেখো" : "View all planets"}>
+          ← {L ? "সব গ্রহ" : "All planets"}
+        </button>
         <div className="isx-switch" role="tablist" aria-label={L ? "গ্রহ বদলাও" : "Switch planet"}>
-          {SYS.map((s) => (
-            <button key={s.id} type="button" role="tab" aria-selected={s.id === id} className={`isx-mini-p ${s.id === id ? "on" : ""}`}
-              onClick={(e) => s.id !== id && onSwitch(s.id, e.currentTarget.querySelector(".pl")?.getBoundingClientRect())}>
-              <Planet id={s.id} size={s.id === "corporate" ? 34 : 26} />
-              <small>{cats[s.id]?.name[L]}</small>
-            </button>
-          ))}
+          {SYS.map((s) => {
+            const isCur = s.id === id;
+            const c = cats[s.id];
+            return (
+              <button
+                key={s.id}
+                type="button"
+                role="tab"
+                aria-selected={isCur}
+                className={`isx-mini-p ${isCur ? "on" : ""}`}
+                style={{ "--c": c?.c }}
+                title={`${c?.name?.[L] || s.id}`}
+                onClick={(e) => {
+                  if (isCur) {
+                    onBack();
+                  } else {
+                    onSwitch(s.id, e.currentTarget.querySelector(".pl")?.getBoundingClientRect());
+                  }
+                }}
+              >
+                <Planet id={s.id} size={s.id === "corporate" ? 34 : 26} />
+                <small className={L ? "bn" : ""}>{c?.icon} {c?.name?.[L]}</small>
+              </button>
+            );
+          })}
         </div>
       </div>
       <div className="isx-focus-main">
         <div className="isx-stage">
           <button type="button" className="isx-arrow" onClick={() => go(-1)} aria-label={L ? "আগের গ্রহ" : "Previous planet"}>‹</button>
-          <div className="isx-big" ref={ref} key={id}><Planet id={id} size={190} spin={false} /><span className="isx-warp" /></div>
+          <div
+            className="isx-big isx-big-clickable"
+            ref={ref}
+            key={id}
+            onClick={onBack}
+            title={L ? "সব গ্রহ দেখতে ক্লিক করো" : "Click to view all planets"}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && onBack()}
+          >
+            <Planet id={id} size={190} spin={false} />
+            <span className="isx-warp" />
+            <span className="isx-planet-hint">{L ? "সব গ্রহ দেখতে ট্যাপ করো ✕" : "Tap to close ✕"}</span>
+          </div>
           <button type="button" className="isx-arrow" onClick={() => go(1)} aria-label={L ? "পরের গ্রহ" : "Next planet"}>›</button>
         </div>
         <div className="isx-focus-txt">
@@ -156,6 +189,11 @@ export default function InternSystem({ cats, sel, counts, onSelect, L, top, onSe
 
   const pick = (id, rect) => {
     if (!byCat[id]) return;
+    if (id === sel) {
+      setFrom(null);
+      onSelect("");
+      return;
+    }
     setFrom(rect || document.querySelector(`.isx-row [data-p="${id}"] .pl`)?.getBoundingClientRect() || null);
     onSelect(id);
     const i = STORY.findIndex((s) => s.id === id); if (i >= 0) setActive(i);

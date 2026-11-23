@@ -88,3 +88,10 @@
 @media (prefers-reduced-motion: reduce) {
   .ig-explain, .ig-timeline li { animation: none; }
 }
+
+/* category filter pills above boarding passes (Galaxy style) */
+.ip-cat-pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 24px; }
+.ip-cat-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; font-size: 13.5px; font-weight: 700; background: #fff; color: #4A5272; border: 1.5px solid #E2E8F0; cursor: pointer; transition: all .2s; }
+.ip-cat-pill:hover { border-color: var(--c, #0B1026); color: #0B1026; transform: translateY(-1px); }
+.ip-cat-pill.on { background: var(--c, #0B1026); color: #fff; border-color: var(--c, #0B1026); box-shadow: 0 4px 14px -4px var(--c, rgba(11, 16, 38, .4)); }
+

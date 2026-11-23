@@ -132,6 +132,30 @@ export default function Internships() {
           </div>
         </div>
 
+        <div className="ip-cat-pills" role="tablist" aria-label={L ? "ক্যাটাগরি ফিল্টার" : "Filter categories"}>
+          <button
+            type="button"
+            className={`ip-cat-pill ${!cat ? "on" : ""}`}
+            onClick={() => { setCat(""); setSp({}, { replace: true }); }}
+          >
+            ✦ {L ? "সব ক্যাটাগরি" : "All Categories"} ({n2((all || []).length, L)})
+          </button>
+          {cats.map((c) => {
+            const on = cat === c.id;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                className={`ip-cat-pill ${on ? "on" : ""}`}
+                style={{ "--c": c.c }}
+                onClick={() => pick(c.id)}
+              >
+                {c.icon} {c.name[L]} ({n2(counts[c.id] || 0, L)})
+              </button>
+            );
+          })}
+        </div>
+
         <div className="ip-grid">
           {all === null && Array.from({ length: 4 }, (_, i) => <div key={i} className="ip-pass skel" />)}
           {list.slice(0, shown).map((j, i) => (
