@@ -225,12 +225,12 @@ export default function Hero({ ready = true }) {
             holdMs={2600}
           />
           <div className="hero-ctas">
-            <a href="#builder" className="btn btn-lime">
+            <Link to="/startup#builder" className="btn btn-lime">
               {L ? "আইডিয়া পিচ করো →" : "Pitch my idea →"}
-            </a>
-            <a href="#three-friends" className="btn btn-ghost">
+            </Link>
+            <Link to="/startup#story" className="btn btn-ghost">
               🎬 {L ? "৩ বন্ধুর গল্প" : "3 Friends Story"}
-            </a>
+            </Link>
           </div>
         </div>
       )}

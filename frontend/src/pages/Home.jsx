@@ -25,19 +25,15 @@ export default function Home() {
   const [gate, setGate] = useState(() => !hasChosenTrack());
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const p = new URLSearchParams(window.location.search);
-      const t = p.get("track");
-      if (t === "internship") {
-        nav("/internships", { replace: true });
-        return;
-      }
-      if (t === "startup") {
-        nav("/startup", { replace: true });
-        return;
-      }
+    if (track === "startup") {
+      nav("/startup", { replace: true });
+      return;
     }
-  }, [nav]);
+    if (track === "internship") {
+      nav("/internships", { replace: true });
+      return;
+    }
+  }, [track, nav]);
 
   useEffect(() => {
     // Record initial history state if not yet set

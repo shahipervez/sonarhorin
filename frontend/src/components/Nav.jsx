@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 import { useLang, useT } from "../i18n";
+import { setTrack } from "../track";
 import Logo from "./Logo";
 
 const I = {
@@ -55,7 +56,7 @@ export default function Nav() {
 
   return (
     <nav className={`nav ${solid ? "solid" : ""}`}>
-      <Link to="/" className="logo" aria-label="সোনারহরিণ home"><Logo bangla={home} /></Link>
+      <Link to="/" className="logo" onClick={() => setTrack("job")} aria-label="সোনারহরিণ home"><Logo bangla={home} /></Link>
       <div className={`nav-links ${focus ? "searching" : ""}`}>
         <form className="nav-search" role="search" onSubmit={search}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
@@ -84,7 +85,7 @@ export default function Nav() {
           </Link>
         )}
         <div className={`menu ${open ? "open" : ""}`}>
-          <Link className="mi" to="/"><Icon n="home" />{t("Home", "হোম")}</Link>
+          <Link className="mi" to="/" onClick={() => setTrack("job")}><Icon n="home" />{t("Home", "হোম")}</Link>
           <Link className="mi" to="/jobs"><Icon n="bag" />{t("Fresher jobs · 1-tap apply", "ফ্রেশার জব")}</Link>
           <Link className="mi" to="/internships"><Icon n="prog" />{t("Internships · boarding passes", "ইন্টার্নশিপ")}</Link>
           <Link className="mi" to="/applications"><Icon n="test" />{t("My applications", "আমার আবেদন")}</Link>
