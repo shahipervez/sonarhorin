@@ -135,7 +135,22 @@
 /* story */
 .sc-story-bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 22px 22px 28px; border-radius: 30px; background: var(--sc-card); box-shadow: var(--sc-clay); }
 .sc-story-bar b { display: block; margin-top: 8px; font-size: 19px; }
-.sc-story-frame { margin-top: 16px; padding: 12px; border-radius: 30px; background: #0B0E24; box-shadow: var(--sc-clay); overflow: hidden; animation: scUp .5s both; }
+.sc-story-frame {
+  margin-top: 16px;
+  padding: clamp(16px, 2.8vw, 28px);
+  border-radius: 32px;
+  background: #0B0E24;
+  box-shadow: 0 24px 60px -20px rgba(11, 14, 36, 0.45), var(--sc-clay);
+  overflow: hidden;
+  animation: scUp .5s both;
+}
+.sc-story-frame .story-caption .bn {
+  color: #fff;
+}
+.sc-story-frame .story-player {
+  max-width: 960px;
+  margin: 0 auto;
+}
 
 /* builder */
 .sc-builder { padding: clamp(18px, 3vw, 34px); border-radius: 36px; background: var(--sc-card); box-shadow: var(--sc-clay); }

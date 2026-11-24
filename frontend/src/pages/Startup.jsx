@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import Scribble from "../components/Scribble";
-import StartupStoryExperience from "../components/StartupStoryExperience";
+import { StoryPlayer } from "../landing/StoryAnimation";
+import { STARTUP } from "../landing/story/startup";
 import ClayScene from "../components/startup/ClayScene";
-import FounderStory from "../components/startup/FounderStory";
 import FunderBoard from "../components/startup/FunderBoard";
 import { FUNDERS, stageOf } from "./startupFunders";
 import { useLang } from "../i18n";
@@ -554,7 +554,6 @@ export default function Startup() {
   const L = lang === "bn" ? 1 : 0;
   const nav = useNavigate();
   const [funded, setFunded] = useState([]);
-  const [showStory, setShowStory] = useState(false);
   const [launchTick, setLaunchTick] = useState(0);
 
   useEffect(() => { api("/api/startups/funded/").then(setFunded).catch(() => {}); }, []);
@@ -618,19 +617,15 @@ export default function Startup() {
         <FunderBoard L={L} />
       </section>
 
-      {/* 5. World's biggest startup funding stories (Telegram, Airbnb, Stripe, WhatsApp) */}
+      {/* 5. Animated Startup Story Film */}
       <section className="sc-sec" id="story">
         <Reveal className="sc-head">
           <h2 className={L ? "bn" : ""}>{L ? "স্টোরিজ" : "Stories"}</h2>
-          <p>{L ? "বিশ্বখ্যাত ইউনিকর্ন স্টার্টআপরা কীভাবে প্রথম ফান্ডিং তুলেছিল — রিয়েল কেস স্টাডি ও মাস্টারক্লাস।" : "How the world's most iconic startups secured their breakthrough funding."}</p>
+          <p>{L ? "আইডিয়া থেকে ফান্ডিং — পুলকের সফলতার পুরো গল্প (৪৮ সেকেন্ড)।" : "From Idea to Funding — Pulok's Journey to Success (48s animated film)."}</p>
         </Reveal>
-        <FounderStory L={L} onStart={() => launch("")} />
-        <div className="sc-anime">
-          <button type="button" className="sc-btn soft" onClick={() => setShowStory((v) => !v)}>
-            {showStory ? (L ? "অ্যানিমে বন্ধ করো ▲" : "Close anime ▲") : (L ? "অ্যানিমে ভার্সন দেখো ▶" : "Watch the anime version ▶")}
-          </button>
+        <div className="sc-story-frame">
+          <StoryPlayer film={STARTUP} autoplay={false} />
         </div>
-        {showStory && <div className="sc-story-frame"><StartupStoryExperience /></div>}
       </section>
 
       {/* 6. Founders who raised: Microsoft, AWS, Google backed (In English) */}
