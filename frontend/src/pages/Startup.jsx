@@ -7,6 +7,7 @@ import { StoryPlayer } from "../landing/StoryAnimation";
 import { STARTUP } from "../landing/story/startup";
 import ClayScene from "../components/startup/ClayScene";
 import FunderBoard from "../components/startup/FunderBoard";
+import StartupVideos from "../components/startup/StartupVideos";
 import { FUNDERS, stageOf } from "./startupFunders";
 import { useLang } from "../i18n";
 import { confetti, toast } from "../utils";
@@ -617,15 +618,16 @@ export default function Startup() {
         <FunderBoard L={L} />
       </section>
 
-      {/* 5. Animated Startup Story Film */}
+      {/* 5. Animated Startup Story Film & Global Talks */}
       <section className="sc-sec" id="story">
         <Reveal className="sc-head">
           <h2 className={L ? "bn" : ""}>{L ? "স্টোরিজ" : "Stories"}</h2>
-          <p>{L ? "আইডিয়া থেকে ফান্ডিং — পুলকের সফলতার পুরো গল্প (৪৮ সেকেন্ড)।" : "From Idea to Funding — Pulok's Journey to Success (48s animated film)."}</p>
+          <p>{L ? "আইডিয়া থেকে ফান্ডিং — পুলকের সফলতার পুরো গল্প (৪৮ সেকেন্ড) ও গ্লোবাল মাস্টারক্লাস।" : "From Idea to Funding — Pulok's Journey to Success (48s animated film) and Global Masterclasses."}</p>
         </Reveal>
         <div className="sc-story-frame">
           <StoryPlayer film={STARTUP} autoplay={false} />
         </div>
+        <StartupVideos L={L} />
       </section>
 
       {/* 6. Founders who raised: Microsoft, AWS, Google backed (In English) */}

@@ -136,19 +136,43 @@
 .sc-story-bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 22px 22px 28px; border-radius: 30px; background: var(--sc-card); box-shadow: var(--sc-clay); }
 .sc-story-bar b { display: block; margin-top: 8px; font-size: 19px; }
 .sc-story-frame {
-  margin-top: 16px;
-  padding: clamp(16px, 2.8vw, 28px);
-  border-radius: 32px;
+  margin: 16px auto 0;
+  max-width: 760px;
+  padding: clamp(12px, 2vw, 18px);
+  border-radius: 26px;
   background: #0B0E24;
-  box-shadow: 0 24px 60px -20px rgba(11, 14, 36, 0.45), var(--sc-clay);
+  box-shadow: 0 20px 48px -16px rgba(11, 14, 36, 0.4), var(--sc-clay);
   overflow: hidden;
   animation: scUp .5s both;
 }
+.sc-story-frame .story-stage {
+  border-radius: 18px;
+}
+.sc-story-frame .story-caption {
+  min-height: 56px;
+  padding: 10px 10px 4px;
+}
 .sc-story-frame .story-caption .bn {
+  font-size: clamp(16px, 1.8vw, 20px);
   color: #fff;
 }
+.sc-story-frame .story-caption .en {
+  font-size: 13px;
+  color: #9aa093;
+}
+.sc-story-frame .story-controls {
+  padding: 4px 6px;
+}
+.sc-story-frame .story-chapters {
+  margin-top: 8px;
+  gap: 6px;
+}
+.sc-story-frame .story-chapters button {
+  padding: 5px 11px;
+  font-size: 12px;
+}
 .sc-story-frame .story-player {
-  max-width: 960px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -418,7 +442,8 @@
 .fs-bar { height: 5px; margin-top: 16px; border-radius: 5px; background: var(--sc-line); overflow: hidden; }
 .fs-bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--sc-pink), var(--sc-gold)); transition: width .6s cubic-bezier(.2, .8, .2, 1); }
 @keyframes fsPop { 0% { transform: translateY(14px) scale(.4); opacity: 0; } 100% { transform: none; opacity: 1; } }
-.fs-real h3 { font-size: 20px; font-weight: 800; margin-bottom: 12px; }
+.fs-real { margin-top: 48px; }
+.fs-real h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: var(--sc-navy); }
 .fs-videos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
 .fs-video { display: flex; flex-direction: column; gap: 8px; background: var(--sc-card, #fff); padding: 14px; border-radius: 24px; box-shadow: var(--sc-clay); border: 1px solid rgba(226, 232, 240, 0.85); transition: transform .25s ease, box-shadow .25s ease; }
 .fs-video:hover { transform: translateY(-4px); box-shadow: 0 18px 36px -12px rgba(14, 21, 56, .14); }
