@@ -843,3 +843,160 @@
 .pb-idea-name { font-family: inherit; font-size: 24px; font-weight: 800; line-height: 1.2; }
 .fb-ribbon { left: 62px; transform: none; }
 .fs-frame { background: radial-gradient(120% 120% at 0% 0%, #3A1C6E, var(--sc-navy)); }
+
+/* ==========================================================================
+   Animated Story — Rafi's Funding Journey (cinematic auto-advancing scenes)
+   ========================================================================== */
+.as-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 36px 24px 32px;
+  border-radius: 32px;
+  background: var(--sc-card, #fff);
+  box-shadow: var(--sc-clay);
+  overflow: hidden;
+}
+
+/* ---- scene viewport ---- */
+.as-viewport {
+  width: 100%;
+  max-width: 640px;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 36px 32px 28px;
+  border-radius: 26px;
+  background: var(--bg);
+  animation: asSlideIn .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+@keyframes asSlideIn {
+  from { opacity: 0; transform: translateY(22px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---- emojis ---- */
+.as-scene-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.as-em {
+  display: inline-block;
+  font-size: 48px;
+  line-height: 1;
+  animation: asPop .5s cubic-bezier(.2, .9, .3, 1.4) var(--d, 0ms) both;
+}
+@keyframes asPop {
+  0%   { transform: translateY(16px) scale(.3); opacity: 0; }
+  100% { transform: none; opacity: 1; }
+}
+
+/* ---- narrative text ---- */
+.as-text {
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: var(--sc, #1E293B);
+  font-weight: 600;
+  text-align: center;
+  max-width: 520px;
+  margin: 0;
+  animation: asFadeText .6s .18s both;
+}
+.as-text.bn {
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+}
+@keyframes asFadeText {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---- progress dots ---- */
+.as-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.as-dot {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.as-dot:hover { transform: scale(1.18); }
+.as-dot svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.as-dot span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--sc-muted, #94A3B8);
+  pointer-events: none;
+}
+.as-dot.on span { color: var(--sc-navy, #0E1538); }
+.as-dot.done span { color: var(--sc-pink, #E23FB8); }
+
+.as-dot-bg {
+  fill: none;
+  stroke: #E2E8F0;
+  stroke-width: 3;
+}
+.as-dot.on .as-dot-bg { stroke: rgba(226, 63, 184, .2); }
+.as-dot.done .as-dot-bg { stroke: rgba(226, 63, 184, .35); }
+
+.as-dot-fill {
+  fill: none;
+  stroke: var(--sc-pink, #E23FB8);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 100.53;
+  stroke-dashoffset: 100.53;
+  animation: asDotCountdown var(--dur, 4.2s) linear forwards;
+}
+@keyframes asDotCountdown {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ---- bottom CTA ---- */
+.as-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.as-cta-hint {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sc-muted, #64748B);
+  text-align: center;
+}
+
+/* ---- responsive ---- */
+@media (max-width: 640px) {
+  .as-wrap { padding: 24px 14px 22px; }
+  .as-viewport { min-height: 220px; padding: 26px 18px 20px; }
+  .as-em { font-size: 36px; }
+  .as-text { font-size: 15px; }
+  .as-dot { width: 26px; height: 26px; }
+  .as-dot span { font-size: 9.5px; }
+}
