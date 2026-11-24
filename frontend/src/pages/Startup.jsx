@@ -17,13 +17,13 @@ const PENDING_KEY = "sh_pitch_name";
 
 const SECTORS = [["edtech", "EdTech"], ["fintech", "FinTech"], ["agritech", "AgriTech"], ["health", "Health"], ["ecommerce", "E-commerce"], ["ai", "AI / SaaS"], ["logistics", "Logistics"], ["social", "Social impact"], ["other", "Other"]];
 const STAGES = [["idea", "Just an idea"], ["prototype", "Prototype / MVP"], ["users", "Early users"], ["revenue", "Making revenue"]];
-// Step 1 — the idea card: Box 1 is just Your Business Idea, and the rest is structured Concept Note
+// Step 1 — the idea card: Box 1 is just Your Business Idea with placeholder "Name of you Business", and the rest is structured Concept Note
 const IDEA = [
-  ["one_liner", ["💡 Your Business Idea", "💡 Your Business Idea"], ["Detail your business idea in simple terms: what is your product or service, who is the target customer, and what makes it unique?", "তোমার বিজনেস আইডিয়া বিস্তারিত লেখো: কী প্রোডাক্ট বা সার্ভিস, টার্গেট কাস্টমার কারা এবং কেন এটি ইউনিক?"], 3],
+  ["one_liner", ["💡 Your Business Idea", "💡 Your Business Idea"], ["Name of you Business", "Name of you Business"], 3],
   ["problem", ["❗ Problem Statement", "❗ সমস্যা (Problem Statement)"], ["What critical pain point or market inefficiency does your customer face daily? Why do current alternatives fail?", "কাস্টমার প্রতিদিন কোন জটিল সমস্যার মুখোমুখি হচ্ছে? বর্তমান বাজার ব্যবস্থার ঘাটতি কোথায়?"], 4],
   ["solution", ["📋 Concept Note (Execution, Market & Budget)", "📋 কনসেপ্ট নোট (সমাধান, মার্কেট ও বাজেট)"], ["Standard Concept Note components:\n• Proposed Solution & Value Proposition: How your product solves the core problem\n• Target Market & Beneficiaries: Target user segment and estimated demand\n• Execution Roadmap: Key milestones for the next 6-12 months\n• Budget & Use of Funds: Total funding ask and cost allocation (Tech, Team, Marketing)", "একটি প্রফেশনাল কনসেপ্ট নোটের আবশ্যক বিষয়সমূহ:\n• সমাধান ও ভ্যালু প্রপোজিশন: প্রোডাক্ট কীভাবে মূল সমস্যার সমাধান দেবে\n• মার্কেট ও বেনিফিশিয়ারি: টার্গেট গ্রাহক এবং সম্ভাব্য চাহিদার সাইজ\n• বাস্তবায়নের রোডম্যাপ: আগামী ৬-১২ মাসের মূল মাইলস্টোনসমূহ\n• বাজেট ও তহবিলের ব্যবহার: প্রয়োজনীয় ফান্ড এবং খরচের খাতসমূহ (ডেভেলপমেন্ট, টিম, মার্কেটিং)"], 6],
 ];
-const ideaDone = (p) => (p.one_liner || "").trim().length >= 15 && (p.problem || "").trim().length >= 25 && (p.solution || "").trim().length >= 25;
+const ideaDone = (p) => (p.one_liner || "").trim().length >= 3 && (p.problem || "").trim().length >= 25 && (p.solution || "").trim().length >= 25;
 // Step 2 — everything an investor asks before a pitch
 const FIELDS = [
   ["one_liner", "One-line pitch", "", 1],
@@ -94,6 +94,23 @@ function Builder({ launchTick = 0, L = 0 }) {
     try { const r = await api(`/api/startups/pitches/${cur.id}/submit/`, { method: "POST" }); setCur(r); setList((l) => l.map((x) => (x.id === r.id ? r : x))); confetti(); toast("Submitted! We'll review it within two weeks."); }
     catch (x) { toast(x.message); }
   };
+  const removePitch = async (e, pitchId) => {
+    e.stopPropagation();
+    if (!window.confirm(L ? "এই ড্রাফট পিচটি মুছে ফেলতে চাও?" : "Delete this draft pitch?")) return;
+    try {
+      await api(`/api/startups/pitches/${pitchId}/`, { method: "DELETE" });
+      setList((prev) => {
+        const next = (prev || []).filter((x) => x.id !== pitchId);
+        if (cur?.id === pitchId) {
+          setCur(next[0] || null);
+        }
+        return next;
+      });
+      toast(L ? "পিচ মুছে ফেলা হয়েছে" : "Pitch deleted");
+    } catch (x) {
+      toast(x.message);
+    }
+  };
 
   if (!list) return <p className="muted">Loading your pitches…</p>;
   if (!cur) return (
@@ -108,7 +125,32 @@ function Builder({ launchTick = 0, L = 0 }) {
   return (
     <div className="pb">
       <div className="pb-tabs">
-        {list.map((p) => <button key={p.id} className={p.id === cur.id ? "on" : ""} onClick={() => setCur(p)}>{p.name}<small>{p.status_label}</small></button>)}
+        {list.map((p) => {
+          const isDraft = p.status === "draft";
+          return (
+            <div key={p.id} className={`pb-tab-pill ${p.id === cur.id ? "on" : ""} ${!isDraft ? "no-del" : ""}`}>
+              <button
+                type="button"
+                className="pb-tab-main"
+                onClick={() => setCur(p)}
+              >
+                <span>{p.name}</span>
+                <small>{p.status_label}</small>
+              </button>
+              {isDraft && (
+                <button
+                  type="button"
+                  className="pb-tab-del"
+                  onClick={(e) => removePitch(e, p.id)}
+                  title={L ? "পিচ মুছে ফেলুন" : "Delete pitch"}
+                  aria-label={L ? "পিচ মুছে ফেলুন" : "Delete pitch"}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          );
+        })}
         <button className="add" onClick={() => create()}>+ New</button>
       </div>
       {cur.status !== "draft" && (
@@ -126,7 +168,7 @@ function Builder({ launchTick = 0, L = 0 }) {
           </div>
           <div className="pb-idea-cards">
             {IDEA.map(([k, t, ph, rows], i) => {
-              const ok = (cur[k] || "").trim().length >= (k === "one_liner" ? 15 : 40);
+              const ok = (cur[k] || "").trim().length >= (k === "one_liner" ? 3 : 25);
               return (
                 <label key={k} className={`pb-idea-card ${ok ? "ok" : ""}`} style={{ "--i": i }}>
                   <span className="pb-idea-t">{t[L]}{ok && <i>✓</i>}</span>

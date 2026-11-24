@@ -196,10 +196,16 @@
 .sc-page .st-empty { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 30px 0; }
 .sc-page .btn-lime { background: linear-gradient(120deg, var(--sc-pink), var(--sc-pink2)); color: #fff; border-radius: 999px; box-shadow: 0 10px 24px -10px rgba(226, 63, 184, .7); }
 .sc-page .btn-lime:disabled { background: #D9D7E5; color: #7C7E9E; box-shadow: none; }
-.sc-page .pb-tabs button { background: #F3F2F8; border: 1.5px solid transparent; color: var(--sc-navy); border-radius: 16px; box-shadow: var(--sc-clay); }
-.sc-page .pb-tabs button small { color: var(--sc-muted); }
-.sc-page .pb-tabs button.on { border-color: var(--sc-pink); background: #fff; }
-.sc-page .pb-tabs .add { color: var(--sc-pink); }
+.sc-page .pb-tabs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.sc-page .pb-tab-pill { position: relative; display: inline-flex; align-items: center; border-radius: 16px; background: #F3F2F8; border: 1.5px solid transparent; box-shadow: var(--sc-clay); transition: all .2s ease; }
+.sc-page .pb-tab-pill.on { border-color: var(--sc-pink); background: #fff; }
+.sc-page .pb-tab-main { background: none; border: none; padding: 8px 6px 8px 14px; display: flex; flex-direction: column; align-items: flex-start; color: var(--sc-navy); font-weight: 700; font-size: 14px; cursor: pointer; text-align: left; }
+.sc-page .pb-tab-pill.no-del .pb-tab-main { padding-right: 14px; }
+.sc-page .pb-tab-main small { font-size: 11px; color: var(--sc-muted); }
+.sc-page .pb-tab-del { display: grid; place-items: center; width: 20px; height: 20px; margin-right: 8px; border-radius: 50%; border: none; background: rgba(0, 0, 0, 0.06); color: #888; font-size: 14px; font-weight: 700; line-height: 1; cursor: pointer; transition: all .15s ease; padding: 0; }
+.sc-page .pb-tab-del:hover { background: #EF4444; color: #fff; transform: scale(1.15); }
+.sc-page .pb-tabs .add { display: flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 16px; background: #F3F2F8; border: 1.5px solid transparent; box-shadow: var(--sc-clay); color: var(--sc-pink); font-weight: 700; cursor: pointer; transition: all .2s ease; }
+.sc-page .pb-tabs .add:hover { background: #fff; border-color: var(--sc-pink); }
 .sc-page .pb-status { background: #F3F2F8; border-radius: 20px; }
 .sc-page .pb-status span { color: #A4A6C2; }
 .sc-page .pb-status span.on { color: var(--sc-pink2); }
