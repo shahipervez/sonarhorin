@@ -1,15 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { BD_STORY, VIDEOS } from "../../pages/startupFunders";
-
-/** Tanvir's story (a short illustrated story) + real startup stories from YouTube. */
-const PANELS = [
-  { s: ["📄", "📄", "📄", "❌"], bg: "#FDE7EF", t: ["40 CVs sent. Zero calls.", "৪০টা সিভি। একটা কলও না।"] },
-  { s: ["🧵", "📒", "😩"], bg: "#FFF2D6", t: ["Mom's tailoring orders keep getting lost on paper.", "মায়ের দর্জির অর্ডার খাতায় হারিয়ে যায়।"] },
-  { s: ["💻", "🦌"], bg: "#E9E6FB", t: ["He opens সোনারহরিণ → Startup.", "সে সোনারহরিণ → স্টার্টআপ খোলে।"] },
-  { s: ["💡", "❗", "✅"], bg: "#E3F6EC", t: ["Writes just 3 things: idea, problem, solution.", "শুধু ৩টা জিনিস লেখে: আইডিয়া, সমস্যা, সমাধান।"] },
-  { s: ["📊", "🗂️", "🤝"], bg: "#E4F1FF", t: ["Score climbs. Full pitch. 4 funders fit him.", "স্কোর বাড়ে। পুরো পিচ। ৪টা ফান্ডার মিলে যায়।"] },
-  { s: ["🎉", "🧑‍💻", "🧑‍💻"], bg: "#FFE9DC", t: ["A grant lands. He hires 2 friends.", "অনুদান আসে। ২ বন্ধুকে চাকরি দেয়।"] },
-];
+import { useState } from "react";
+import { GLOBAL_STORIES, VIDEOS } from "../../pages/startupFunders";
 
 function Video({ v, L }) {
   const [play, setPlay] = useState(false);
@@ -17,10 +7,20 @@ function Video({ v, L }) {
     <div className="fs-video">
       <div className="fs-frame">
         {play ? (
-          <iframe src={`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0`} title={v.t[0]} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0`}
+            title={v.t[0]}
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+          />
         ) : (
-          <button type="button" onClick={() => setPlay(true)} aria-label={`${L ? "দেখো" : "Play"}: ${v.t[L]}`}>
-            <img src={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`} alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+          <button type="button" onClick={() => setPlay(true)} aria-label={`${L ? "ভিডিও দেখো" : "Play"}: ${v.t[L]}`}>
+            <img
+              src={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`}
+              alt=""
+              loading="lazy"
+              onError={(e) => { e.currentTarget.style.display = "none"; }}
+            />
             <span className="fs-play">▶</span>
           </button>
         )}
@@ -32,42 +32,90 @@ function Video({ v, L }) {
 }
 
 export default function FounderStory({ L, onStart }) {
-  const [at, setAt] = useState(0);
-  const [hold, setHold] = useState(false);
-  const track = useRef(null);
-  useEffect(() => {
-    if (hold) return;
-    const t = setInterval(() => setAt((a) => (a + 1) % PANELS.length), 2600);
-    return () => clearInterval(t);
-  }, [hold]);
+  const [selectedStory, setSelectedStory] = useState(0);
+  const cur = GLOBAL_STORIES[selectedStory] || GLOBAL_STORIES[0];
 
   return (
-    <div className="fs">
-      <div className="fs-strip" ref={track} onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}>
-        <div className="fs-who">
-          <span className="fs-avatar">T</span>
-          <div><b>{L ? "তানভীরের গল্প" : "Tanvir's story"}</b><small>{L ? "চাকরি পাচ্ছিল না · ৬ ধাপ" : "Couldn't find a job · 6 steps"}</small></div>
-          <button type="button" className="sc-btn pink" onClick={onStart}>{L ? "আমিও শুরু করবো →" : "I'll start too →"}</button>
-        </div>
-        <ol className="fs-panels">
-          {PANELS.map((p, i) => (
-            <li key={i} className={`${i === at ? "on" : ""} ${i < at ? "past" : ""}`} style={{ "--bg": p.bg }} onMouseEnter={() => setAt(i)}>
-              <span className="fs-n">{i + 1}</span>
-              <span className="fs-scene" aria-hidden="true">{p.s.map((e, k) => <i key={k} style={{ "--k": k }}>{e}</i>)}</span>
-              <p className={L ? "bn" : ""}>{p.t[L]}</p>
-            </li>
+    <div className="fs-global-wrap">
+      {/* 1. Global Startups That Raised Billions: Interactive Breakdown */}
+      <div className="fs-spotlight">
+        <div className="fs-spotlight-nav">
+          {GLOBAL_STORIES.map((s, idx) => (
+            <button
+              key={s.id}
+              type="button"
+              className={`fs-spotlight-tab ${idx === selectedStory ? "active" : ""}`}
+              onClick={() => setSelectedStory(idx)}
+              style={{ "--accent": s.accent }}
+            >
+              <span className="fs-tab-icon">{s.logoText}</span>
+              <div className="fs-tab-text">
+                <b>{s.company}</b>
+                <small>{s.badge}</small>
+              </div>
+            </button>
           ))}
-        </ol>
-        <div className="fs-bar"><span style={{ width: `${((at + 1) / PANELS.length) * 100}%` }} /></div>
+        </div>
+
+        <div className="fs-spotlight-card" style={{ "--accent": cur.accent }}>
+          <div className="fs-card-header">
+            <div className="fs-card-badge">
+              <span className="fs-badge-dot" />
+              <span>{cur.badge}</span>
+            </div>
+            <span className="fs-card-tagline">{cur.tagline}</span>
+          </div>
+
+          <div className="fs-card-body">
+            <div className="fs-card-lead">
+              <span className="fs-big-icon">{cur.logoText}</span>
+              <div>
+                <h3>{cur.company}</h3>
+                <p className="fs-founder-name">
+                  {L ? "ফাউন্ডার:" : "Founders:"} <b>{cur.founder}</b>
+                </p>
+              </div>
+            </div>
+
+            <p className="fs-card-summary">{cur.summary[L]}</p>
+
+            <div className="fs-card-callout">
+              <div className="fs-callout-item">
+                <small>{L ? "ফান্ডিং হাইলাইট" : "Funding Highlight"}</small>
+                <b>{cur.highlight}</b>
+              </div>
+              <div className="fs-callout-item">
+                <small>{L ? "মূল কৌশল" : "Key Strategy"}</small>
+                <span>{cur.keyLesson}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="fs-card-footer">
+            <span className="fs-action-hint">
+              {L ? "তোমার আইডিয়া নিয়ে ফান্ডিং প্রস্তুতি শুরু করো" : "Turn your idea into the next global story"}
+            </span>
+            <button type="button" className="sc-btn pink" onClick={onStart}>
+              {L ? "পিচ শুরু করো →" : "Start your pitch →"}
+            </button>
+          </div>
+        </div>
       </div>
 
+      {/* 2. Official Global Talks on How Startups Raised Seed & Growth Capital */}
       <div className="fs-real">
-        <h3 className={L ? "bn" : ""}>{L ? "স্টোরিজ" : "Stories"}</h3>
+        <h3 className={L ? "bn" : ""}>
+          {L ? "গ্লোবাল স্টার্টআপ মাস্টারক্লাস ও ভিডিও" : "Global Startup Funding Talks & Masterclasses"}
+        </h3>
+        <p className="fs-real-sub">
+          {L
+            ? "বিশ্বের শীর্ষ ভেঞ্চার ক্যাপিটাল ও ফাউন্ডারদের সরাসরি দিকনির্দেশনা — আইডিয়া ভ্যালিডেশন থেকে ইনভেস্টর পিচিং।"
+            : "Direct lessons from Silicon Valley VCs, Y Combinator, and unicorn founders on securing seed investment."}
+        </p>
         <div className="fs-videos">
-          {VIDEOS.map((v) => <Video key={v.id} v={v} L={L} />)}
-          <a className="fs-link" href={BD_STORY.url} target="_blank" rel="noopener noreferrer">
-            <span>🇧🇩</span><b className={L ? "bn" : ""}>{BD_STORY.t[L]}</b><small>{BD_STORY.by} ↗</small>
-          </a>
+          {VIDEOS.map((v) => (
+            <Video key={v.id} v={v} L={L} />
+          ))}
         </div>
       </div>
     </div>

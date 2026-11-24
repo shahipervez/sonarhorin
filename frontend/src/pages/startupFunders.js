@@ -98,11 +98,73 @@ export const KIND = {
 /** Map a pitch's stage (Pitch.STAGES) to the founder stages used above. */
 export const stageOf = (pitchStage) => ({ idea: "idea", prototype: "mvp", users: "traction", revenue: "traction" }[pitchStage] || "idea");
 
-// real startup stories on YouTube (IDs checked)
+// World's biggest startup funding stories on YouTube (Official talks & case-studies)
 export const VIDEOS = [
-  { id: "CZ6B3jPETYw", t: ["Pathao: Taking a Startup from Zero to One", "পাঠাও: শূন্য থেকে শুরু করে সফল স্টার্টআপ তৈরির গল্প"], by: "Hussain M Elius · Co-Founder, Pathao" },
-  { id: "AzOI8K3fmT4", t: ["My Journey of Building 10 Minute School", "১০ মিনিট স্কুল তৈরির পেছনের আসল লড়াই ও ফান্ডিং"], by: "Ayman Sadiq · Founder & CEO, 10 Minute School" },
-  { id: "CBYhVcO4WgI", t: ["How to Start a Startup — Lecture 1", "কিভাবে স্টার্টআপ শুরু করবে — লেকচার ১"], by: "Sam Altman & Dustin Moskovitz · Y Combinator" },
-  { id: "lw2X3PxKlAY", t: ["How to pitch your seed-stage startup", "সিড-স্টেজ স্টার্টআপ কিভাবে পিচ করবে"], by: "Michael Seibel (Y Combinator) · SaaStr" },
+  { id: "CBYhVcO4WgI", t: ["How to Start a Startup & Get Early Funding", "কিভাবে স্টার্টআপ শুরু করবে ও প্রাথমিক ফান্ডিং পাবে"], by: "Sam Altman & Dustin Moskovitz · Y Combinator" },
+  { id: "yF85bC7fE6g", t: ["How Airbnb Raised Its First Round: The Cereal Box Story", "এয়ারবিএনবি কিভাবে সিরিয়াল বক্স বিক্রি করে প্রথম ফান্ড তুলল"], by: "Brian Chesky · Co-Founder & CEO, Airbnb (Stanford)" },
+  { id: "lw2X3PxKlAY", t: ["How to Pitch Your Seed-Stage Startup to Top Investors", "সিড-স্টেজ স্টার্টআপ কিভাবে পিচ করবে এবং ইনভেস্টমেন্ট পাবে"], by: "Michael Seibel · Managing Director, Y Combinator" },
+  { id: "d05Q1q5zW8o", t: ["How Stripe Got Its First Seed Round from Peter Thiel & Elon Musk", "স্ট্রাইপ যেভাবে পিটার থিল ও এলন মাস্কের কাছ থেকে ফান্ড পেল"], by: "Patrick Collison · Co-Founder & CEO, Stripe" },
 ];
-export const BD_STORY = { url: "https://www.ted.com/talks/hussain_m_elius_taking_a_startup_from_zero_to_one", t: ["Pathao: taking a startup from zero to one", "পাঠাও: শূন্য থেকে এক"], by: "Hussain M Elius · TED" };
+
+export const GLOBAL_STORIES = [
+  {
+    id: "telegram",
+    company: "Telegram",
+    tagline: "$1.7B Raised · 100% Founder Controlled",
+    badge: "Bonds & Institutional Round",
+    founder: "Pavel Durov",
+    logoText: "✈️",
+    accent: "#229ED9",
+    summary: [
+      "Pavel Durov built Telegram with zero outside venture capital for years. When monthly server costs soared to millions with 500M+ users, rather than giving up control to Silicon Valley VCs or monetizing private user data, he raised $1.7 Billion via private bonds and pre-sales from top global institutional investors. Telegram kept 100% founder control and reached 900M+ active users.",
+      "টেলিগ্রামের প্রতিষ্ঠাতা পাভেল দুরভ কোনো প্রথাগত সিলিকন ভ্যালি ভিসিদের কাছে নিজের মালিকানা না দিয়ে প্রাইভেট বন্ডের মাধ্যমে বিশ্বসেরা ইনস্টিটিউশনাল ইনভেস্টরদের থেকে ১.৭ বিলিয়ন ডলার ফান্ডিং তোলেন। ১০০% কন্ট্রোল বজায় রেখে আজ টেলিগ্রাম ৯০০ মিলিয়নের বেশি ইউজারের প্ল্যাটফর্ম।"
+    ],
+    highlight: "$1.7 Billion raised without giving up board seats or equity to big tech.",
+    keyLesson: "Retaining founder control and having uncompromising product architecture creates unstoppable leverage."
+  },
+  {
+    id: "airbnb",
+    company: "Airbnb",
+    tagline: "$20K YC Seed → $600K Sequoia → $90B IPO",
+    badge: "Y Combinator & Sequoia",
+    founder: "Brian Chesky & Joe Gebbia",
+    logoText: "🏡",
+    accent: "#FF5A5F",
+    summary: [
+      "Maxed out on credit cards and rejected by 7 top Silicon Valley angels, the founders designed and sold $40 novelty 'Obama O's' cereal boxes during the 2008 election, earning $30,000 to keep the company alive. That extreme resourcefulness convinced Paul Graham to back them in Y Combinator, followed by a $600K seed from Sequoia.",
+      "৭ জন শীর্ষ ইনভেস্টর রিজেক্ট করার পর এয়ারবিএনবির ফাউন্ডাররা নির্বাচনকালীন সময়ে সিরিয়াল বক্স বিক্রি করে ৩০ হাজার ডলার তুলে কোম্পানি বাঁচিয়ে রাখেন। এই উদ্যম দেখেই ওয়াই কম্বিনেটরের পল গ্রাহাম তাদের ফান্ড করেন।"
+    ],
+    highlight: "Sold $30,000 worth of breakfast cereal boxes to survive before raising from YC & Sequoia.",
+    keyLesson: "Resourcefulness over resources: investors back founders who refuse to give up."
+  },
+  {
+    id: "stripe",
+    company: "Stripe",
+    tagline: "$2M Seed from Peter Thiel & Elon Musk",
+    badge: "Angel Seed Round",
+    founder: "Patrick & John Collison",
+    logoText: "💳",
+    accent: "#635BFF",
+    summary: [
+      "Online payments used to take weeks of merchant banking paperwork. The Collison brothers built a 7-line snippet of code that accepted cards instantly. In meetings with early founders, they used the famous 'Collison Installation' — taking the founder's laptop and installing Stripe on the spot. That speed attracted PayPal co-founders Peter Thiel and Elon Musk to lead their $2M seed.",
+      "স্ট্রাইপের ফাউন্ডাররা মাত্র ৭ লাইনের কোড দিয়ে অনলাইনে পেমেন্ট নেওয়া সম্ভব করেন। মিটিং চলাকালীন তারা ফাউন্ডারদের ল্যাপটপ চেয়ে সরাসরি লাইভ ইন্সটল করে দিতেন, যা পিটার থিল ও এলন মাস্ককে মুগ্ধ করে ২ মিলিয়ন ডলার সিড রাউন্ড পাইয়ে দেয়।"
+    ],
+    highlight: "Co-led by PayPal founders Peter Thiel and Elon Musk based on an instant 7-line demo.",
+    keyLesson: "Frictionless demo: eliminate every barrier between your product and the user's 'aha' moment."
+  },
+  {
+    id: "whatsapp",
+    company: "WhatsApp",
+    tagline: "$250K Friends & Family → $8M Sequoia",
+    badge: "Bootstrapped to Sequoia",
+    founder: "Jan Koum & Brian Acton",
+    logoText: "💬",
+    accent: "#25D366",
+    summary: [
+      "Turned down for jobs at Twitter and Facebook in 2009, Jan Koum and Brian Acton raised $250,000 from 5 former Yahoo colleagues to cover server costs. They taped a note to their desks: 'No Ads! No Games! No Gimmicks!' Sequoia partner Jim Goetz spent months hunting them down to invest $8 Million, which later turned into a $19 Billion acquisition.",
+      "টুইটার ও ফেসবুকে চাকরির ইন্টারভিউতে ব্যর্থ হওয়ার পর বন্ধুরা মিলে ২৫০ হাজার ডলার দিয়ে শুরু করেন। কোনো অ্যাড বা বিজ্ঞাপন ছাড়া শুধুমাত্র নিখুঁত চ্যাটিং সেবার কারণে সিকোইয়া ক্যাপিটাল তাদের খুঁজে বের করে ৮ মিলিয়ন ডলার ইনভেস্ট করে।"
+    ],
+    highlight: "Turned down by Facebook, later acquired for $19 Billion with Sequoia making $3 Billion.",
+    keyLesson: "Pure product retention and word-of-mouth growth beat multi-million dollar marketing campaigns."
+  }
+];

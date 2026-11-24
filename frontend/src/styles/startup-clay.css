@@ -420,6 +420,389 @@
 .fs-link small { font-size: 12.5px; opacity: .8; }
 .sc-anime { margin-top: 14px; }
 
+/* ---- 3-Box Journey: Generate Idea, Pitch your Startup, Match your Funders ---- */
+.sc-track-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  position: relative;
+}
+.sc-step-3 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 24px 28px;
+  border-radius: 28px;
+  background: var(--sc-card, #fff);
+  box-shadow: var(--sc-clay);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s, border-color .35s;
+  cursor: pointer;
+}
+.sc-step-3:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 44px -16px rgba(54, 48, 110, .22), var(--sc-clay);
+  border-color: var(--step-c, var(--sc-pink));
+}
+.sc-step-3-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.sc-step-3-cube {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: var(--step-bg, #FFF9EB);
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.08);
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+}
+.sc-step-3:hover .sc-step-3-cube {
+  transform: scale(1.08) rotate(-4deg);
+}
+.sc-step-3-cube svg {
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke: var(--step-c, #FFB020);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sc-step-3-num {
+  font: 800 12px/1 ui-monospace, monospace;
+  color: #94A3B8;
+  letter-spacing: 0.12em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
+.sc-step-3 b {
+  display: block;
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--sc-navy, #0E1538);
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
+}
+.sc-step-3 p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--sc-muted, #64748B);
+  margin: 0;
+  flex: 1;
+}
+
+/* ---- Global Startup Stories (Telegram, Airbnb, Stripe, WhatsApp) ---- */
+.fs-global-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.fs-spotlight {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.fs-spotlight-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.fs-spotlight-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: var(--sc-card, #fff);
+  border: 1.5px solid #E5E7EB;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: all .25s ease;
+  text-align: left;
+}
+.fs-spotlight-tab:hover {
+  border-color: var(--accent, #3B82F6);
+  transform: translateY(-2px);
+}
+.fs-spotlight-tab.active {
+  background: #fff;
+  border-color: var(--accent, #3B82F6);
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--accent, #3B82F6);
+}
+.fs-tab-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.fs-tab-text b {
+  display: block;
+  font-size: 14.5px;
+  color: var(--sc-navy, #0E1538);
+}
+.fs-tab-text small {
+  display: block;
+  font-size: 11px;
+  color: #6B7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fs-spotlight-card {
+  position: relative;
+  padding: 30px 32px;
+  border-radius: 28px;
+  background: var(--sc-card, #fff);
+  box-shadow: var(--sc-clay);
+  border: 1.5px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.fs-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.fs-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 800 11px/1 ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent, #3B82F6);
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+.fs-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent, #3B82F6);
+}
+.fs-card-tagline {
+  font: 800 13px/1 var(--sans);
+  color: #10B981;
+  background: #ECFDF5;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+.fs-card-lead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.fs-big-icon {
+  font-size: 38px;
+  line-height: 1;
+}
+.fs-card-lead h3 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--sc-navy, #0E1538);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+.fs-founder-name {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: #64748B;
+}
+.fs-founder-name b {
+  color: var(--sc-navy, #0E1538);
+}
+.fs-card-summary {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: #334155;
+  margin: 0;
+}
+.fs-card-callout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 20px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
+.fs-callout-item small {
+  display: block;
+  font: 800 10.5px/1 ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748B;
+  margin-bottom: 6px;
+}
+.fs-callout-item b {
+  font-size: 14.5px;
+  color: var(--sc-navy, #0E1538);
+  line-height: 1.4;
+}
+.fs-callout-item span {
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.45;
+}
+.fs-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px dashed #E2E8F0;
+}
+.fs-action-hint {
+  font-size: 13.5px;
+  color: #64748B;
+  font-weight: 600;
+}
+.fs-real-sub {
+  margin: -6px 0 20px;
+  font-size: 14.5px;
+  color: var(--sc-muted, #64748B);
+}
+
+/* ---- Founders Who Raised: Microsoft, AWS, Google Backed ---- */
+.sc-raised-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.sc-raised-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border-radius: 26px;
+  background: var(--sc-card, #fff);
+  box-shadow: var(--sc-clay);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1), box-shadow .3s;
+}
+.sc-raised-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 44px -14px rgba(14, 21, 56, .16), var(--sc-clay);
+}
+.sc-raised-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.sc-founder-img {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  object-fit: cover;
+  flex: none;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
+  border: 2px solid #fff;
+}
+.sc-raised-meta {
+  flex: 1;
+  min-width: 0;
+}
+.sc-raised-meta h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--sc-navy, #0E1538);
+  letter-spacing: -0.015em;
+}
+.sc-founder-creds {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #64748B;
+  line-height: 1.35;
+}
+.sc-founder-creds b {
+  color: var(--sc-navy, #0E1538);
+}
+.sc-backer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 800 11px/1 ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 5px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  width: fit-content;
+}
+.sc-backer-pill.google { background: #FEF3F2; color: #DC2626; border-color: #FECDCA; }
+.sc-backer-pill.microsoft { background: #EFF6FF; color: #2563EB; border-color: #BFDBFE; }
+.sc-backer-pill.aws { background: #FFFBEB; color: #D97706; border-color: #FDE68A; }
+.sc-backer-icon {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+.sc-amount-badge {
+  display: inline-block;
+  font: 800 13px/1.2 var(--sans);
+  color: #059669;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  padding: 6px 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.sc-proj-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--sc-navy, #0E1538);
+  margin: 0 0 6px;
+  line-height: 1.35;
+}
+.sc-proj-desc {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #475569;
+  margin: 0 0 14px;
+  flex: 1;
+}
+.sc-raised-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px dashed #E2E8F0;
+  font-size: 11.5px;
+}
+.sc-metrics-tag {
+  color: #64748B;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.sc-raised-foot a {
+  font-weight: 800;
+  color: var(--sc-navy, #0E1538);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  transition: color .2s;
+}
+.sc-raised-foot a:hover {
+  color: var(--sc-pink, #E23FB8);
+}
+
 /* ---- step 1: the 3-box idea card ---- */
 .pb-idea { padding: 6px; }
 .pb-idea-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
@@ -437,11 +820,17 @@
 .pb-step2 { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 800; color: var(--sc-navy); }
 
 @media (max-width: 1000px) {
+  .sc-track-3 { grid-template-columns: 1fr; }
+  .sc-raised-grid { grid-template-columns: 1fr 1fr; }
+  .fs-spotlight-nav { grid-template-columns: 1fr 1fr; }
+  .fs-card-callout { grid-template-columns: 1fr; }
   .fs-panels { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .fs-videos { grid-template-columns: 1fr 1fr; }
   .pb-idea-cards { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
+  .sc-raised-grid { grid-template-columns: 1fr; }
+  .fs-spotlight-nav { grid-template-columns: 1fr; }
   .fs-panels { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-top: 10px; }
   .fs-panels li { flex: 0 0 62%; scroll-snap-align: center; }
   .fs-videos { grid-template-columns: minmax(0, 1fr); }
