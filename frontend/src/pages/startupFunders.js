@@ -98,12 +98,32 @@ export const KIND = {
 /** Map a pitch's stage (Pitch.STAGES) to the founder stages used above. */
 export const stageOf = (pitchStage) => ({ idea: "idea", prototype: "mvp", users: "traction", revenue: "traction" }[pitchStage] || "idea");
 
-// World's biggest startup funding stories on YouTube (Official talks & case-studies)
+// World's biggest startup funding stories on YouTube (Verified Official Talks & Case-Studies)
 export const VIDEOS = [
-  { id: "CBYhVcO4WgI", t: ["How to Start a Startup & Get Early Funding", "কিভাবে স্টার্টআপ শুরু করবে ও প্রাথমিক ফান্ডিং পাবে"], by: "Sam Altman & Dustin Moskovitz · Y Combinator" },
-  { id: "yF85bC7fE6g", t: ["How Airbnb Raised Its First Round: The Cereal Box Story", "এয়ারবিএনবি কিভাবে সিরিয়াল বক্স বিক্রি করে প্রথম ফান্ড তুলল"], by: "Brian Chesky · Co-Founder & CEO, Airbnb (Stanford)" },
-  { id: "lw2X3PxKlAY", t: ["How to Pitch Your Seed-Stage Startup to Top Investors", "সিড-স্টেজ স্টার্টআপ কিভাবে পিচ করবে এবং ইনভেস্টমেন্ট পাবে"], by: "Michael Seibel · Managing Director, Y Combinator" },
-  { id: "d05Q1q5zW8o", t: ["How Stripe Got Its First Seed Round from Peter Thiel & Elon Musk", "স্ট্রাইপ যেভাবে পিটার থিল ও এলন মাস্কের কাছ থেকে ফান্ড পেল"], by: "Patrick Collison · Co-Founder & CEO, Stripe" },
+  {
+    id: "1Ut6RouSs0w",
+    t: ["Pavel Durov: How Telegram Raised $1.7B & Stayed Independent", "পাভেল দুরভ: যেভাবে টেলিগ্রাম ১.৭ বিলিয়ন ডলার তুলল ও স্বাধীন থাকল"],
+    by: "Pavel Durov · Founder & CEO, Telegram",
+    badge: "Telegram",
+  },
+  {
+    id: "RfWgVWGEuGE",
+    t: ["Brian Chesky: The Airbnb Story — From Cereal Boxes to Billions", "ব্রায়ান চেস্কি: এয়ারবিএনবির গল্প — সিরিয়াল বক্স বিক্রি থেকে বিলিয়ন ডলার"],
+    by: "Brian Chesky & Alfred Lin · Airbnb & Sequoia Capital (Stanford)",
+    badge: "Airbnb",
+  },
+  {
+    id: "NprBQi0cSHU",
+    t: ["Patrick Collison: How We Built & Got Seed Funding for Stripe", "প্যাট্রিক কলিসন: যেভাবে স্ট্রাইপ তৈরি করে পিটার থিল ও এলন মাস্কের ফান্ড পেল"],
+    by: "Patrick Collison · Co-Founder & CEO, Stripe (YC Startup School)",
+    badge: "Stripe",
+  },
+  {
+    id: "lw2X3PxKlAY",
+    t: ["Michael Seibel: How to Pitch Your Seed-Stage Startup to Top Investors", "মাইকেল সিবেল: সিড-স্টেজ স্টার্টআপ যেভাবে পিচ করে ইনভেস্টমেন্ট পাবে"],
+    by: "Michael Seibel · Managing Director, Y Combinator",
+    badge: "Y Combinator",
+  },
 ];
 
 export const GLOBAL_STORIES = [

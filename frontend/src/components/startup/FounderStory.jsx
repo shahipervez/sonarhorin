@@ -8,19 +8,24 @@ function Video({ v, L }) {
       <div className="fs-frame">
         {play ? (
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0`}
+            src={`https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0`}
             title={v.t[0]}
-            allow="autoplay; encrypted-media; picture-in-picture"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           />
         ) : (
-          <button type="button" onClick={() => setPlay(true)} aria-label={`${L ? "ভিডিও দেখো" : "Play"}: ${v.t[L]}`}>
+          <button
+            type="button"
+            className="fs-play-btn"
+            onClick={() => setPlay(true)}
+            aria-label={`${L ? "ভিডিও দেখো" : "Play"}: ${v.t[L]}`}
+          >
             <img
-              src={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`}
-              alt=""
+              src={`https://img.youtube.com/vi/${v.id}/hqdefault.jpg`}
+              alt={v.t[L]}
               loading="lazy"
-              onError={(e) => { e.currentTarget.style.display = "none"; }}
             />
+            <span className="fs-badge-tag">{v.badge}</span>
             <span className="fs-play">▶</span>
           </button>
         )}
