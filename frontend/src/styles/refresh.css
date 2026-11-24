@@ -369,36 +369,49 @@
 .ip-logo img { width: 80%; height: 80%; object-fit: contain; }
 .ip-cat { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px; font: 700 11px var(--sans); background: color-mix(in srgb, var(--c) 14%, #fff); color: color-mix(in srgb, var(--c) 70%, #0B1026); white-space: nowrap; }
 .ip-cat i { font-style: normal; }
-.ip-route { display: flex; align-items: center; gap: 12px; }
-.ip-route > div { display: flex; flex-direction: column; }
-.ip-route > div.r { text-align: right; }
-.ip-route b { font: 900 26px/1 ui-monospace, monospace; letter-spacing: 0.04em; color: var(--ink); }
-.ip-route small { font: 600 11px var(--sans); color: #7A86A8; margin-top: 3px; }
-.ip-fly { flex: 1; display: flex; align-items: center; gap: 6px; color: var(--c); }
-.ip-fly i { flex: 1; height: 0; border-top: 2px dashed color-mix(in srgb, var(--c) 55%, #fff); }
-.ip-fly em { font-style: normal; font-size: 18px; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-.ip-pass:hover .ip-fly em { transform: translateX(14px) rotate(-8deg); }
-.ip-main h3 { margin: 0; font: 800 17px/1.25 var(--sans); color: var(--ink); }
+
+/* Highlighted role spot replacing the old route */
+.ip-role-spot { display: flex; flex-direction: column; gap: 6px; padding: 4px 0 2px; }
+.ip-role-kicker { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ip-role-tag { display: inline-flex; align-items: center; gap: 4px; font: 800 11px/1 monospace; letter-spacing: 0.05em; text-transform: uppercase; color: var(--c); background: color-mix(in srgb, var(--c) 14%, #fff); padding: 3px 8px; border-radius: 999px; }
+.ip-role-loc { font: 600 12px var(--sans); color: #64748B; }
+.ip-role-title { margin: 0; font: 800 20px/1.25 var(--sans); color: var(--ink); letter-spacing: -0.015em; word-break: break-word; }
+
 .ip-main dl { margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 10px; border-top: 1px dashed #DCE3F1; }
 .ip-main dt { font: 800 9.5px/1 monospace; letter-spacing: 0.14em; color: #8A93B0; }
 .ip-main dd { margin: 5px 0 0; font: 700 13px var(--sans); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ip-main dd.urgent { color: #DC2626; }
 .ip-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .ip-tags span { font: 600 11px var(--sans); padding: 4px 9px; border-radius: 999px; background: #F1F4FB; color: #4A5578; }
+
 .ip-stub {
-  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 18px 12px;
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 8px; padding: 18px 12px;
   background: linear-gradient(180deg, color-mix(in srgb, var(--c) 10%, #fff), #fff);
-  border-left: 2px dashed #D3DBEC;
+  border-left: 2px dashed #D3DBEC; min-width: 110px;
 }
 .ip-stub::before, .ip-stub::after { content: ""; position: absolute; left: -12px; width: 22px; height: 22px; border-radius: 50%; background: #F6F8FC; border: 1px solid #E3E9F5; }
 .ip-stub::before { top: -12px; } .ip-stub::after { bottom: -12px; }
+.ip-stub-top { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .ip-stub small { font: 800 9.5px/1 monospace; letter-spacing: 0.18em; color: #8A93B0; }
-.ip-stub b { font: 900 20px/1 ui-monospace, monospace; color: var(--ink); }
-.ip-barcode {
-  width: 84px; height: 46px; margin: 4px 0;
-  background: repeating-linear-gradient(90deg, #0B1026 0 2px, transparent 2px 4px, #0B1026 4px 5px, transparent 5px 8px, #0B1026 8px 11px, transparent 11px 13px);
-  opacity: 0.85; border-radius: 2px;
+.ip-stub b { font: 900 18px/1 ui-monospace, monospace; color: var(--ink); }
+
+/* Scannable QR Code */
+.ip-qr-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: #fff; padding: 5px; border-radius: 12px;
+  border: 1.5px solid #E2E8F0; box-shadow: 0 4px 10px rgba(11, 16, 38, 0.06);
+  cursor: pointer; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s, border-color 0.2s;
 }
+.ip-qr-wrap:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 18px rgba(11, 16, 38, 0.12);
+  border-color: var(--c, #0B1026);
+}
+.ip-qr-img { width: 72px; height: 72px; display: block; border-radius: 6px; }
+.ip-qr-skel { width: 72px; height: 72px; background: #F1F5F9; border-radius: 6px; }
+.ip-qr-label { font: 800 9px/1 monospace; letter-spacing: 0.05em; text-transform: uppercase; color: #64748B; margin-top: 2px; white-space: nowrap; }
+.ip-qr-wrap:hover .ip-qr-label { color: var(--ink); }
+
 .ip-apply { border: 0; cursor: pointer; padding: 10px 14px; border-radius: 999px; background: #0B1026; color: #fff; font: 800 13px var(--sans); transition: 0.2s; white-space: nowrap; }
 .ip-apply:hover { background: var(--c); color: #0B1026; box-shadow: 0 0 18px color-mix(in srgb, var(--c) 60%, transparent); }
 .ip-applied { font: 800 12px var(--sans); color: #10B981; }
@@ -432,9 +445,11 @@
   .ip-board-head, .ip-row { grid-template-columns: 44px 1fr auto; }
   .ip-board-head span:nth-child(3), .ip-perk { display: none; }
   .ip-pass { grid-template-columns: 1fr; }
-  .ip-stub { flex-direction: row; border-left: 0; border-top: 2px dashed #D3DBEC; justify-content: space-between; }
+  .ip-stub { flex-direction: row; border-left: 0; border-top: 2px dashed #D3DBEC; justify-content: space-between; padding: 12px 16px; }
   .ip-stub::before, .ip-stub::after { display: none; }
   .ip-barcode { display: none; }
+  .ip-qr-img { width: 52px; height: 52px; }
+  .ip-qr-label { display: none; }
   .ip-main dl { grid-template-columns: 1fr 1fr; }
   .ip-steps { grid-template-columns: 1fr; }
   .ip-search { min-width: 0; flex: 1; }

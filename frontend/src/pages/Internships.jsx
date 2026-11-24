@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import QRCode from "qrcode";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import { STORY_SETS } from "../components/StoryRail";
@@ -73,7 +74,17 @@ export default function Internships() {
 
   const activeCat = cats.find((c) => c.id === cat);
   const topFor = (id, n = 3) => (all || []).filter(MATCH[id]).sort((a, b) => (daysLeft(a.deadline) ?? 999) - (daysLeft(b.deadline) ?? 999)).slice(0, n);
-  const apply = (j) => (user ? setOpen(j) : nav(`/login?next=/internships`));
+  const apply = (j) => (user ? setOpen(j) : nav(`/login?next=/internships?apply=${j.id}`));
+
+  useEffect(() => {
+    const applyId = sp.get("apply");
+    if (applyId && all && all.length > 0) {
+      const target = all.find((x) => String(x.id) === String(applyId));
+      if (target) {
+        setOpen(target);
+      }
+    }
+  }, [sp, all]);
 
   return (
     <div className={`ip-page ${L ? "bn" : ""}`}>
@@ -209,6 +220,43 @@ export default function Internships() {
   );
 }
 
+function PassQR({ url, onClick, L }) {
+  const [dataUrl, setDataUrl] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+    QRCode.toDataURL(url, {
+      width: 180,
+      margin: 1,
+      color: {
+        dark: "#0B1026",
+        light: "#FFFFFF",
+      },
+    }).then((uri) => {
+      if (alive) setDataUrl(uri);
+    }).catch(() => {});
+    return () => { alive = false; };
+  }, [url]);
+
+  return (
+    <div
+      className="ip-qr-wrap"
+      onClick={onClick}
+      title={L ? "ক্লিক অথবা স্ক্যান করে আবেদন করো" : "Click or scan with phone to apply"}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onClick?.()}
+    >
+      {dataUrl ? (
+        <img src={dataUrl} alt="Apply QR Code" className="ip-qr-img" />
+      ) : (
+        <div className="ip-qr-skel" />
+      )}
+      <span className="ip-qr-label">{L ? "স্ক্যান কোড 📲" : "Scan QR 📲"}</span>
+    </div>
+  );
+}
+
 function Pass({ j, i, L, c, onApply }) {
   const ref = useRef(null);
   const [tear, setTear] = useState(false);
@@ -218,6 +266,9 @@ function Pass({ j, i, L, c, onApply }) {
   const mode = j.remote ? (L ? "রিমোট" : "Remote") : j.location || (L ? "অন-সাইট" : "On-site");
   const urgent = dl != null && dl <= 3;
   const chip = urgent ? (L ? "শেষ ডাক" : "FINAL CALL") : dl != null && dl <= 7 ? (L ? "বোর্ডিং" : "BOARDING") : (L ? "গেট খোলা" : "GATE OPEN");
+
+  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
+  const applyUrl = `${origin}/internships?apply=${j.id}`;
 
   // 3D tilt + holographic glare following the pointer
   const move = (e) => {
@@ -250,12 +301,20 @@ function Pass({ j, i, L, c, onApply }) {
           </div>
           <span className={`ip-chip ${urgent ? "red" : ""}`}><i />{chip}</span>
         </header>
-        <div className="ip-route">
-          <div><b>YOU</b><small>{L ? "ফ্রেশার" : "Fresher"}</small></div>
-          <span className="ip-fly"><i /><em>✈</em><i /></span>
-          <div className="r"><b>{code3(j.company?.name)}</b><small>{mode}</small></div>
+
+        {/* Highlighted Job / Internship Title Spot (Replaces YOU ... LAF) */}
+        <div className="ip-role-spot">
+          <div className="ip-role-kicker">
+            <span className="ip-role-tag">
+              <i>{c.icon}</i> {c.name[L]}
+            </span>
+            <span className="ip-role-loc">
+              {j.remote ? "🌐 " : "📍 "}{mode}
+            </span>
+          </div>
+          <h3 className="ip-role-title">{j.title}</h3>
         </div>
-        <h3>{j.title}</h3>
+
         <dl>
           <div><dt>{L ? "স্টাইপেন্ড" : "STIPEND"}</dt><dd>{stipend}</dd></div>
           <div><dt>{L ? "ধরন" : "MODE"}</dt><dd>{j.remote ? "🌐 " : "📍 "}{mode}</dd></div>
@@ -267,9 +326,11 @@ function Pass({ j, i, L, c, onApply }) {
         </div>
       </div>
       <div className="ip-stub">
-        <small>{L ? "সিট" : "SEAT"}</small>
-        <b>0-YR</b>
-        <span className="ip-barcode" aria-hidden="true"><i /></span>
+        <div className="ip-stub-top">
+          <small>{L ? "সিট" : "SEAT"}</small>
+          <b>0-YR</b>
+        </div>
+        <PassQR url={applyUrl} onClick={board} L={L} />
         {st ? (
           <span className="ip-applied">✓ {L ? "আবেদন হয়েছে" : "Applied"}</span>
         ) : (
