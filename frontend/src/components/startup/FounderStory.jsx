@@ -181,11 +181,6 @@ export default function FounderStory({ L, onStart }) {
         <h3 className={L ? "bn" : ""}>
           {L ? "গ্লোবাল স্টার্টআপ মাস্টারক্লাস ও ভিডিও" : "Global Startup Funding Talks & Masterclasses"}
         </h3>
-        <p className="fs-real-sub">
-          {L
-            ? "বিশ্বের শীর্ষ ভেঞ্চার ক্যাপিটাল ও ফাউন্ডারদের সরাসরি দিকনির্দেশনা — আইডিয়া ভ্যালিডেশন থেকে ইনভেস্টর পিচিং।"
-            : "Direct lessons from Silicon Valley VCs, Y Combinator, and unicorn founders on securing seed investment."}
-        </p>
         <div className="fs-videos">
           {VIDEOS.map((v) => (
             <Video key={v.id} v={v} L={L} />

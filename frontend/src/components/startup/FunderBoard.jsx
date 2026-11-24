@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FUNDERS, FUNDERS_CHECKED, KIND } from "../../pages/startupFunders";
+import { FUNDERS, KIND } from "../../pages/startupFunders";
 
 /**
  * The funding wall — every funder is a numbered crate (like the idea crates on the conveyor).
@@ -56,10 +56,6 @@ export default function FunderBoard({ L, stage: initialStage = "" }) {
           </a>
         ))}
       </div>
-      <p className="fb-legal">
-        {L ? `তথ্য যাচাই: ${FUNDERS_CHECKED}। শর্ত বদলায় — আবেদনের আগে অফিসিয়াল পেজ দেখো। সোনারহরিণ এদের কারো অংশ নয়; আমরা তোমাকে প্রস্তুত হতে সাহায্য করি।`
-          : `Checked ${FUNDERS_CHECKED}. Terms change — read the official page before you apply. সোনারহরিণ isn't affiliated with any of them; we help you get ready.`}
-      </p>
     </div>
   );
 }

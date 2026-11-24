@@ -361,7 +361,6 @@ function Hero({ L, user, onLaunch }) {
           <span className="sh-c-sep">·</span>
           <span className="sh-c-item sh-c-fund">{L ? "ফান্ড পাইয়ে দিই" : "Fund you"}</span>
         </h1>
-        <p className="sc-hero-sub">{L ? "আইডিয়া লেখো → পিচ বানাও → সঠিক ফান্ডারের কাছে যাও।" : "Write the idea → build the pitch → reach the right funders."}</p>
         <form className="sc-namebar" onSubmit={submit}>
           <span className="sc-namebar-tag">
             <svg viewBox="0 0 24 24"><path d="M4 10l1.5-5h13L20 10M4 10h16M4 10v9h16v-9M9 19v-5h6v5" /></svg>
@@ -373,7 +372,6 @@ function Hero({ L, user, onLaunch }) {
             <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </button>
         </form>
-        <small className="sc-hint">{L ? "নাম লেখো → Enter → লঞ্চ 🚀" : "Type a name → Enter → launch 🚀"}</small>
       </div>
     </section>
   );
@@ -401,11 +399,6 @@ function Journey({ L, onStart }) {
         <h2 className={L ? "bn" : ""}>
           {L ? <>আইডিয়া থেকে <em>ফান্ডিং যাত্রা</em></> : <>Idea to <em>funded</em></>}
         </h2>
-        <p>
-          {L
-            ? "৩টি সহজ পদক্ষেপে তোমার উদ্যোগকে ইনভেস্টমেন্ট ও অনুদানের জন্য প্রস্তুত করো।"
-            : "Three direct steps from raw idea to landing your first funding cheque."}
-        </p>
       </Reveal>
       <div className="sc-track-3">
         {JOURNEY.map((step) => (
@@ -551,9 +544,6 @@ function FundedWall() {
       <Reveal className="sc-head">
         <span className="sc-eyebrow sc-eyebrow-raised">GLOBAL CAPITAL</span>
         <h2>Founders who <em>raised</em></h2>
-        <p>
-          Meet startup founders who successfully secured funding, equity-free grants, and cloud capital from <b>Microsoft, AWS, and Google</b>.
-        </p>
       </Reveal>
       <div className="sc-raised-grid">
         {RAISED_FOUNDERS.map((f, i) => (
@@ -655,7 +645,6 @@ export default function Startup() {
       <section className="sc-sec" id="funders">
         <Reveal className="sc-head">
           <h2 className={L ? "bn" : ""}>{L ? <>ফান্ডিং <em>ওয়াল</em></> : <>The funding <em>wall</em></>}</h2>
-          <p>{L ? "বাংলাদেশ ও আন্তর্জাতিক সরকারি অনুদান, অ্যাঞ্জেল ইনভেস্টর ও শীর্ষ অ্যাক্সেলারেটরদের সম্পূর্ণ তালিকা।" : "Verified grants, VCs, angel networks and accelerators in Bangladesh & globally."}</p>
         </Reveal>
         <FunderBoard L={L} />
       </section>
