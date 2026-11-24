@@ -294,30 +294,30 @@ function Pass({ j, i, L, c, onApply }) {
       <span className="ip-holo" aria-hidden="true" />
       <div className="ip-main">
         <header>
-          <CompanyLogo company={j.company} className="ip-logo" />
-          <div>
-            <small>{L ? "ইন্টার্নশিপ বোর্ডিং পাস" : "INTERNSHIP BOARDING PASS"}</small>
-            <b>{j.company?.name}{j.company?.is_partner && <span className="ip-partner">✓</span>}</b>
+          <div className="ip-head-left">
+            <span className="ip-pass-pill">
+              <span className="ip-pass-dot" />
+              {L ? "ইন্টার্নশিপ বোর্ডিং পাস" : "INTERNSHIP BOARDING PASS"}
+            </span>
           </div>
           <span className={`ip-chip ${urgent ? "red" : ""}`}><i />{chip}</span>
         </header>
 
-        {/* Highlighted Job / Internship Title Spot (Replaces YOU ... LAF) */}
+        {/* Highlighted Job / Internship Title (BIG) + Company Name (SMALL under it) */}
         <div className="ip-role-spot">
-          <div className="ip-role-kicker">
-            <span className="ip-role-tag">
-              <i>{c.icon}</i> {c.name[L]}
-            </span>
-            <span className="ip-role-loc">
-              {j.remote ? "🌐 " : "📍 "}{mode}
+          <h3 className="ip-role-title">{j.title}</h3>
+          <div className="ip-company-sub">
+            <CompanyLogo company={j.company} className="ip-company-mini-logo" />
+            <span className="ip-company-name">
+              {j.company?.name}
+              {j.company?.is_partner && <span className="ip-partner" title={L ? "ভেরিফায়েড পার্টনার" : "Verified Partner"}>✓</span>}
             </span>
           </div>
-          <h3 className="ip-role-title">{j.title}</h3>
         </div>
 
         <dl>
           <div><dt>{L ? "স্টাইপেন্ড" : "STIPEND"}</dt><dd>{stipend}</dd></div>
-          <div><dt>{L ? "ধরন" : "MODE"}</dt><dd>{j.remote ? "🌐 " : "📍 "}{mode}</dd></div>
+          <div><dt>{L ? "লোকেশন" : "LOCATION"}</dt><dd>{j.remote ? (L ? "🌐 রিমোট" : "🌐 Remote") : `📍 ${mode}`}</dd></div>
           <div><dt>{L ? "বোর্ডিং শেষ" : "BOARDS BY"}</dt><dd className={dl != null && dl <= 5 ? "urgent" : ""}>{dl != null ? (L ? `${n2(dl, L)} দিন` : `${dl} day${dl === 1 ? "" : "s"}`) : L ? "খোলা" : "Open"}</dd></div>
         </dl>
         <div className="ip-tags">

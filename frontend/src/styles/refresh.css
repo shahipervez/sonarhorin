@@ -359,23 +359,64 @@
 .ip-pass.skel::before { display: none; }
 @keyframes ipSkel { to { background-position: -200% 0; } }
 .ip-main { padding: 18px 20px 18px 26px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.ip-main header { display: flex; align-items: center; gap: 12px; }
-.ip-main header > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.ip-main header small { font: 800 9.5px/1 monospace; letter-spacing: 0.18em; color: #8A93B0; }
-.ip-main header b { font: 800 14.5px var(--sans); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ip-partner { margin-left: 6px; color: #10B981; }
+.ip-main header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ip-head-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ip-pass-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 800 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.16em;
+  color: #64748B;
+  text-transform: uppercase;
+  background: #F1F5F9;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #E2E8F0;
+}
+.ip-pass-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c, #3B82F6);
+  display: inline-block;
+  box-shadow: 0 0 6px var(--c, #3B82F6);
+}
+.ip-partner { margin-left: 4px; color: #10B981; font-weight: 800; }
 .ip-logo { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; overflow: hidden; flex: none; background: var(--cc); color: #fff; font: 900 16px var(--sans); }
 .ip-logo.clogo-img-wrap { background: #fff; border: 1px solid #E3E9F5; }
 .ip-logo img { width: 80%; height: 80%; object-fit: contain; }
 .ip-cat { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px; font: 700 11px var(--sans); background: color-mix(in srgb, var(--c) 14%, #fff); color: color-mix(in srgb, var(--c) 70%, #0B1026); white-space: nowrap; }
 .ip-cat i { font-style: normal; }
 
-/* Highlighted role spot replacing the old route */
-.ip-role-spot { display: flex; flex-direction: column; gap: 6px; padding: 4px 0 2px; }
-.ip-role-kicker { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.ip-role-tag { display: inline-flex; align-items: center; gap: 4px; font: 800 11px/1 monospace; letter-spacing: 0.05em; text-transform: uppercase; color: var(--c); background: color-mix(in srgb, var(--c) 14%, #fff); padding: 3px 8px; border-radius: 999px; }
-.ip-role-loc { font: 600 12px var(--sans); color: #64748B; }
-.ip-role-title { margin: 0; font: 800 20px/1.25 var(--sans); color: var(--ink); letter-spacing: -0.015em; word-break: break-word; }
+/* Highlighted role spot: Big Job Title + Small Company Name underneath */
+.ip-role-spot { display: flex; flex-direction: column; gap: 6px; padding: 2px 0 4px; min-width: 0; }
+.ip-role-title { margin: 0; font: 800 22px/1.22 var(--sans); color: var(--ink); letter-spacing: -0.02em; word-break: break-word; }
+.ip-company-sub { display: inline-flex; align-items: center; gap: 7px; min-width: 0; }
+.ip-company-mini-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex: none;
+  background: var(--cc, #FFC23D);
+  color: #fff;
+  font: 800 11px/1 var(--sans);
+}
+.ip-company-mini-logo.clogo-img-wrap { background: #fff; border: 1px solid #E2E8F0; }
+.ip-company-mini-logo img { width: 85%; height: 85%; object-fit: contain; }
+.ip-company-name {
+  font: 700 13px/1.2 var(--sans);
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .ip-main dl { margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 10px; border-top: 1px dashed #DCE3F1; }
 .ip-main dt { font: 800 9.5px/1 monospace; letter-spacing: 0.14em; color: #8A93B0; }
