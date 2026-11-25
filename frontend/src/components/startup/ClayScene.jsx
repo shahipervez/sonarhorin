@@ -101,6 +101,7 @@ export default function ClayScene({ name = "", bn = false, launch = 0 }) {
 
       {/* kiosk */}
       <g className="sc-l2">
+        <g className="sc-kiosk">
         <Face p="top" at={[0, 0, 0]}>
           <rect x="-34" y="-34" width="278" height="278" rx="44" fill="#F6F5FB" stroke="#FFFFFF" strokeWidth="3" />
           <rect x="30" y="40" width="270" height="250" rx="70" fill="#4E4875" opacity=".2" filter="url(#scBlur18)" />
@@ -167,6 +168,7 @@ export default function ClayScene({ name = "", bn = false, launch = 0 }) {
               d="M0 -9 C1.5 -2 2 -1.5 9 0 C2 1.5 1.5 2 0 9 C-1.5 2 -2 1.5 -9 0 C-2 -1.5 -1.5 -2 0 -9Z" fill={d === 1.1 ? "#F2C14E" : "#E64BD2"} />
           </g>
         ))}
+        </g>
         {/* LAUNCH: the idea leaves the kiosk as a rocket, funding coins burst out */}
         {launch > 0 && (
           <g key={launch} className="sc-launch" transform="translate(640 150)">
