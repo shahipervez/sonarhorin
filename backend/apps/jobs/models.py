@@ -5,6 +5,7 @@ from django.utils.text import slugify
 
 CHANNELS = [
     ("partner", "1-click (partner employer)"),
+    ("ats", "1-click into the company's own ATS (Greenhouse/Lever key)"),
     ("email", "Email apply"),
     ("portal", "Company career portal (assisted)"),
 ]
@@ -13,7 +14,7 @@ JOB_TYPES = [("full_time", "Full-time"), ("trainee", "Trainee / MTO"), ("interns
 
 class Company(models.Model):
     ATS = [("none", "None"), ("custom", "Own career site"), ("bdjobs", "Bdjobs"), ("greenhouse", "Greenhouse"), ("lever", "Lever"),
-           ("workday", "Workday"), ("other", "Other")]
+           ("workable", "Workable"), ("workday", "Workday"), ("other", "Other")]
     name = models.CharField(max_length=140, unique=True)
     slug = models.SlugField(max_length=160, unique=True, blank=True)
     website = models.URLField(blank=True)
@@ -26,6 +27,16 @@ class Company(models.Model):
     featured = models.BooleanField(default=False, help_text="Pin to the front of the Featured Companies strip.")
     apply_email = models.EmailField(blank=True, help_text="Default HR inbox for email-apply jobs.")
     ats = models.CharField(max_length=12, choices=ATS, default="custom")
+    # ---- automatic import from the company's public job board (apps/jobs/ats.py) ----
+    ats_slug = models.CharField(max_length=120, blank=True, help_text="Board token / site name: boards.greenhouse.io/<slug>, "
+                                "jobs.lever.co/<slug>, apply.workable.com/<slug>")
+    auto_import = models.BooleanField(default=False, help_text="Pull this company's openings every hour.")
+    bd_only = models.BooleanField(default=True, help_text="Only import jobs located in Bangladesh or remote-from-Bangladesh.")
+    ats_api_key = models.CharField(max_length=200, blank=True, help_text="SECRET. Given by the company (Greenhouse Job Board API key "
+                                   "or Lever postings key) so candidates can apply in one click from Sonarhorin. Never exposed by the API.")
+    last_imported_at = models.DateTimeField(null=True, blank=True)
+    import_error = models.CharField(max_length=300, blank=True)
+    logo_source = models.URLField(max_length=500, blank=True, help_text="Where the real logo was downloaded from (company site / favicon).")
     employer_users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="companies",
                                             help_text="Employer accounts that can see applicants.")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -88,6 +99,8 @@ class Job(models.Model):
         """What actually happens when someone applies."""
         if self.apply_channel == "partner" and self.company.is_partner:
             return "partner"
+        if self.apply_channel == "ats" and self.company.ats in ("greenhouse", "lever") and self.company.ats_api_key and self.external_id:
+            return "ats"
         if self.apply_channel in ("partner", "email") and self.inbox:
             return "email"
         return "portal"

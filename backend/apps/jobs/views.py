@@ -36,10 +36,10 @@ class JobListView(APIView):
         jobs = list(qs[:200])
         if (ch := p.get("channel")):
             jobs = [j for j in jobs if j.effective_channel() == ch]
-        counts = {c: 0 for c in ("partner", "email", "portal")}
+        counts = {c: 0 for c in ("partner", "ats", "email", "portal")}
         for j in jobs:
             counts[j.effective_channel()] += 1
-        data = JobSerializer(jobs, many=True, context={"my_apps": _my_apps(request.user)}).data
+        data = JobSerializer(jobs, many=True, context={"my_apps": _my_apps(request.user), "request": request}).data
         return Response({"count": len(jobs), "by_channel": counts, "jobs": data})
 
 
@@ -48,7 +48,7 @@ class JobDetailView(APIView):
 
     def get(self, request, pk):
         job = get_object_or_404(Job.objects.select_related("company"), pk=pk)
-        return Response(JobSerializer(job, context={"my_apps": _my_apps(request.user)}).data)
+        return Response(JobSerializer(job, context={"my_apps": _my_apps(request.user), "request": request}).data)
 
 
 class PreviewView(APIView):
@@ -71,7 +71,7 @@ class ApplyView(APIView):
         except services.ApplyError as e:
             return Response({"detail": str(e)}, status=400)
         out = ApplicationSerializer(app).data
-        if app.channel == "portal":
+        if app.channel == "portal" or app.status == "needs_action":  # incl. a one-click ATS submit that fell back
             out["packet"] = services.apply_packet(request.user, job)
         return Response(out, status=201)
 
@@ -98,8 +98,8 @@ class MatchesView(APIView):
     def get(self, request):
         prefs = getattr(request.user, "auto_apply", None)
         jobs = services.matching_jobs(request.user, prefs)
-        auto = [j.id for j in jobs if j.effective_channel() in ("partner", "email")]
-        return Response({"count": len(jobs), "auto_eligible": auto, "jobs": JobSerializer(jobs[:60], many=True).data,
+        auto = [j.id for j in jobs if j.effective_channel() in ("partner", "ats", "email")]
+        return Response({"count": len(jobs), "auto_eligible": auto, "jobs": JobSerializer(jobs[:60], many=True, context={"request": request}).data,
                          "has_cv": bool(services.latest_cv(request.user))})
 
 
@@ -210,13 +210,8 @@ class FeaturedCompaniesView(APIView):
               .order_by("-featured", "-open_jobs", "name")[:40])
         out = []
         for c in qs:
-            # Prefer clean relative path /logos/{slug}.svg for crisp vector rendering across all origins/hosts
-            logo_url = f"/logos/{c.slug}.svg"
-            if not os.path.exists(os.path.join(settings.BASE_DIR, "..", "frontend", "public", "logos", f"{c.slug}.svg")):
-                if c.logo:
-                    logo_url = c.logo.url
-                else:
-                    logo_url = f"/media/logos/{c.slug}.png"
+            # Real logo only (downloaded from the company's own site by logos.py); empty → UI shows the name
+            logo_url = request.build_absolute_uri(c.logo.url) if c.logo else ""
 
             out.append({
                 "id": c.id,

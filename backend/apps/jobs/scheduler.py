@@ -44,12 +44,19 @@ def _worker_loop():
         with _LOCK:
             _IS_RUNNING = True
         try:
-            from apps.jobs.scraper import run_scraper
-            log.info("Auto-scraper background cycle starting...")
-            stats = run_scraper(limit_per_query=8, fetch_details=True)
+            from apps.jobs.ats import import_all
+            log.info("Job import cycle starting (company job boards)...")
+            boards = import_all()
+            stats = {"created": sum(b["created"] for b in boards), "updated": sum(b["updated"] for b in boards),
+                     "closed": sum(b["closed"] for b in boards), "boards": boards}
+            # LinkedIn's terms forbid scraping — the old guest scraper only runs if someone turns it on deliberately.
+            if os.environ.get("ENABLE_LINKEDIN_GUEST_SCRAPER") == "1":
+                from apps.jobs.scraper import run_scraper
+                li = run_scraper(limit_per_query=8, fetch_details=True)
+                stats["created"] += li["created"]; stats["updated"] += li["updated"]
             _LAST_RUN = timezone.now()
             _LAST_STATS = stats
-            log.info("Auto-scraper cycle finished: %d created, %d updated.", stats["created"], stats["updated"])
+            log.info("Job import cycle finished: %d created, %d updated, %d closed.", stats["created"], stats["updated"], stats["closed"])
         except Exception as e:
             log.error("Error in background job scraper cycle: %s", e)
         finally:
@@ -82,8 +89,14 @@ def trigger_immediate_scrape(queries=None, limit=8, fetch_details=False):
     with _LOCK:
         _IS_RUNNING = True
     try:
-        from apps.jobs.scraper import run_scraper
-        stats = run_scraper(queries=queries, limit_per_query=limit, fetch_details=fetch_details)
+        from apps.jobs.ats import import_all
+        boards = import_all()
+        stats = {"created": sum(b["created"] for b in boards), "updated": sum(b["updated"] for b in boards),
+                 "closed": sum(b["closed"] for b in boards), "boards": boards}
+        if os.environ.get("ENABLE_LINKEDIN_GUEST_SCRAPER") == "1":
+            from apps.jobs.scraper import run_scraper
+            li = run_scraper(queries=queries, limit_per_query=limit, fetch_details=fetch_details)
+            stats["created"] += li["created"]; stats["updated"] += li["updated"]
         _LAST_RUN = timezone.now()
         _LAST_STATS = stats
         return stats

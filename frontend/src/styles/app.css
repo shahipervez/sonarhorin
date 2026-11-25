@@ -584,7 +584,7 @@ details.qa p{font-size:14px;margin-top:8px}
 .ch-card b{display:block;font-size:14.5px;margin-bottom:3px}
 .ch-card b em{font-style:normal;font-size:11.5px;font-weight:800;background:var(--chb);padding:1px 7px;border-radius:99px;margin-left:4px}
 .ch-card span{font-size:12.5px;color:var(--muted);line-height:1.4}
-.c-partner{--chb:#FFF1CC;--chf:#8A5A00}.c-email{--chb:#E3F0FF;--chf:#164D8E}.c-portal{--chb:#FFF1D6;--chf:#7A4A00}
+.c-partner,.c-ats{--chb:#FFF1CC;--chf:#8A5A00}.c-email{--chb:#E3F0FF;--chf:#164D8E}.c-portal{--chb:#FFF1D6;--chf:#7A4A00}
 .chbadge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;background:var(--chb);color:var(--chf);white-space:nowrap;width:max-content}
 
 .auto-cta,.auto-panel{display:flex;flex-direction:column;gap:10px;border-style:dashed}

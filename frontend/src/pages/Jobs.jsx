@@ -18,6 +18,14 @@ export const CATEGORIES = [
 ];
 
 export const getCH = (L) => ({
+  ats: {
+    ic: "⚡",
+    t: L ? "১-ক্লিক" : "1-click",
+    d: L
+      ? "সরাসরি কোম্পানির নিজের হায়ারিং সিস্টেমে জমা হয় — অন্য কোনো সাইটে যেতে হয় না।"
+      : "Goes straight into the company's own hiring system — no other site needed.",
+    cls: "c-partner",
+  },
   partner: {
     ic: "⚡",
     t: L ? "১-ক্লিক" : "1-click",
@@ -579,8 +587,8 @@ function JobsBoard() {
 
 export function CompanyLogo({ company, className = "clogo2" }) {
   const [err, setErr] = useState(false);
-  const slug = company?.slug;
-  const src = !err && slug ? `/logos/${slug}.svg` : company?.logo;
+  // only the real logo from the API (downloaded from the company's own site) — never a drawn one
+  const src = !err ? company?.logo : "";
   if (!src || err) {
     return (
       <span className={className} style={{ "--cc": company?.color || "#FFC23D" }}>
@@ -718,7 +726,7 @@ export function ApplyModal({ j, onClose, onApplied, L, CH }) {
       });
       setApp(r);
       onApplied();
-      if (r.channel !== "portal") {
+      if (r.channel !== "portal" && r.status !== "needs_action") {
         const b = document.querySelector(".modal .btn-lime");
         const rc = b?.getBoundingClientRect();
         confetti(rc ? rc.left + rc.width / 2 : innerWidth / 2, rc ? rc.top : 200);
@@ -834,7 +842,7 @@ export function ApplyModal({ j, onClose, onApplied, L, CH }) {
           </>
         )}
 
-        {app && app.channel !== "portal" && (
+        {app && app.channel !== "portal" && app.status !== "needs_action" && (
           <div className="sent-ok">
             <span>🎉</span>
             <div>
@@ -865,7 +873,8 @@ export function ApplyModal({ j, onClose, onApplied, L, CH }) {
           </div>
         )}
 
-        {app && app.channel === "portal" && packet && (
+        {app && app.status === "needs_action" && app.error && <p className="small err">{app.error}</p>}
+        {app && (app.channel === "portal" || app.status === "needs_action") && packet && (
           <div className="portal-steps">
             <ol>
               <li>
@@ -1110,7 +1119,7 @@ function AutoApplyPanel({ matches, onRun, L, CH }) {
           <div className="field">
             <span>{L ? "আবেদনের মাধ্যম" : "Channels"}</span>
             <div className="row">
-              {["partner", "email"].map((c) => (
+              {["partner", "ats", "email"].map((c) => (
                 <label key={c} className="check">
                   <input
                     type="checkbox"

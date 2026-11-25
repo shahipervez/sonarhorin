@@ -87,3 +87,27 @@ npm run dev
 - 🕷️ **বিডি জব স্ক্র্যাপার ও অটো-পোস্টিং:** বিডি ক্যারিয়ার পোর্টাল থেকে স্বয়ংক্রিয় জব কালেকশন।
 - 📱 **ফোন-নম্বর ভিত্তিক ইউজার অথেন্টিকেশন।**
 - 💾 **সম্পূর্ণ প্রি-বিল্ট ডাটাবেস (`db.sqlite3`):** সকল ডেমো ইউজার, অ্যাডমিন ও জব পোস্টসহ সংরক্ষিত।
+
+## Automatic job import (company job boards) + one-click apply
+
+Sonarhorin pulls openings straight from companies' **public** job boards every hour — no scraping, no LinkedIn.
+
+| ATS | Find the slug in | Import | One-click apply from Sonarhorin |
+|---|---|---|---|
+| Greenhouse | `boards.greenhouse.io/<slug>` or `job-boards.greenhouse.io/<slug>` | ✅ | ✅ with the company's Job Board API key |
+| Lever | `jobs.lever.co/<slug>` | ✅ | ✅ with the company's postings API key |
+| Workable | `apply.workable.com/<slug>` | ✅ | ❌ (needs a Workable partner token) → assisted apply |
+
+1. Admin → Companies → add/open a company → **Automatic job import**: set `ats`, `ats_slug`, tick `auto_import`.
+2. (Optional) Ask the company for its key and paste it in **One-click apply** → candidates apply in one tap and the
+   application lands in the company's own ATS. Without a key the job uses assisted apply.
+3. Run now: admin action "Import jobs now", or `python manage.py import_ats_jobs --logos`.
+
+Only Bangladesh / remote-from-Bangladesh roles that ask ≤ 1 year of experience are imported (turn off `bd_only` per company).
+Jobs that disappear from the board are closed automatically.
+
+**Logos:** only real logos, downloaded from the company's own website (apple-touch-icon / site icon / favicon) or a
+URL an admin provides. If none is found, the UI shows the company name — nothing is drawn.
+
+The old LinkedIn guest scraper (`scraper.py`) is off. LinkedIn's terms forbid scraping; it only runs if
+`ENABLE_LINKEDIN_GUEST_SCRAPER=1` is set deliberately.

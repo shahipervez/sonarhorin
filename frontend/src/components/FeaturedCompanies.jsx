@@ -102,23 +102,16 @@ const ROLE_CATEGORIES = [
 
 function CompanyLogo({ company, className = "fc-logo-box", size = "normal" }) {
   const slug = company?.slug;
-  const [src, setSrc] = useState(() => (slug ? `/logos/${slug}.svg` : company?.logo));
+  const [src, setSrc] = useState(() => (company?.logo || ""));
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    setSrc(slug ? `/logos/${slug}.svg` : company?.logo);
+    setSrc(company?.logo || "");
     setFailed(false);
   }, [slug, company?.logo]);
 
-  const handleErr = () => {
-    if (src && src.endsWith(".svg")) {
-      setSrc(`/logos/${slug}.png`);
-    } else if (src && !src.startsWith("/media/")) {
-      setSrc(`/media/logos/${slug}.png`);
-    } else {
-      setFailed(true);
-    }
-  };
+  // only the real logo from the API; if it fails we show the name instead
+  const handleErr = () => setFailed(true);
 
   if (!src || failed) {
     return (
@@ -136,23 +129,16 @@ function CompanyLogo({ company, className = "fc-logo-box", size = "normal" }) {
 }
 
 function Tile({ c, L }) {
-  const [src, setSrc] = useState(() => (c.slug ? `/logos/${c.slug}.svg` : c.logo));
+  const [src, setSrc] = useState(() => (c.logo || ""));
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    setSrc(c.slug ? `/logos/${c.slug}.svg` : c.logo);
+    setSrc(c.logo || "");
     setFailed(false);
   }, [c.slug, c.logo]);
 
-  const handleErr = () => {
-    if (src && src.endsWith(".svg")) {
-      setSrc(`/logos/${c.slug}.png`);
-    } else if (src && !src.startsWith("/media/")) {
-      setSrc(`/media/logos/${c.slug}.png`);
-    } else {
-      setFailed(true);
-    }
-  };
+  // only the real logo from the API; if it fails we show the name instead
+  const handleErr = () => setFailed(true);
 
   return (
     <div
@@ -218,23 +204,16 @@ function Tile({ c, L }) {
 }
 
 function CorpCard({ c, L }) {
-  const [src, setSrc] = useState(() => (c.slug ? `/logos/${c.slug}.svg` : c.logo));
+  const [src, setSrc] = useState(() => (c.logo || ""));
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    setSrc(c.slug ? `/logos/${c.slug}.svg` : c.logo);
+    setSrc(c.logo || "");
     setFailed(false);
   }, [c.slug, c.logo]);
 
-  const handleErr = () => {
-    if (src && src.endsWith(".svg")) {
-      setSrc(`/logos/${c.slug}.png`);
-    } else if (src && !src.startsWith("/media/")) {
-      setSrc(`/media/logos/${c.slug}.png`);
-    } else {
-      setFailed(true);
-    }
-  };
+  // only the real logo from the API; if it fails we show the name instead
+  const handleErr = () => setFailed(true);
 
   return (
     <div className="fc-card" style={{ "--c": c.color || "#FFC23D" }}>

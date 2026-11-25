@@ -141,7 +141,7 @@ export default function Dashboard() {
                   <div className="mlist">{d.matches.jobs.slice(0, 4).map((j) => (
                     <Link key={j.id} to="/jobs" className="mrow"><span className="lg" style={{ background: j.company.color }}>{j.company.name[0]}</span>
                       <span className="tx"><b>{j.title}</b><small>{j.company.name} · {j.location} {money(j.salary_min, j.salary_max) && `· ${money(j.salary_min, j.salary_max)}`}</small></span>
-                      <span className={`chbadge c-${j.channel}`}>{j.channel === "partner" ? "⚡ 1-click" : j.channel === "email" ? "✉️ Email" : "🔗 Portal"}</span></Link>
+                      <span className={`chbadge c-${j.channel}`}>{j.channel === "partner" || j.channel === "ats" ? "⚡ 1-click" : j.channel === "email" ? "✉️ Email" : "🔗 Portal"}</span></Link>
                   ))}</div>
                 ) : <p className="muted">{d.matches ? "No new matches right now — we'll add them as companies post." : "Finding your matches…"}</p>}
                 {!d.matches?.has_cv && d.matches && <p className="small err">Upload your CV so we can apply for you — <Link className="link" to="/cv">Judge my CV →</Link></p>}

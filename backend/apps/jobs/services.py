@@ -4,6 +4,8 @@ Three channels, chosen per job:
   partner — employer is on Sonarhorin: the application lands in their dashboard instantly.
   email   — job says "send your CV to hr@…": we email HR from Sonarhorin with the CV attached,
             reply-to the candidate. Fully automatic.
+  ats     — company gave us its Greenhouse/Lever key: the application goes straight into their own ATS
+            from Sonarhorin (see ats.py). If their API refuses it, the candidate finishes on the portal.
   portal  — job lives on the company's own career site (no API). We never bot-fill third-party
             sites (captchas, logins, terms of use); we prepare a tailored packet and the
             candidate finishes in ~1 minute, then marks it done.
@@ -104,13 +106,13 @@ def apply(user, job, note="", auto=False, letter=None):
         raise ApplyError("You've already applied to this job.")
     channel = job.effective_channel()
     cv = latest_cv(user)
-    if channel in ("partner", "email") and not cv:
+    if channel in ("partner", "email", "ats") and not cv:
         raise ApplyError("Upload your CV first (Judge my CV) — we attach it to every application.")
     try:
         with transaction.atomic():
             app = JobApplication.objects.create(
                 user=user, job=job, channel=channel, auto=auto, cv=cv,
-                status={"partner": "submitted", "email": "sent", "portal": "needs_action"}[channel],
+                status={"partner": "submitted", "email": "sent", "ats": "submitted", "portal": "needs_action"}[channel],
                 cover_letter=letter or cover_letter(user, job, note),
             )
     except IntegrityError:
@@ -126,6 +128,15 @@ def apply(user, job, note="", auto=False, letter=None):
     elif channel == "partner":
         app.sent_at = timezone.now()
         app.save(update_fields=["sent_at"])
+    elif channel == "ats":
+        from .ats import submit_application
+        try:
+            submit_application(job, user, cv, app.cover_letter)
+            app.sent_at = timezone.now()
+        except Exception as exc:  # key revoked, required custom question, ATS down…
+            log.warning("ATS apply failed for job %s: %s", job.id, exc)
+            app.status, app.error = "needs_action", f"Couldn't submit automatically — finish on the company page. ({str(exc)[:200]})"
+        app.save(update_fields=["status", "sent_at", "error"])
     return app
 
 
@@ -166,7 +177,7 @@ def run_auto_apply(user, now=None):
     today = timezone.localtime(now).date()
     used = JobApplication.objects.filter(user=user, auto=True, created_at__date=today).count()
     room = max(0, min(prefs.max_per_day, 20) - used)
-    allowed = {c for c in prefs.channels.split(",") if c in ("partner", "email")}
+    allowed = {c for c in prefs.channels.split(",") if c in ("partner", "email", "ats")}
     results = []
     if room and latest_cv(user):
         for job in matching_jobs(user, prefs, channels=allowed)[:room]:
