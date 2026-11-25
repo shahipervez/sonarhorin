@@ -415,7 +415,7 @@ export default function Services() {
           const rows = res.jobs.slice(0, 4).map((j) => [
             j.title,
             j.company.name,
-            j.channel === "partner" ? "⚡ Easy Apply" : "Apply",
+            j.channel === "partner" || j.channel === "ats" ? "⚡ Easy Apply" : "Apply",
             j.salary_min ? `৳${Math.round(j.salary_min / 1000)}k/mo` : "৳35,000/mo",
             (j.location || "Dhaka").split(",")[0].trim(),
             j.apply_url || "",
@@ -432,7 +432,7 @@ export default function Services() {
           const rows = res.jobs.slice(0, 4).map((j) => [
             j.title,
             j.company.name,
-            j.channel === "partner" ? "⚡ Easy Apply" : "Apply",
+            j.channel === "partner" || j.channel === "ats" ? "⚡ Easy Apply" : "Apply",
             j.salary_min ? `৳${Math.round(j.salary_min / 1000)}k/mo` : "৳18,000/mo",
             (j.location || "Dhaka").split(",")[0].trim(),
             j.apply_url || "",

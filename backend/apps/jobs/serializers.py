@@ -11,14 +11,11 @@ class CompanyMini(serializers.ModelSerializer):
         fields = ["id", "name", "slug", "city", "industry", "color", "is_partner", "website", "careers_url", "logo"]
 
     def get_logo(self, c):
-        import os
-        from django.conf import settings
-        # Return static svg/png path so it resolves seamlessly on any host
-        if c.slug:
-            return f"/logos/{c.slug}.svg"
-        if c.logo:
-            return c.logo.url
-        return ""
+        """Only a real logo downloaded from the company's own site (logos.py) — never a drawn placeholder."""
+        if not c.logo:
+            return ""
+        req = self.context.get("request")
+        return req.build_absolute_uri(c.logo.url) if req else c.logo.url
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -60,5 +57,5 @@ class AutoApplySerializer(serializers.ModelSerializer):
         return max(1, min(v, 20))
 
     def validate_channels(self, v):
-        ok = [c for c in v.split(",") if c in ("partner", "email")]
+        ok = [c for c in v.split(",") if c in ("partner", "email", "ats")]
         return ",".join(ok) or "partner"

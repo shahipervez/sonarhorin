@@ -379,67 +379,21 @@ def fetch_logo_image(info):
 
 
 def sync_top_corporates():
-    """Scrapes authentic logos and connects career portals for all top Bangladesh corporate offices."""
+    """Create/refresh the top Bangladesh corporates and download each one's REAL logo (Wikipedia file or own site)."""
+    from apps.jobs.logos import fetch_real_logo
     from apps.jobs.models import Company
 
-    media_logos_dir = os.path.join(settings.MEDIA_ROOT, "logos")
-    os.makedirs(media_logos_dir, exist_ok=True)
-
-    # Also save to frontend/public/logos for instant static serving if needed
-    frontend_logos_dir = os.path.abspath(
-        os.path.join(settings.BASE_DIR, "..", "frontend", "public", "logos")
-    )
-    os.makedirs(frontend_logos_dir, exist_ok=True)
-
     results = []
-
     for item in TOP_BANGLADESH_CORPORATES:
-        slug = item["slug"]
-        img = fetch_logo_image(item)
-
-        logo_rel_path = f"logos/{slug}.png"
-        saved = False
-
-        if img:
-            try:
-                # Save as optimized PNG with RGBA transparency
-                media_file = os.path.join(media_logos_dir, f"{slug}.png")
-                frontend_file = os.path.join(frontend_logos_dir, f"{slug}.png")
-
-                # If image is palette or P mode without alpha, convert to RGBA
-                if img.mode != "RGBA":
-                    img = img.convert("RGBA")
-
-                img.save(media_file, "PNG", optimize=True)
-                img.save(frontend_file, "PNG", optimize=True)
-                saved = True
-            except Exception as e:
-                logger.error(f"Error saving logo for {slug}: {e}")
-
-        # Update or create the Company in database
         company, created = Company.objects.update_or_create(
             name=item["name"],
             defaults={
-                "slug": item["slug"],
-                "website": item["website"],
-                "careers_url": item["careers_url"],
-                "industry": item["industry"],
-                "city": item.get("city", "Dhaka"),
-                "color": item["color"],
-                "featured": True,
-                "is_partner": True,
-                "logo": logo_rel_path if saved else "",
+                "slug": item["slug"], "website": item["website"], "careers_url": item["careers_url"],
+                "industry": item["industry"], "city": item.get("city", "Dhaka"), "color": item["color"], "featured": True,
+                # is_partner is NOT set here: "1-click partner" means the company really reads applications on Sonarhorin.
             },
         )
-
-        results.append(
-            {
-                "name": company.name,
-                "slug": company.slug,
-                "careers_url": company.careers_url,
-                "logo_saved": saved,
-                "created": created,
-            }
-        )
-
+        saved = bool(company.logo) or fetch_real_logo(company, extra_urls=[item.get("wiki_img")])
+        results.append({"name": company.name, "slug": company.slug, "careers_url": company.careers_url,
+                        "logo_saved": saved, "created": created})
     return results

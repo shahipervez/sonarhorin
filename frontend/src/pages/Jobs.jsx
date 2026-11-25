@@ -15,9 +15,26 @@ export const CATEGORIES = [
   { id: "agriculture", major: "Agriculture & Agribusiness", en: "Agriculture & Biotech", bn: "কৃষি ও এগ্রি-টেক" },
   { id: "textile", major: "Textile & Apparel", en: "Textile & Apparel", bn: "টেক্সটাইল ও গার্মেন্টস" },
   { id: "engineering", major: "Electrical / Mechanical", en: "Engineering & Tech", bn: "ইঞ্জিনিয়ারিং ও টেক" },
+  // skill & service jobs: no degree major — matched by keywords instead
+  { id: "driver", major: "", kw: "driver", en: "Driver", bn: "ড্রাইভার" },
+  { id: "chef", major: "", kw: "chef cook kitchen", en: "Chef & Kitchen", bn: "শেফ ও কিচেন" },
+  { id: "delivery", major: "", kw: "delivery rider courier", en: "Delivery", bn: "ডেলিভারি" },
+  { id: "fitness", major: "", kw: "gym trainer fitness", en: "Gym Trainer", bn: "জিম ট্রেইনার" },
+  { id: "legal", major: "", kw: "legal law lawyer", en: "Law & Legal", bn: "আইন ও লিগ্যাল" },
+  { id: "education", major: "", kw: "teacher tutor trainer instructor", en: "Education & Training", bn: "শিক্ষা ও ট্রেনিং" },
+  { id: "ngo", major: "", kw: "ngo development program project", en: "NGO / Development", bn: "এনজিও / ডেভেলপমেন্ট" },
+  { id: "technician", major: "", kw: "mechanic technician", en: "Mechanic / Technician", bn: "মেকানিক / টেকনিশিয়ান" },
 ];
 
 export const getCH = (L) => ({
+  ats: {
+    ic: "⚡",
+    t: L ? "১-ক্লিক" : "1-click",
+    d: L
+      ? "সরাসরি কোম্পানির নিজের হায়ারিং সিস্টেমে জমা হয় — অন্য কোনো সাইটে যেতে হয় না।"
+      : "Goes straight into the company's own hiring system — no other site needed.",
+    cls: "c-partner",
+  },
   partner: {
     ic: "⚡",
     t: L ? "১-ক্লিক" : "1-click",
@@ -90,6 +107,7 @@ function JobsBoard() {
     major: sp.get("major") || (sp.get("q") ? "" : user?.major || ""),
     channel: "",
     type: initialType,
+    kw: "",
   });
 
   const [trackMode, setTrackMode] = useState(initialType === "internship" ? "internship" : "job");
@@ -167,15 +185,16 @@ function JobsBoard() {
     if (!cat) {
       setActiveJobCat(null);
       setActiveSubCat("any");
-      setF((o) => ({ ...o, major: "", q: "" }));
+      setF((o) => ({ ...o, major: "", q: "", kw: "" }));
       return;
     }
     setActiveJobCat(cat.id);
     setActiveSubCat("any");
     setF((o) => ({
       ...o,
-      major: cat.major,
+      major: cat.major || "",
       q: "",
+      kw: cat.kw || "",
     }));
   };
 
@@ -199,7 +218,9 @@ function JobsBoard() {
   // Handle Sub-category Selection (e.g. Frontend, Backend, or Any type)
   const handleSelectSubCat = (sub) => {
     setActiveSubCat(sub.id);
-    if (sub.id === "any") {
+    if (sub.kw) {
+      setF((o) => ({ ...o, q: "", kw: sub.kw }));
+    } else if (sub.id === "any") {
       setF((o) => ({ ...o, q: "" }));
     } else {
       setF((o) => ({ ...o, q: sub.query || sub.name?.[0] || sub.id }));
@@ -351,6 +372,7 @@ function JobsBoard() {
                 ...o,
                 major: found ? found.major : "",
                 q: "",
+                kw: found?.kw || "",
               }));
             }}
           >
@@ -370,7 +392,9 @@ function JobsBoard() {
               setActiveSubCat(subId);
               const list = (activeJobCat && SUB_CATEGORIES[activeJobCat]) || [];
               const found = list.find((s) => s.id === subId);
-              if (!found || found.id === "any") {
+              if (found?.kw) {
+                setF((o) => ({ ...o, q: "", kw: found.kw }));
+              } else if (!found || found.id === "any") {
                 setF((o) => ({ ...o, q: "" }));
               } else {
                 setF((o) => ({ ...o, q: found.query || found.name[0] }));
@@ -579,8 +603,8 @@ function JobsBoard() {
 
 export function CompanyLogo({ company, className = "clogo2" }) {
   const [err, setErr] = useState(false);
-  const slug = company?.slug;
-  const src = !err && slug ? `/logos/${slug}.svg` : company?.logo;
+  // only the real logo from the API (downloaded from the company's own site) — never a drawn one
+  const src = !err ? company?.logo : "";
   if (!src || err) {
     return (
       <span className={className} style={{ "--cc": company?.color || "#FFC23D" }}>
@@ -718,7 +742,7 @@ export function ApplyModal({ j, onClose, onApplied, L, CH }) {
       });
       setApp(r);
       onApplied();
-      if (r.channel !== "portal") {
+      if (r.channel !== "portal" && r.status !== "needs_action") {
         const b = document.querySelector(".modal .btn-lime");
         const rc = b?.getBoundingClientRect();
         confetti(rc ? rc.left + rc.width / 2 : innerWidth / 2, rc ? rc.top : 200);
@@ -834,7 +858,7 @@ export function ApplyModal({ j, onClose, onApplied, L, CH }) {
           </>
         )}
 
-        {app && app.channel !== "portal" && (
+        {app && app.channel !== "portal" && app.status !== "needs_action" && (
           <div className="sent-ok">
             <span>🎉</span>
             <div>
@@ -865,7 +889,8 @@ export function ApplyModal({ j, onClose, onApplied, L, CH }) {
           </div>
         )}
 
-        {app && app.channel === "portal" && packet && (
+        {app && app.status === "needs_action" && app.error && <p className="small err">{app.error}</p>}
+        {app && (app.channel === "portal" || app.status === "needs_action") && packet && (
           <div className="portal-steps">
             <ol>
               <li>
@@ -1110,7 +1135,7 @@ function AutoApplyPanel({ matches, onRun, L, CH }) {
           <div className="field">
             <span>{L ? "আবেদনের মাধ্যম" : "Channels"}</span>
             <div className="row">
-              {["partner", "email"].map((c) => (
+              {["partner", "ats", "email"].map((c) => (
                 <label key={c} className="check">
                   <input
                     type="checkbox"

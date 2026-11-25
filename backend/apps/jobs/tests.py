@@ -60,6 +60,14 @@ class JobsTests(TestCase):
         self.assertTrue(all(v >= 1 for v in d["by_channel"].values()) or d["by_channel"]["portal"] == 0)
         self.assertEqual(set(j["channel"] for j in APIClient().get("/api/jobs/").data["jobs"]), {"partner", "email", "portal"})
 
+    def test_keyword_categories(self):
+        # kw = any of the words, so "chef cook" finds a job that only says "cook"
+        j = Job.objects.filter(is_active=True).first()
+        j.pk = None; j.title = "Line Cook (Fresher)"; j.description = "Hot kitchen, 6 days a week"; j.save()
+        titles = [x["title"] for x in APIClient().get("/api/jobs/?kw=chef cook").data["jobs"]]
+        self.assertIn("Line Cook (Fresher)", titles)
+        self.assertNotIn("Line Cook (Fresher)", [x["title"] for x in APIClient().get("/api/jobs/?kw=driver").data["jobs"]])
+
     def test_apply_needs_cv(self):
         r = self.c.post(f"/api/jobs/{self.job('Junior Software Engineer').id}/apply/", {}, format="json")
         self.assertEqual(r.status_code, 400)

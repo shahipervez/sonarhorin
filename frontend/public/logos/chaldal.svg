@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
-  <rect width="240" height="80" rx="12" fill="#FFFFFF"/>
-  <g transform="translate(18, 16)">
-    <rect width="44" height="44" rx="10" fill="#FFB800"/>
-    <path d="M14 22 L30 22 L27 34 L17 34 Z" fill="#2E7D32"/>
-    <circle cx="22" cy="18" r="4" fill="#E52427"/>
-  </g>
-  <text x="72" y="49" font-family="'Inter',sans-serif" font-size="26" font-weight="900" fill="#2E7D32" letter-spacing="-0.5">chaldal</text>
-</svg>
