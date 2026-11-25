@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Planet } from "./InternPlanets";
 
 /**
- * Internships hero — left: Rafi's story (when → which internship → where to find it),
+ * Internships hero — left: a simple list of the 5 kinds,
  * right: a side-view line-up of 5 planets (sun at the edge, real relative sizes).
  * Tap a planet → it flies forward spinning fast, then its live openings appear.
  */
@@ -15,58 +15,26 @@ const SYS = [
 ];
 const BY = Object.fromEntries(SYS.map((p) => [p.id, p]));
 
-// Rafi's 4 years, in time order
-const STORY = [
-  { id: "unpaid", when: ["1st–2nd year", "১ম–২য় বর্ষ"], line: ["No experience yet — learns from a mentor.", "অভিজ্ঞতা নেই — মেন্টরের কাছে শেখে।"], where: ["Startups · NGOs", "স্টার্টআপ · এনজিও"] },
-  { id: "paid", when: ["3rd year", "৩য় বর্ষ"], line: ["Has a skill now — earns ৳15k a month.", "এখন স্কিল আছে — মাসে ৳১৫k আয়।"], where: ["Tech startups · agencies", "টেক স্টার্টআপ · এজেন্সি"] },
-  { id: "remote", when: ["Semester break", "সেমিস্টার ব্রেক"], line: ["Home in Rajshahi — keeps working online.", "রাজশাহীতে বাড়িতে — অনলাইনে কাজ চলে।"], where: ["Online & global teams", "অনলাইন ও গ্লোবাল টিম"] },
-  { id: "versity", when: ["Final semester", "শেষ সেমিস্টার"], line: ["His degree needs a credit internship.", "ডিগ্রির জন্য ক্রেডিট ইন্টার্নশিপ লাগবে।"], where: ["Banks · telcos (uni letter)", "ব্যাংক · টেলকো (ভার্সিটির চিঠি)"] },
-  { id: "corporate", when: ["After graduation", "গ্র্যাজুয়েশনের পর"], line: ["Joins a big company — gets a job offer.", "বড় কোম্পানিতে — চাকরির অফার।"], where: ["MNCs & big local brands", "এমএনসি ও বড় দেশি ব্র্যান্ড"] },
-];
-
-function Story({ L, cats, active, setActive, onPick, sel, counts, n2 }) {
-  const [hold, setHold] = useState(false);
-  useEffect(() => {
-    if (hold || sel) return;
-    const t = setInterval(() => setActive((a) => (a + 1) % STORY.length), 3200);
-    return () => clearInterval(t);
-  }, [hold, sel, setActive]);
-  const byCat = Object.fromEntries(cats.map((c) => [c.id, c]));
-  // walk the little figure to the active chapter
-  const olRef = useRef(null);
-  const [walkY, setWalkY] = useState(0);
-  const cur = sel ? STORY.findIndex((s) => s.id === sel) : active;
-  useLayoutEffect(() => {
-    const li = olRef.current?.children[cur + 1];
-    if (li) setWalkY(li.offsetTop + 8);
-  }, [cur, L]);
+/** Left side: a calm, simple list of the 5 kinds — tap one to open its planet. */
+function Guide({ L, cats, sel, counts, n2, onPick }) {
   return (
-    <div className="isx-story" onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)}>
-      <div className="isx-story-head">
-        <span className="isx-rafi">R</span>
-        <div>
-          <b className={L ? "bn" : ""}>{L ? "রাফির গল্প" : "Rafi's story"}</b>
-          <small>{L ? "CSE · ৪ বছর · ৫টা ইন্টার্নশিপ" : "CSE · 4 years · 5 internships"}</small>
-        </div>
-      </div>
-      <ol className="isx-steps" ref={olRef}>
-        <span className="isx-walker" aria-hidden="true" style={{ top: walkY }}>🚶</span>
-        {STORY.map((s, i) => {
-          const c = byCat[s.id];
-          const on = sel ? sel === s.id : i === active;
+    <div className="isx-guide">
+      <span className="isx-guide-k">{L ? "৫ ধরনের ইন্টার্নশিপ" : "5 kinds of internship"}</span>
+      <h3 className={L ? "bn" : ""}>{L ? "তোমার কোনটা দরকার?" : "Which one do you need?"}</h3>
+      <ul>
+        {SYS.map((s) => {
+          const c = cats[s.id]; if (!c) return null;
           return (
-            <li key={s.id} className={on ? "on" : ""} style={{ "--c": c?.c }}>
-              <button type="button" onClick={() => onPick(s.id)} onMouseEnter={() => !sel && setActive(i)}>
-                <span className="isx-when">{s.when[L]}</span>
-                <b className={L ? "bn" : ""}>{c?.icon} {c?.name[L]}</b>
-                <p className={L ? "bn" : ""}>{s.line[L]}</p>
-                <span className="isx-where">📍 {s.where[L]}</span>
-                <em>{n2(counts[s.id] || 0, L)} {L ? "টি খোলা" : "open"} →</em>
+            <li key={s.id}>
+              <button type="button" className={sel === s.id ? "on" : ""} style={{ "--c": c.c }} onClick={() => onPick(s.id)}>
+                <span className="isx-guide-p"><Planet id={s.id} size={s.id === "corporate" ? 22 : 24} /></span>
+                <span className="isx-guide-t"><b className={L ? "bn" : ""}>{c.name[L]}</b><small className={L ? "bn" : ""}>{s.one[L]}</small></span>
+                <em>{n2(counts[s.id] || 0, L)}</em>
               </button>
             </li>
           );
         })}
-      </ol>
+      </ul>
     </div>
   );
 }
@@ -182,10 +150,8 @@ function Focus({ L, id, cat, cats, from, list, count, daysLeft, n2, onBack, onSw
 }
 
 export default function InternSystem({ cats, sel, counts, onSelect, L, top, onSeeAll, onOpenJob, daysLeft, n2 }) {
-  const [active, setActive] = useState(0);
   const [from, setFrom] = useState(null);
   const byCat = Object.fromEntries(cats.map((c) => [c.id, c]));
-  const storyId = STORY[active].id;
 
   const pick = (id, rect) => {
     if (!byCat[id]) return;
@@ -196,7 +162,6 @@ export default function InternSystem({ cats, sel, counts, onSelect, L, top, onSe
     }
     setFrom(rect || document.querySelector(`.isx-row [data-p="${id}"] .pl`)?.getBoundingClientRect() || null);
     onSelect(id);
-    const i = STORY.findIndex((s) => s.id === id); if (i >= 0) setActive(i);
   };
 
   useEffect(() => {
@@ -208,7 +173,7 @@ export default function InternSystem({ cats, sel, counts, onSelect, L, top, onSe
 
   return (
     <div className={`isx ${sel ? "has-sel" : ""}`}>
-      <Story L={L} cats={cats} active={active} setActive={setActive} sel={sel} counts={counts} n2={n2} onPick={(id) => pick(id)} />
+      <Guide L={L} cats={byCat} sel={sel} counts={counts} n2={n2} onPick={(id) => pick(id)} />
 
       <div className="isx-space">
         {!sel || !byCat[sel] ? (
@@ -217,9 +182,8 @@ export default function InternSystem({ cats, sel, counts, onSelect, L, top, onSe
             <div className="isx-row">
               {SYS.map((s) => {
                 const c = byCat[s.id]; if (!c) return null;
-                const here = storyId === s.id;
                 return (
-                  <button key={s.id} type="button" data-p={s.id} className={`isx-p ${s.label} ${here ? "here" : ""}`} style={{ "--c": c.c }}
+                  <button key={s.id} type="button" data-p={s.id} className={`isx-p ${s.label}`} style={{ "--c": c.c }}
                     onClick={(e) => pick(s.id, e.currentTarget.querySelector(".pl")?.getBoundingClientRect())}>
                     <span className="isx-tag">
                       <span className="isx-lab">
@@ -229,7 +193,6 @@ export default function InternSystem({ cats, sel, counts, onSelect, L, top, onSe
                       <span className="isx-line" />
                     </span>
                     <span className="isx-orb">
-                      {here && <span className="isx-pin">{L ? "রাফি এখানে" : "Rafi is here"}</span>}
                       <Planet id={s.id} size={s.size} />
                     </span>
                   </button>

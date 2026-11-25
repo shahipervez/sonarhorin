@@ -6,6 +6,7 @@ import Scribble from "../components/Scribble";
 import { StoryPlayer } from "../landing/StoryAnimation";
 import { STARTUP } from "../landing/story/startup";
 import ClayScene from "../components/startup/ClayScene";
+import HeroPhoneStory from "../components/startup/HeroPhoneStory";
 import FunderBoard from "../components/startup/FunderBoard";
 import StartupVideos from "../components/startup/StartupVideos";
 import { FUNDERS, stageOf } from "./startupFunders";
@@ -350,7 +351,7 @@ function Hero({ L, user, onLaunch }) {
     setTimeout(() => { busy.current = false; onLaunch(name); }, 1700);
   };
   return (
-    <section className={`sc-hero ${launch ? "launched" : ""}`} ref={heroRef} onPointerMove={onMove} onPointerLeave={onLeave}>
+    <section className={`sc-hero has-phone ${launch ? "launched" : ""}`} ref={heroRef} onPointerMove={onMove} onPointerLeave={onLeave}>
       <div className="sc-scene-wrap"><ClayScene name={name} bn={!!L} launch={launch} /></div>
       <div className="sc-hero-fade" />
       <div className="sc-hero-copy">
@@ -373,6 +374,7 @@ function Hero({ L, user, onLaunch }) {
           </button>
         </form>
       </div>
+      <HeroPhoneStory L={L} />
     </section>
   );
 }

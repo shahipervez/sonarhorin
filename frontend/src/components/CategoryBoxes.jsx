@@ -46,8 +46,64 @@ export const SUB_CATEGORIES = {
     { id: "mechanical", name: ["Mechanical", "মেকানিক্যাল"], query: "mechanical maintenance" },
     { id: "civil", name: ["Civil & Site", "সিভিল ও সাইট"], query: "civil site engineer" },
     { id: "automation", name: ["Automation & Robotics", "অটোমেশন ও রোবোটিক্স"], query: "automation robotics plc" },
+  ],  driver: [
+    { id: "any", name: ["Any type", "সব ধরনের"], kw: "driver" },
+    { id: "car", name: ["Car / Private Driver", "প্রাইভেট কার ড্রাইভার"], kw: "car driver private" },
+    { id: "ride", name: ["Ride-share Driver", "রাইড শেয়ার ড্রাইভার"], kw: "ride uber pathao" },
+    { id: "truck", name: ["Truck / Covered Van", "ট্রাক / কাভার্ড ভ্যান"], kw: "truck covered van lorry" },
+    { id: "bus", name: ["Bus / Office Transport", "বাস / অফিস ট্রান্সপোর্ট"], kw: "bus transport microbus" },
+  ],
+  chef: [
+    { id: "any", name: ["Any type", "সব ধরনের"], kw: "chef cook kitchen" },
+    { id: "chef", name: ["Chef / Cook", "শেফ / কুক"], kw: "chef cook" },
+    { id: "commis", name: ["Commis / Kitchen Helper", "কিচেন হেল্পার"], kw: "commis kitchen helper" },
+    { id: "pastry", name: ["Pastry & Bakery", "পেস্ট্রি ও বেকারি"], kw: "pastry bakery baker" },
+    { id: "barista", name: ["Barista / Café", "বারিস্তা / ক্যাফে"], kw: "barista cafe coffee" },
+  ],
+  delivery: [
+    { id: "any", name: ["Any type", "সব ধরনের"], kw: "delivery rider courier" },
+    { id: "food", name: ["Food Delivery Rider", "ফুড ডেলিভারি রাইডার"], kw: "food delivery rider" },
+    { id: "parcel", name: ["Parcel / Courier", "পার্সেল / কুরিয়ার"], kw: "parcel courier" },
+    { id: "bike", name: ["Bike Rider", "বাইক রাইডার"], kw: "bike motorcycle rider" },
+    { id: "cycle", name: ["Cycle / Walking Delivery", "সাইকেল / হেঁটে ডেলিভারি"], kw: "cycle bicycle" },
+  ],
+  fitness: [
+    { id: "any", name: ["Any type", "সব ধরনের"], kw: "gym trainer fitness" },
+    { id: "gym", name: ["Gym Trainer", "জিম ট্রেইনার"], kw: "gym trainer" },
+    { id: "pt", name: ["Personal Trainer", "পার্সোনাল ট্রেইনার"], kw: "personal trainer" },
+    { id: "yoga", name: ["Yoga / Zumba Instructor", "ইয়োগা / জুম্বা ইন্সট্রাক্টর"], kw: "yoga zumba aerobics" },
+    { id: "coach", name: ["Sports Coach", "স্পোর্টস কোচ"], kw: "coach sports swimming football cricket" },
+  ],
+  legal: [
+    { id: "any", name: ["Any type", "সব ধরনের"], kw: "legal law lawyer" },
+    { id: "associate", name: ["Junior Lawyer / Associate", "জুনিয়র আইনজীবী"], kw: "lawyer associate advocate" },
+    { id: "officer", name: ["Legal Officer", "লিগ্যাল অফিসার"], kw: "legal officer" },
+    { id: "compliance", name: ["Compliance", "কমপ্লায়েন্স"], kw: "compliance regulatory" },
+    { id: "paralegal", name: ["Paralegal / Legal Assistant", "প্যারালিগ্যাল"], kw: "paralegal legal assistant" },
+  ],
+  education: [
+    { id: "any", name: ["Any type", "সব ধরনের"], kw: "teacher tutor trainer instructor" },
+    { id: "teacher", name: ["School / College Teacher", "স্কুল / কলেজ শিক্ষক"], kw: "teacher lecturer" },
+    { id: "tutor", name: ["Tutor / Coaching", "টিউটর / কোচিং"], kw: "tutor coaching" },
+    { id: "edtech", name: ["EdTech Content", "এডটেক কনটেন্ট"], kw: "content instructor edtech" },
+    { id: "trainer", name: ["Corporate Trainer", "কর্পোরেট ট্রেইনার"], kw: "trainer training facilitator" },
+  ],
+  ngo: [
+    { id: "any", name: ["Any type", "সব ধরনের"], kw: "ngo development program project" },
+    { id: "program", name: ["Program / Project Officer", "প্রোগ্রাম / প্রজেক্ট অফিসার"], kw: "program officer project officer" },
+    { id: "field", name: ["Field Officer", "ফিল্ড অফিসার"], kw: "field officer community" },
+    { id: "mel", name: ["M&E / Research", "এমঅ্যান্ডই / রিসার্চ"], kw: "monitoring evaluation research" },
+    { id: "humanitarian", name: ["Humanitarian / Relief", "মানবিক সহায়তা"], kw: "humanitarian relief" },
+  ],
+  technician: [
+    { id: "any", name: ["Any type", "সব ধরনের"], kw: "mechanic technician" },
+    { id: "auto", name: ["Auto Mechanic", "অটো মেকানিক"], kw: "auto mechanic car bike" },
+    { id: "electrician", name: ["Electrician", "ইলেকট্রিশিয়ান"], kw: "electrician wiring" },
+    { id: "ac", name: ["AC & Refrigeration", "এসি ও রেফ্রিজারেশন"], kw: "ac refrigeration hvac" },
+    { id: "mobile", name: ["Mobile / Electronics Repair", "মোবাইল / ইলেকট্রনিক্স রিপেয়ার"], kw: "mobile repair electronics" },
   ],
 };
+
 
 export const CATEGORY_BOXES = {
   job: [
@@ -120,6 +176,45 @@ export const CATEGORY_BOXES = {
       vacancies: ["27+ Roles", "২৭+ পদ"],
       major: "Electrical & Electronic (EEE)",
       query: "engineering mechanical civil electrical",
+    },    {
+      id: "driver", icon: "🚗", c: "#0F766E", bgSoft: "#F0FDFA", borderSoft: "rgba(15, 118, 110, 0.2)",
+      name: ["Driver", "ড্রাইভার"], sub: ["Car, ride-share, truck", "কার, রাইড শেয়ার, ট্রাক"], chip: ["৳15k–30k", "৳১৫k–৩০k"],
+      major: "", kw: "driver",
+    },
+    {
+      id: "chef", icon: "👨‍🍳", c: "#EA580C", bgSoft: "#FFF7ED", borderSoft: "rgba(234, 88, 12, 0.2)",
+      name: ["Chef & Kitchen", "শেফ ও কিচেন"], sub: ["Cook, bakery, café", "কুক, বেকারি, ক্যাফে"], chip: ["৳18k–45k", "৳১৮k–৪৫k"],
+      major: "", kw: "chef cook kitchen",
+    },
+    {
+      id: "delivery", icon: "🛵", c: "#DC2626", bgSoft: "#FEF2F2", borderSoft: "rgba(220, 38, 38, 0.2)",
+      name: ["Delivery", "ডেলিভারি"], sub: ["Food, parcel, courier", "ফুড, পার্সেল, কুরিয়ার"], chip: ["৳12k–25k+", "৳১২k–২৫k+"],
+      major: "", kw: "delivery rider courier",
+    },
+    {
+      id: "fitness", icon: "🏋️", c: "#9333EA", bgSoft: "#FAF5FF", borderSoft: "rgba(147, 51, 234, 0.2)",
+      name: ["Gym Trainer", "জিম ট্রেইনার"], sub: ["Gym, yoga, sports", "জিম, ইয়োগা, স্পোর্টস"], chip: ["৳15k–40k", "৳১৫k–৪০k"],
+      major: "", kw: "gym trainer fitness",
+    },
+    {
+      id: "legal", icon: "⚖️", c: "#1E3A8A", bgSoft: "#EFF6FF", borderSoft: "rgba(30, 58, 138, 0.2)",
+      name: ["Law & Legal", "আইন ও লিগ্যাল"], sub: ["Associate, compliance", "অ্যাসোসিয়েট, কমপ্লায়েন্স"], chip: ["৳20k–50k", "৳২০k–৫০k"],
+      major: "", kw: "legal law lawyer",
+    },
+    {
+      id: "education", icon: "📚", c: "#CA8A04", bgSoft: "#FEFCE8", borderSoft: "rgba(202, 138, 4, 0.2)",
+      name: ["Education & Training", "শিক্ষা ও ট্রেনিং"], sub: ["Teacher, tutor, trainer", "শিক্ষক, টিউটর, ট্রেইনার"], chip: ["৳15k–40k", "৳১৫k–৪০k"],
+      major: "", kw: "teacher tutor trainer instructor",
+    },
+    {
+      id: "ngo", icon: "🤝", c: "#16A34A", bgSoft: "#F0FDF4", borderSoft: "rgba(22, 163, 74, 0.2)",
+      name: ["NGO / Development", "এনজিও / ডেভেলপমেন্ট"], sub: ["Program, field, M&E", "প্রোগ্রাম, ফিল্ড, এমঅ্যান্ডই"], chip: ["৳25k–60k", "৳২৫k–৬০k"],
+      major: "", kw: "ngo development program project",
+    },
+    {
+      id: "technician", icon: "🔧", c: "#475569", bgSoft: "#F8FAFC", borderSoft: "rgba(71, 85, 105, 0.2)",
+      name: ["Mechanic / Technician", "মেকানিক / টেকনিশিয়ান"], sub: ["Auto, electric, AC", "অটো, ইলেকট্রিক, এসি"], chip: ["৳15k–35k", "৳১৫k–৩৫k"],
+      major: "", kw: "mechanic technician",
     },
   ],
   internship: [
