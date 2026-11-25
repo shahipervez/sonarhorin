@@ -15,6 +15,15 @@ export const CATEGORIES = [
   { id: "agriculture", major: "Agriculture & Agribusiness", en: "Agriculture & Biotech", bn: "কৃষি ও এগ্রি-টেক" },
   { id: "textile", major: "Textile & Apparel", en: "Textile & Apparel", bn: "টেক্সটাইল ও গার্মেন্টস" },
   { id: "engineering", major: "Electrical / Mechanical", en: "Engineering & Tech", bn: "ইঞ্জিনিয়ারিং ও টেক" },
+  // skill & service jobs: no degree major — matched by keywords instead
+  { id: "driver", major: "", kw: "driver", en: "Driver", bn: "ড্রাইভার" },
+  { id: "chef", major: "", kw: "chef cook kitchen", en: "Chef & Kitchen", bn: "শেফ ও কিচেন" },
+  { id: "delivery", major: "", kw: "delivery rider courier", en: "Delivery", bn: "ডেলিভারি" },
+  { id: "fitness", major: "", kw: "gym trainer fitness", en: "Gym Trainer", bn: "জিম ট্রেইনার" },
+  { id: "legal", major: "", kw: "legal law lawyer", en: "Law & Legal", bn: "আইন ও লিগ্যাল" },
+  { id: "education", major: "", kw: "teacher tutor trainer instructor", en: "Education & Training", bn: "শিক্ষা ও ট্রেনিং" },
+  { id: "ngo", major: "", kw: "ngo development program project", en: "NGO / Development", bn: "এনজিও / ডেভেলপমেন্ট" },
+  { id: "technician", major: "", kw: "mechanic technician", en: "Mechanic / Technician", bn: "মেকানিক / টেকনিশিয়ান" },
 ];
 
 export const getCH = (L) => ({
@@ -98,6 +107,7 @@ function JobsBoard() {
     major: sp.get("major") || (sp.get("q") ? "" : user?.major || ""),
     channel: "",
     type: initialType,
+    kw: "",
   });
 
   const [trackMode, setTrackMode] = useState(initialType === "internship" ? "internship" : "job");
@@ -175,15 +185,16 @@ function JobsBoard() {
     if (!cat) {
       setActiveJobCat(null);
       setActiveSubCat("any");
-      setF((o) => ({ ...o, major: "", q: "" }));
+      setF((o) => ({ ...o, major: "", q: "", kw: "" }));
       return;
     }
     setActiveJobCat(cat.id);
     setActiveSubCat("any");
     setF((o) => ({
       ...o,
-      major: cat.major,
+      major: cat.major || "",
       q: "",
+      kw: cat.kw || "",
     }));
   };
 
@@ -207,7 +218,9 @@ function JobsBoard() {
   // Handle Sub-category Selection (e.g. Frontend, Backend, or Any type)
   const handleSelectSubCat = (sub) => {
     setActiveSubCat(sub.id);
-    if (sub.id === "any") {
+    if (sub.kw) {
+      setF((o) => ({ ...o, q: "", kw: sub.kw }));
+    } else if (sub.id === "any") {
       setF((o) => ({ ...o, q: "" }));
     } else {
       setF((o) => ({ ...o, q: sub.query || sub.name?.[0] || sub.id }));
@@ -359,6 +372,7 @@ function JobsBoard() {
                 ...o,
                 major: found ? found.major : "",
                 q: "",
+                kw: found?.kw || "",
               }));
             }}
           >
@@ -378,7 +392,9 @@ function JobsBoard() {
               setActiveSubCat(subId);
               const list = (activeJobCat && SUB_CATEGORIES[activeJobCat]) || [];
               const found = list.find((s) => s.id === subId);
-              if (!found || found.id === "any") {
+              if (found?.kw) {
+                setF((o) => ({ ...o, q: "", kw: found.kw }));
+              } else if (!found || found.id === "any") {
                 setF((o) => ({ ...o, q: "" }));
               } else {
                 setF((o) => ({ ...o, q: found.query || found.name[0] }));

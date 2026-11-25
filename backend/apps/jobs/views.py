@@ -17,7 +17,7 @@ def _my_apps(user):
 
 
 class JobListView(APIView):
-    """GET ?q=&major=&channel=&location=&type=&fresher=1 — open fresher-friendly jobs."""
+    """GET ?q=&kw=&major=&channel=&location=&type=&fresher=1 — open fresher-friendly jobs. kw = space-separated, any word matches."""
 
     permission_classes = [permissions.AllowAny]
 
@@ -27,6 +27,12 @@ class JobListView(APIView):
               .filter(Q(deadline__isnull=True) | Q(deadline__gte=timezone.localdate())).select_related("company"))
         if (q := p.get("q", "").strip()):
             qs = qs.filter(Q(title__icontains=q) | Q(company__name__icontains=q) | Q(description__icontains=q))
+        if (kw := p.get("kw", "").split()):
+            # category keywords (driver, chef…): any one word in the title or description
+            any_word = Q()
+            for w in kw[:8]:
+                any_word |= Q(title__icontains=w) | Q(description__icontains=w)
+            qs = qs.filter(any_word)
         if (m := p.get("major")):
             qs = qs.filter(Q(majors="") | Q(majors__icontains=m))
         if (loc := p.get("location")):
